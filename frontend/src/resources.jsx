@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import axios from "axios";
 // Import the smart URL we just created
-import { BASE_SERVER_URL } from "./const"; 
+import { BASE_SERVER_URL } from "./constants";
 
 export default function Resources() {
     const [files, setFiles] = useState({});
