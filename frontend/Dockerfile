@@ -4,6 +4,11 @@ FROM node:22 AS build
 # Set the working directory
 WORKDIR /usr/src/app
 
+# -> ADD THESE TWO LINES HERE <-
+# This catches the URL from Render and gives it to Vite
+ARG VITE_BACKEND_URL 
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL 
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
@@ -14,13 +19,11 @@ RUN npm install
 COPY . .
 
 # Build the production version of the React app
-# (Assuming you fixed your outDir so it creates the 'dist' folder here)
 RUN npm run build
 
 # Use Nginx to serve the built static files
 FROM nginx:alpine
 
-# -> ADD THIS NEW LINE RIGHT HERE:
 # This overwrites the default Nginx config with your custom one
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
