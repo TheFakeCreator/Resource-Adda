@@ -48,13 +48,18 @@ const Requests = ({ jwtToken }) => {
 
     const approve = (request) => {
         try {
-            const data = { id: request._id };
+            // Updated to match the backend req.body.contributionId
+            const data = { contributionId: request._id }; 
+            
             axios
                 .post(`${BASE_SERVER_URL}/approve`, data, {
                     headers: { Authorization: `Bearer ${jwtToken}` },
                 })
                 .then((res) => {
-                    
+                    // Update UI state so the item disappears immediately without a refresh
+                    setPendingRequests((prevRequests) => 
+                        prevRequests.filter((item) => item._id !== request._id)
+                    );
                 })
                 .catch((err) => {
                     console.log(`Error while approving: ${err}`);
@@ -100,7 +105,26 @@ const Requests = ({ jwtToken }) => {
                                     className={"req-reject-btn"}
                                     text={"Reject"}
                                     onClick={() => {
-                                    }}
+        const confirmReject = window.confirm("Are you sure you want to permanently delete this file?");
+        if (!confirmReject) return;
+
+        axios.delete(`${BASE_SERVER_URL}/reject`, {
+            headers: { Authorization: `Bearer ${jwtToken}` },
+            // Notice how data is passed inside this object for a DELETE request
+            data: { contributionId: request._id } 
+        })
+        .then(() => {
+            // Remove it from the screen immediately
+            setPendingRequests((prevRequests) => 
+                prevRequests.filter((item) => item._id !== request._id)
+            );
+            console.log("File rejected and deleted.");
+        })
+        .catch((err) => {
+            console.error(`Error while rejecting: ${err}`);
+            alert("Failed to reject the file. Check console for details.");
+        });
+    }}
                                 />
                             </div>
                         </li>

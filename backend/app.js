@@ -18,7 +18,7 @@ const axios = require("axios");
 const uri = process.env.MONGO_URI;
 const RequestCount = require("./requestCount");
 
-const SAVE_USER_CNT = false;
+const SAVE_USER_CNT = true;
 
 const clientOptions = {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
@@ -313,16 +313,20 @@ app.delete("/server/delete", authenticateJWT, async (req, res) => {
         const remainingDocuments = await Document.find({ fileUrl });
 
         // Only delete the file from GCP if no other branches reference it
+        // Only delete the file from GCP/Cloudinary if no other branches reference it
         if (!remainingDocuments.length) {
-           // Cloudinary URLs usually end in /v1234567890/your-file-id.ext
-            // We need to extract just the public ID (the name without the extension)
+            // Extract the filename with the extension (e.g., "my_notes.pdf")
             const fileNameWithExt = fileUrl.split("/").pop(); 
-            const publicId = fileNameWithExt.split(".")[0]; 
+            // Extract the filename without the extension (e.g., "my_notes")
+            const publicIdNoExt = fileNameWithExt.split(".")[0]; 
 
-            // Cloudinary requires knowing the resource_type to delete it. "auto" handles raw files/images/PDFs.
-            await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
-            await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
-            console.log("File deleted from Cloudinary");
+            // 1. Try to delete it as a raw document (REQUIRES the extension)
+            await cloudinary.uploader.destroy(fileNameWithExt, { resource_type: "raw" });
+            
+            // 2. Try to delete it as an image (REQUIRES stripping the extension)
+            await cloudinary.uploader.destroy(publicIdNoExt, { resource_type: "image" });
+            
+            console.log("File completely removed from Cloudinary");
         } else {
             console.log("File retained because other branches reference it.");
         }
@@ -441,8 +445,72 @@ app.get("/server/pending-requests", authenticateJWT, async (req, res) => {
 });
 
 app.post("/server/approve", authenticateJWT, async (req, res) => {
-    console.log(req.body);
-    res.sendStatus(200);
+    const { contributionId } = req.body; 
+
+    if (!contributionId) {
+        return res.status(400).json({ error: "Contribution ID is required" });
+    }
+
+    try {
+        const pendingRequest = await Contribution.findById(contributionId);
+
+        if (!pendingRequest) {
+            return res.status(404).json({ error: "Pending request not found" });
+        }
+
+        const newDocument = new Document({
+            fileUrl: pendingRequest.fileUrl,
+            branch: pendingRequest.branch,
+            sem: pendingRequest.sem,
+            fileName: pendingRequest.filename, 
+            subject: pendingRequest.subject,
+            unit: pendingRequest.unit
+        });
+
+        await newDocument.save();
+        await Contribution.findByIdAndDelete(contributionId);
+
+        return res.status(200).json({ message: "File approved and moved to public documents!" });
+    } catch (error) {
+        console.error("Error approving request:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.delete("/server/reject", authenticateJWT, async (req, res) => {
+    // We use the same contributionId payload as the approve route
+    const { contributionId } = req.body; 
+
+    if (!contributionId) {
+        return res.status(400).json({ error: "Contribution ID is required" });
+    }
+
+    try {
+        // 1. Find the pending request to get the file URL
+        const pendingRequest = await Contribution.findById(contributionId);
+
+        if (!pendingRequest) {
+            return res.status(404).json({ error: "Pending request not found" });
+        }
+
+        // 2. Extract the Cloudinary Public ID from the URL
+        const fileUrl = pendingRequest.fileUrl;
+        const fileNameWithExt = fileUrl.split("/").pop(); 
+        const publicId = fileNameWithExt.split(".")[0]; 
+
+        // 3. Tell Cloudinary to delete the physical file to save your storage space
+        await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+        await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+        console.log(`Cloudinary file ${publicId} deleted successfully.`);
+
+        // 4. Delete the request from the MongoDB Contribution database
+        await Contribution.findByIdAndDelete(contributionId);
+
+        return res.status(200).json({ message: "Request rejected and file deleted permanently." });
+    } catch (error) {
+        console.error("Error rejecting request:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 io.use((socket, next) => {

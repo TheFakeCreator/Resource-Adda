@@ -26,17 +26,7 @@ export default function FileList({ files, subject, unit }) {
                         <li
                             key={file._id}
                             className="file-item hover-effect"
-                            onClick={() => {
-                                // downloadFile(file.fileUrl, file.fileName);
-                                window.open(
-                                    `/view?uri=${BASE_SERVER_URL}/download?fileUrl=${encodeURIComponent(
-                                        file.fileUrl
-                                    )}&fileName=${encodeURIComponent(
-                                        file.fileName
-                                    )}`,
-                                    "_blank"
-                                );
-                            }}
+                           onClick={() => window.open(file.fileUrl, "_blank")}
                             style={{ cursor: "pointer" }} // Add a pointer cursor for better UX
                         >
                             {file.fileName}
