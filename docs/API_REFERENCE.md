@@ -245,7 +245,7 @@ Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "fileUrl": "https://storage.googleapis.com/<bucket>/<object>",
+  "fileUrl": "https://cloudinary.com/public_key",
   "branch": ["CSE", "IT"]
 }
 ```
