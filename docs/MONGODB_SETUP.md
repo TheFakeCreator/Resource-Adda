@@ -40,7 +40,7 @@ NODE_ENV=development
 > Notes:
 > - `MONGO_URI` is read from `backend/app.js`.
 > - `PASSWORD` is compared in `/server/addAdmin` as the super-admin gate value.
-> - `BUCKET_NAME` is required by Google Cloud Storage upload flows.
+> - `CLOUDINARY_URL` is required by Cloudinary Cloud Storage upload flows.
 
 ---
 
