@@ -4,7 +4,7 @@
 
 The academic resource-sharing platform — designed to help students discover study materials, contribute notes, and connect with communities organised by branch and semester.
 
-🌐 **Live:** https://resource-adda-1030059749120.asia-south1.run.app/
+🌐 **Live:** https://resource-adda.onrender.com
 
 ## 📖 About
 
