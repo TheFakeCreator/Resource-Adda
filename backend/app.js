@@ -1,7 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
-const { Storage } = require("@google-cloud/storage");
+// const { Storage } = require("@google-cloud/storage");
+const cloudinary = require("cloudinary").v2;
+// Cloudinary automatically configures itself using the CLOUDINARY_URL in your .env file.
 const path = require("path");
 const Document = require("./document");
 const adminDoc = require("./admin");
@@ -36,9 +38,9 @@ async function run() {
 run().catch(console.dir);
 
 // Create a new instance of the Google Cloud Storage class
-const storage = new Storage();
-const bucketName = process.env.BUCKET_NAME; // Update with your bucket name
-const bucket = storage.bucket(bucketName);
+// const storage = new Storage();
+// const bucketName = process.env.BUCKET_NAME; // Update with your bucket name
+// const bucket = storage.bucket(bucketName);
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -46,26 +48,26 @@ const port = process.env.PORT || 3333;
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:5173", // Replace this with your frontend URL
+        origin: process.env.FRONTEND_URL || "http://localhost:5173", // Replace this with your frontend URL
         methods: ["GET", "POST", "PUT", "DELETE"],
     },
 });
 
 app.use(
     cors({
-        origin: "http://localhost:5173", // Replace this with your frontend URL
+        origin: process.env.FRONTEND_URL || "http://localhost:5173", // Replace this with your frontend URL
         methods: ["GET", "POST", "PUT", "DELETE"],
     })
 );
 
-app.use(express.static(path.join(__dirname, "dist")));
+// app.use(express.static(path.join(__dirname, "dist")));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Set up Multer to handle file uploads in memory
 const upload = multer({
     storage: multer.memoryStorage(), // Store file in memory before uploading
-    limits: { fileSize: 200 * 1024 * 1024 },
+    limits: { fileSize: 50 * 1024 * 1024 },
 });
 
 // The middleware for authentication of admins
@@ -312,13 +314,15 @@ app.delete("/server/delete", authenticateJWT, async (req, res) => {
 
         // Only delete the file from GCP if no other branches reference it
         if (!remainingDocuments.length) {
-            const fileName = fileUrl.split("/").pop(); // Adjust this depending on the structure of your file URL
+           // Cloudinary URLs usually end in /v1234567890/your-file-id.ext
+            // We need to extract just the public ID (the name without the extension)
+            const fileNameWithExt = fileUrl.split("/").pop(); 
+            const publicId = fileNameWithExt.split(".")[0]; 
 
-            const bucket = storage.bucket(bucketName);
-            const file = bucket.file(fileName);
-
-            await file.delete();
-            console.log("File deleted from Google Cloud Storage");
+            // Cloudinary requires knowing the resource_type to delete it. "auto" handles raw files/images/PDFs.
+            await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+            await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+            console.log("File deleted from Cloudinary");
         } else {
             console.log("File retained because other branches reference it.");
         }
@@ -501,14 +505,67 @@ io.on("connection", (socket) => {
             return;
         }
 
-        // If this is the first chunk, create the write stream
+       // If this is the first chunk, create the write stream
         if (!activeUploads[id]) {
-            const blob = bucket.file(id); // Store chunks in the same file using unique ID
-            const blobStream = blob.createWriteStream({
-                resumable: true,
-                contentType: "application/octet-stream",
-            });
             activeUploads[id] = {};
+            
+            // Create a Cloudinary upload stream
+            const blobStream = cloudinary.uploader.upload_stream(
+                { 
+                    public_id: id,
+                    resource_type: "auto", // Automatically detects if it's an image, PDF, or raw document
+                    use_filename: true
+                },
+                async (error, result) => {
+                    if (error) {
+                        console.error("Cloudinary upload failed:", error);
+                        // Make sure to emit error to the specific socket
+                        io.to(activeUploads[id]?.socketId).emit("error", "Error finalizing upload to Cloudinary.");
+                        return;
+                    }
+
+                    // Cloudinary success callback - THIS replaces your old `if (offset + buffer.length >= fileSize)` block
+                    const publicUrl = result.secure_url;
+                    let fileRecords = [];
+
+                    if (type == "upload") {
+                        const branches = Array.isArray(branch) ? branch : [branch];
+                        for (let br of branches) {
+                            fileRecords.push(
+                                new Document({
+                                    fileUrl: publicUrl, branch: br, sem, fileName, subject, unit,
+                                })
+                            );
+                        }
+                    } else {
+                        const branches = Array.isArray(branch) ? branch : [branch];
+                        for (let br of branches) {
+                            fileRecords.push(
+                                new Contribution({
+                                    fileUrl: publicUrl, branch: br, sem, filename: fileName, subject, unit, email: data.email,
+                                })
+                            );
+                        }
+                    }
+
+                    try {
+                        for (let fr of fileRecords) {
+                            await fr.save();
+                        }
+                        
+                        io.to(activeUploads[id]?.socketId).emit("uploadSuccess", {
+                            message: "File uploaded successfully!",
+                            fileUrl: publicUrl,
+                        });
+                    } catch (err) {
+                        console.error("Error saving file record:", err);
+                        io.to(activeUploads[id]?.socketId).emit("error", "Error saving file metadata.");
+                    } finally {
+                        delete activeUploads[id];
+                    }
+                }
+            );
+
             activeUploads[id].blobStream = blobStream;
             activeUploads[id].socketId = socket.id;
             activeUploads[id].offset = 0;
@@ -519,82 +576,28 @@ io.on("connection", (socket) => {
         const buffer = Buffer.from(new Uint8Array(fileBuffer));
         activeUploads[id].offset = offset;
         activeUploads[id].blobStream.write(buffer, (err) => {
-            if (err) {
-                console.error("Error writing chunk:", err);
-                socket.emit("error", "Error writing chunk.");
-                return;
+        if (err) {
+            console.error("Error writing chunk:", err);
+            socket.emit("error", "Error writing chunk.");
+            return;
+        }
+
+        const uploadProgress = ((offset + buffer.length) / fileSize) * 100;
+        socket.emit("uploadProgress", uploadProgress);
+
+        if (offset + buffer.length >= fileSize) {
+            // Just end the stream. 
+            // Cloudinary's callback (at the top) will automatically handle the DB saving!
+            try {
+                activeUploads[id].blobStream.end(); 
+            } catch (err) {
+                socket.emit("error", err);
             }
-
-            const uploadProgress = ((offset + buffer.length) / fileSize) * 100;
-            socket.emit("uploadProgress", uploadProgress);
-
-            if (offset + buffer.length >= fileSize) {
-                try {
-                    activeUploads[id].blobStream.end(); // Close the stream
-
-                    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${id}`;
-                    let fileRecords = [];
-
-                    if (type == "upload") {
-                        const branches = Array.isArray(branch)
-                            ? branch
-                            : [branch];
-
-                        for (br of branches)
-                            fileRecords.push(
-                                new Document({
-                                    fileUrl: publicUrl,
-                                    branch: br,
-                                    sem,
-                                    fileName,
-                                    subject,
-                                    unit,
-                                })
-                            );
-                    } else {
-                        const branches = Array.isArray(branch)
-                            ? branch
-                            : [branch];
-                        for (br of branches)
-                            fileRecords.push(
-                                Contribution({
-                                    fileUrl: publicUrl, // Google Cloud Storage URL
-                                    branch,
-                                    sem,
-                                    filename: fileName, // UUID file name
-                                    subject,
-                                    unit,
-                                    email: data.email,
-                                })
-                            );
-                    }
-
-                    for (fr of fileRecords)
-                        fr.save()
-                            .then(() => {
-                                socket.emit("uploadSuccess", {
-                                    message: "File uploaded successfully!",
-                                    fileUrl: publicUrl,
-                                });
-
-                                delete activeUploads[id];
-                            })
-                            .catch((err) => {
-                                console.error("Error saving file record:", err);
-                                socket.emit(
-                                    "error",
-                                    "Error saving file metadata."
-                                );
-                            });
-                } catch (err) {
-                    socket.emit("error", err);
-                }
-            }
-
+        } else {
             socket.emit("chunkUploaded");
-        });
+        }
     });
-
+});
     // Handle client disconnection
     socket.on("disconnect", async () => {
         console.log("Client disconnected");
@@ -617,18 +620,19 @@ io.on("connection", (socket) => {
                 );
             }
 
-            if (activeUploads[id].offset < activeUploads[id].fileSize)
+            if (activeUploads[id].offset < activeUploads[id].fileSize) {
                 try {
                     console.log(`Upload for file with id ${id} failed`);
-                    const bucket = storage.bucket(bucketName);
-                    const file = bucket.file(id);
-                    await file.delete();
-                    console.log("File deleted from Google Cloud Storage");
+                    // Use Cloudinary to destroy the incomplete file
+                    await cloudinary.uploader.destroy(id, { resource_type: "raw" });
+                    await cloudinary.uploader.destroy(id, { resource_type: "image" });
+                    console.log("Incomplete file deleted from Cloudinary");
                 } catch (err) {
                     console.log(
                         `Failed to delete the incomplete file with id ${id}: ${err}`
                     );
                 }
+            }
 
             delete activeUploads[id];
         }
@@ -636,9 +640,9 @@ io.on("connection", (socket) => {
 });
 
 //serve static files if other routes does not match
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "dist", "index.html"));
-});
+// app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+// });
 
 // Start the server with Socket.IO
 server.listen(port, () => {
