@@ -14,10 +14,15 @@ RUN npm install
 COPY . .
 
 # Build the production version of the React app
+# (Assuming you fixed your outDir so it creates the 'dist' folder here)
 RUN npm run build
 
 # Use Nginx to serve the built static files
 FROM nginx:alpine
+
+# -> ADD THIS NEW LINE RIGHT HERE:
+# This overwrites the default Nginx config with your custom one
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the built files from the build stage to Nginx
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
