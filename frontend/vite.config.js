@@ -17,7 +17,7 @@ export default defineConfig({
                 },
             },
         },
-        outDir: "../backend/dist",
+        outDir: "dist",
         emptyOutDir: true, // also necessary
     },
 });
