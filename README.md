@@ -1,7 +1,6 @@
 # Resource Adda
 
-<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"> <img src="https://img.shields.io/badge/Live-Google%20Cloud%20Run-blue.svg">
-
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
 The academic resource-sharing platform — designed to help students discover study materials, contribute notes, and connect with communities organised by branch and semester.
 
 🌐 **Live:** https://resource-adda.onrender.com
