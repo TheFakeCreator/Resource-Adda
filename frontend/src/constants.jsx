@@ -6,6 +6,8 @@
 // export const SOCKET_URL = 'http://localhost:3333'
 // This grabs the live URL from Render. If it's not found (like when you run it locally), it uses localhost.
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+// Inside const.jsx or App.jsx
+console.log("=== VITE ENV CHECK ===");
+console.log("My Backend URL is:", import.meta.env.VITE_BACKEND_URL);
 export const BASE_SERVER_URL = `${backendUrl}/server`;
 export const SOCKET_URL = backendUrl;
