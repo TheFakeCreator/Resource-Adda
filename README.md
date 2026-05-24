@@ -101,8 +101,8 @@ PASSWORD=your-bcrypt-hashed-super-admin-password
 # JWT
 JWT_SECRET=your-jwt-secret
 
-# Google Cloud Storage bucket name
-BUCKET_NAME=your-gcs-bucket-name
+# cloudinary
+CLOUDINARY_URL=your-cloudinary-url
 ```
 
 > **Note:** Ensure your environment is authenticated with `gcloud auth application-default login` so the backend can access Google Cloud Storage.
