@@ -256,7 +256,8 @@ cd backend && npm start
 
 ## 🤝 Contributing
 
-Contributions are welcome. Please keep changes aligned with:
+Contributions are welcome ( **NOTE: Contribution will be made in dev branch only**).
+Please keep changes aligned with:
 
 - Existing module boundaries (`resources`, `contributions`, `admin`, `upload`)
 - Mongoose schema conventions in the backend model files
