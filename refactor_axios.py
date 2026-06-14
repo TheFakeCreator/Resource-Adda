@@ -9,9 +9,11 @@ def process_file(filepath):
 
     original_content = content
 
-    # Replace absolute URLs with relative
-    content = re.sub(r"['\"]http://localhost:5000/api(/.*?)['\"]", r"'\1'", content)
-    content = re.sub(r"`http://localhost:5000/api(/.*?)`", r"`\1`", content)
+# Replace absolute URLs with Next.js env variable template literals
+    content = re.sub(r"['\"]http://localhost:5000/api(/.*?)['\"]", r"`${process.env.NEXT_PUBLIC_API_URL}\1`", content)
+    
+    # Handle URLs that are already using template literals (backticks)
+    content = re.sub(r"`http://localhost:5000/api(/.*?)`", r"`${process.env.NEXT_PUBLIC_API_URL}\1`", content)
 
     # Replace axios with api
     content = re.sub(r"axios\.get\(", r"api.get(", content)
