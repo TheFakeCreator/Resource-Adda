@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
+    "prepare": "husky",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "lint": "pnpm -r run lint"
   },
   "keywords": [],
   "author": "",

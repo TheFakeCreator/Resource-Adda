@@ -34,10 +34,10 @@ node --inspect=9229 backend/src/index.js
 
 ```javascript
 // Enable Mongoose debug logging
-mongoose.set('debug', true);
+mongoose.set("debug", true);
 
 // Use .lean() for read-only queries (skip hydration)
-const vendors = await Vendor.find({ status: 'active' }).lean();
+const vendors = await Vendor.find({ status: "active" }).lean();
 
 // Add indexes for frequently filtered fields
 vendorSchema.index({ category: 1, status: 1 });
@@ -50,6 +50,7 @@ npx lighthouse http://localhost:3000 --output=json
 ```
 
 Next.js optimizations:
+
 - Use `next/image` for automatic image optimization
 - Dynamic imports for heavy components
 - Server Components by default (no `'use client'` unless needed)
@@ -80,9 +81,9 @@ NODE_OPTIONS="--inspect" pnpm dev  # Profile in dev
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
+| Issue            | Solution                                               |
+| ---------------- | ------------------------------------------------------ |
 | Bundle increased | `pnpm why <pkg>` for dupes; dynamic imports for routes |
-| Slow queries | Add indexes; use `.lean()`; check N+1 queries |
-| Memory leak | Close DB connections in tests; check setInterval |
-| Build time high | Use Next.js webpack (default); cache aggressively |
+| Slow queries     | Add indexes; use `.lean()`; check N+1 queries          |
+| Memory leak      | Close DB connections in tests; check setInterval       |
+| Build time high  | Use Next.js webpack (default); cache aggressively      |

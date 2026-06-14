@@ -4,7 +4,11 @@ const express_1 = require("express");
 const setup_controller_1 = require("../controllers/setup.controller");
 const auth_1 = require("../middlewares/auth");
 const router = (0, express_1.Router)();
-router.get('/status', setup_controller_1.getSetupStatus);
-router.get('/settings/public', setup_controller_1.getPublicSettings);
-router.post('/configure', auth_1.authenticate, setup_controller_1.configureSystem);
+router.get("/status", setup_controller_1.getSetupStatus);
+router.get("/settings/public", setup_controller_1.getPublicSettings);
+router.post(
+  "/configure",
+  auth_1.authenticate,
+  setup_controller_1.configureSystem,
+);
 exports.default = router;

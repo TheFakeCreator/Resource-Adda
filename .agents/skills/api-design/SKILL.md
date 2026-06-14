@@ -34,11 +34,13 @@ description: "RESTful API patterns, request/response formatting, authentication 
 Resource-Adda uses two patterns depending on the module:
 
 **Pattern A — Wrapped (auth, club, institute, event, checkin, task, calendar):**
+
 ```json
 { "success": true, "data": { "id": "abc", "title": "Tech Fest" } }
 ```
 
 **Pattern B — Unwrapped (vendor, resource, scheduling, budget):**
+
 ```json
 { "_id": "abc", "name": "Catering Co", "status": "active" }
 ```
@@ -48,6 +50,7 @@ For lists in Pattern B: `{ "count": 5, "vendors": [...] }`
 ### Phase 3: Error Handling
 
 Use appropriate HTTP status codes:
+
 - 200 OK — Successful GET, PUT, PATCH, DELETE
 - 201 Created — Successful POST
 - 400 Bad Request — Invalid input, missing fields
@@ -58,6 +61,7 @@ Use appropriate HTTP status codes:
 - 500 Internal Server Error
 
 Pattern A error response:
+
 ```json
 {
   "success": false,
@@ -69,6 +73,7 @@ Pattern A error response:
 ```
 
 Pattern B error response:
+
 ```json
 { "error": "Vendor not found" }
 ```
@@ -84,6 +89,7 @@ Pattern B error response:
 ### Phase 5: Filtering & Pagination
 
 Query parameters for list endpoints:
+
 ```
 GET /api/v1/vendors?category=catering&status=active
 GET /api/v1/resources?type=venue&condition=good
@@ -110,10 +116,10 @@ curl http://localhost:4000/health
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| 400 Bad Request | Check request body, verify required fields present |
-| 401 Unauthorized | Verify Bearer token format and validity |
-| 403 Forbidden | Check user role matches `requireRoles()` guard |
-| Inconsistent response format | Check which pattern the module uses (A or B) |
-| Missing pagination | Add query param filtering in controller, return count |
+| Issue                        | Solution                                              |
+| ---------------------------- | ----------------------------------------------------- |
+| 400 Bad Request              | Check request body, verify required fields present    |
+| 401 Unauthorized             | Verify Bearer token format and validity               |
+| 403 Forbidden                | Check user role matches `requireRoles()` guard        |
+| Inconsistent response format | Check which pattern the module uses (A or B)          |
+| Missing pagination           | Add query param filtering in controller, return count |

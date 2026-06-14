@@ -1,10 +1,10 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface ISystemSettings extends Document {
   instituteName: string;
   allowedEmailPatterns: string[];
   isSetupComplete: boolean;
-  taglineLanguage: 'hindi' | 'english';
+  taglineLanguage: "hindi" | "english";
 }
 
 const SystemSettingsSchema: Schema = new Schema(
@@ -12,9 +12,16 @@ const SystemSettingsSchema: Schema = new Schema(
     instituteName: { type: String, required: true },
     allowedEmailPatterns: { type: [String], required: true },
     isSetupComplete: { type: Boolean, default: false },
-    taglineLanguage: { type: String, enum: ['hindi', 'english'], default: 'hindi' },
+    taglineLanguage: {
+      type: String,
+      enum: ["hindi", "english"],
+      default: "hindi",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<ISystemSettings>('SystemSettings', SystemSettingsSchema);
+export default mongoose.model<ISystemSettings>(
+  "SystemSettings",
+  SystemSettingsSchema,
+);

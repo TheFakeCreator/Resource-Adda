@@ -1,4 +1,4 @@
-import mongoose, { Document as MongooseDocument, Schema } from 'mongoose';
+import mongoose, { Document as MongooseDocument, Schema } from "mongoose";
 
 export interface IDocument extends MongooseDocument {
   title: string;
@@ -26,13 +26,13 @@ const DocumentSchema: Schema = new Schema(
     semester: { type: Number, required: true },
     branch: { type: String, required: true },
     type: { type: String, required: true },
-    uploadedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     downloadCount: { type: Number, default: 0 },
     averageRating: { type: Number, default: 0 },
     totalRatings: { type: Number, default: 0 },
     isFeatured: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<IDocument>('Document', DocumentSchema);
+export default mongoose.model<IDocument>("Document", DocumentSchema);

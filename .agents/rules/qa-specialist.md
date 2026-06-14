@@ -49,27 +49,30 @@ describe('VendorService', () => {
 ## Test Patterns
 
 ### What services return
+
 - `{ success: true, data }` — check `result.success` and `result.<entity>`
 - `{ success: false, error }` — check `result.error` message
 
 ### What to test
+
 - ✅ Service methods — all CRUD operations
 - ✅ Validation — missing fields, invalid data
 - ✅ Edge cases — empty results, boundary values, duplicates
 - ✅ Data integrity — IDs, timestamps, defaults
 
 ### What NOT to test
+
 - ❌ Express routing (the framework works)
 - ❌ Mongoose internals
 - ❌ Controller HTTP logic (test services instead)
 
 ## Coverage Targets
 
-| Module | Target |
-|--------|--------|
-| Core services | > 80% |
-| Business logic | > 85% |
-| Utilities | > 90% |
+| Module         | Target |
+| -------------- | ------ |
+| Core services  | > 80%  |
+| Business logic | > 85%  |
+| Utilities      | > 90%  |
 
 ## Running Tests
 
@@ -81,13 +84,13 @@ pnpm -C apps/vendor test -- --coverage # With coverage report
 
 ## Current Test Suite
 
-| Module | Tests | Status |
-|--------|-------|--------|
-| Vendor | 14 | ✅ Passing |
-| Resource | 16 | ✅ Passing |
-| Scheduling | 14 | ✅ Passing |
-| Budget | 21 | ✅ Passing |
-| **Total** | **65** | ✅ All passing |
+| Module     | Tests  | Status         |
+| ---------- | ------ | -------------- |
+| Vendor     | 14     | ✅ Passing     |
+| Resource   | 16     | ✅ Passing     |
+| Scheduling | 14     | ✅ Passing     |
+| Budget     | 21     | ✅ Passing     |
+| **Total**  | **65** | ✅ All passing |
 
 ## Constraints
 

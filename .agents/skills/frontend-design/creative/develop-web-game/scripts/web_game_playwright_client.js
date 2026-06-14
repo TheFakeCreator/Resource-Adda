@@ -129,7 +129,9 @@ async function getCanvasHandle(page) {
     let best = null;
     let bestArea = 0;
     for (const canvas of document.querySelectorAll("canvas")) {
-      const area = (canvas.width || canvas.clientWidth || 0) * (canvas.height || canvas.clientHeight || 0);
+      const area =
+        (canvas.width || canvas.clientWidth || 0) *
+        (canvas.height || canvas.clientHeight || 0);
       if (area > bestArea) {
         bestArea = area;
         best = canvas;
@@ -231,10 +233,14 @@ async function doChoreography(page, canvas, steps) {
       if (button === "left_mouse_button" || button === "right_mouse_button") {
         const bbox = canvas ? await canvas.boundingBox() : null;
         if (!bbox) continue;
-        const x = typeof step.mouse_x === "number" ? step.mouse_x : bbox.width / 2;
-        const y = typeof step.mouse_y === "number" ? step.mouse_y : bbox.height / 2;
+        const x =
+          typeof step.mouse_x === "number" ? step.mouse_x : bbox.width / 2;
+        const y =
+          typeof step.mouse_y === "number" ? step.mouse_y : bbox.height / 2;
         await page.mouse.move(bbox.x + x, bbox.y + y);
-        await page.mouse.down({ button: button === "left_mouse_button" ? "left" : "right" });
+        await page.mouse.down({
+          button: button === "left_mouse_button" ? "left" : "right",
+        });
       } else if (buttonNameToKey[button]) {
         await page.keyboard.down(buttonNameToKey[button]);
       }
@@ -251,7 +257,9 @@ async function doChoreography(page, canvas, steps) {
 
     for (const button of buttons) {
       if (button === "left_mouse_button" || button === "right_mouse_button") {
-        await page.mouse.up({ button: button === "left_mouse_button" ? "left" : "right" });
+        await page.mouse.up({
+          button: button === "left_mouse_button" ? "left" : "right",
+        });
       } else if (buttonNameToKey[button]) {
         await page.keyboard.up(buttonNameToKey[button]);
       }
@@ -316,7 +324,9 @@ async function main() {
     ];
   }
   if (!steps) {
-    throw new Error("Actions are required. Use --actions-file, --actions-json, or --click.");
+    throw new Error(
+      "Actions are required. Use --actions-file, --actions-json, or --click.",
+    );
   }
 
   for (let i = 0; i < args.iterations; i++) {
@@ -341,7 +351,7 @@ async function main() {
     if (freshErrors.length) {
       fs.writeFileSync(
         path.join(args.screenshotDir, `errors-${i}.json`),
-        JSON.stringify(freshErrors, null, 2)
+        JSON.stringify(freshErrors, null, 2),
       );
       break;
     }

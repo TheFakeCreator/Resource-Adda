@@ -48,10 +48,10 @@ apps/<module>/src/
 
 ```javascript
 // ❌ Direct module import — breaks plugin system
-import { AuthService } from '../../auth/src/service/auth.service.js';
+import { AuthService } from "../../auth/src/service/auth.service.js";
 
 // ✅ Use the registry
-const requireRoles = registry.getService('requireRoles');
+const requireRoles = registry.getService("requireRoles");
 ```
 
 ```javascript
@@ -89,12 +89,12 @@ async create(req, res, next) {
 
 ## Technical Debt Categories
 
-| Priority | Examples |
-|----------|---------|
-| **Critical** | Security issues, data integrity, broken auth |
-| **High** | Code duplication, missing tests, broken patterns |
-| **Medium** | Inconsistent naming, outdated docs |
-| **Low** | Minor refactoring, cosmetic improvements |
+| Priority     | Examples                                         |
+| ------------ | ------------------------------------------------ |
+| **Critical** | Security issues, data integrity, broken auth     |
+| **High**     | Code duplication, missing tests, broken patterns |
+| **Medium**   | Inconsistent naming, outdated docs               |
+| **Low**      | Minor refactoring, cosmetic improvements         |
 
 ## Technology Constraints
 

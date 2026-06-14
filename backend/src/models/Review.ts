@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IReview extends Document {
   documentId: mongoose.Types.ObjectId;
@@ -13,19 +13,23 @@ export interface IReview extends Document {
 
 const ReviewSchema: Schema = new Schema(
   {
-    documentId: { type: Schema.Types.ObjectId, ref: 'Document', required: true },
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    documentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Document",
+      required: true,
+    },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, trim: true },
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
-    upvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    downvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    upvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    downvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // A user can only review a document once
 ReviewSchema.index({ documentId: 1, userId: 1 }, { unique: true });
 
-export default mongoose.model<IReview>('Review', ReviewSchema);
+export default mongoose.model<IReview>("Review", ReviewSchema);

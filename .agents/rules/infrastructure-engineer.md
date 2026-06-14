@@ -8,6 +8,7 @@ trigger: model_decision
 ## Current Monitoring
 
 Resource-Adda backend includes built-in request logging via `middleware/logger.js`:
+
 - Assigns `req.id` (trace ID) to each request
 - Logs method, path, status code, and duration
 - Health check endpoint: `GET /health` (no auth required)
@@ -16,12 +17,15 @@ Resource-Adda backend includes built-in request logging via `middleware/logger.j
 
 ```javascript
 // Built into app.js — responds before auth middleware
-app.get('/health', (req, res) => res.json({ status: 'healthy', timestamp: new Date() }));
+app.get("/health", (req, res) =>
+  res.json({ status: "healthy", timestamp: new Date() }),
+);
 ```
 
 ## Standard Metrics to Track
 
 ### Application
+
 - Request count by endpoint
 - Response time (P50, P95, P99)
 - Error rate (HTTP 5xx)
@@ -29,6 +33,7 @@ app.get('/health', (req, res) => res.json({ status: 'healthy', timestamp: new Da
 - Active connections
 
 ### System
+
 - CPU and memory usage
 - Disk usage
 - Network I/O
@@ -37,6 +42,7 @@ app.get('/health', (req, res) => res.json({ status: 'healthy', timestamp: new Da
 ## Error Handling
 
 The error middleware (`middleware/error.js`) provides:
+
 - **`notFoundMiddleware`** — Returns 404 with attempted route
 - **`errorMiddleware`** — Catches all errors:
   - Validation errors → 400 with field-level details
@@ -46,12 +52,12 @@ The error middleware (`middleware/error.js`) provides:
 
 ## Incident Severity
 
-| Level | Definition | Response |
-|-------|-----------|----------|
-| P1 - Critical | System down, data breach | Immediate |
-| P2 - High | Major functionality broken | 1 hour |
-| P3 - Medium | Partial degradation | 4 hours |
-| P4 - Low | Minor issue | 1 day |
+| Level         | Definition                 | Response  |
+| ------------- | -------------------------- | --------- |
+| P1 - Critical | System down, data breach   | Immediate |
+| P2 - High     | Major functionality broken | 1 hour    |
+| P3 - Medium   | Partial degradation        | 4 hours   |
+| P4 - Low      | Minor issue                | 1 day     |
 
 ## Constraints
 

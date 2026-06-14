@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IRoadmapReview extends Document {
   roadmapId: mongoose.Types.ObjectId;
@@ -13,19 +13,22 @@ export interface IRoadmapReview extends Document {
 
 const RoadmapReviewSchema: Schema = new Schema(
   {
-    roadmapId: { type: Schema.Types.ObjectId, ref: 'Roadmap', required: true },
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    roadmapId: { type: Schema.Types.ObjectId, ref: "Roadmap", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, trim: true },
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
-    upvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    downvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    upvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    downvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // A user can only review a roadmap once
 RoadmapReviewSchema.index({ roadmapId: 1, userId: 1 }, { unique: true });
 
-export default mongoose.model<IRoadmapReview>('RoadmapReview', RoadmapReviewSchema);
+export default mongoose.model<IRoadmapReview>(
+  "RoadmapReview",
+  RoadmapReviewSchema,
+);

@@ -22,13 +22,15 @@ Most AI-generated websites share a recognizable DNA. Avoiding it requires knowin
 ### The Blacklist — Never Do These
 
 **Typography sins**
-- Inter, Poppins, Montserrat, Raleway, Space Grotesk, Outfit as primary fonts — these scream "AI template". (Note: *Inter Tight* is a separate font family with different metrics and is allowed.)
+
+- Inter, Poppins, Montserrat, Raleway, Space Grotesk, Outfit as primary fonts — these scream "AI template". (Note: _Inter Tight_ is a separate font family with different metrics and is allowed.)
 - Using one font family for everything
 - Uniform font sizes with predictable hierarchy (64px → 32px → 18px → 14px)
 - Default letter-spacing and line-height everywhere
 - Centered text blocks everywhere, especially multi-line paragraphs
 
 **Color sins**
+
 - Purple-to-blue gradients (the single biggest AI design cliché)
 - Indigo/violet as a primary brand color with no contextual reason
 - White background + one accent color + gray text (the SaaS starter kit)
@@ -37,6 +39,7 @@ Most AI-generated websites share a recognizable DNA. Avoiding it requires knowin
 - Neon accent colors on dark backgrounds (the "developer portfolio" look)
 
 **Layout sins**
+
 - Hero → 3-column feature grid → testimonials → CTA → footer (the default SaaS landing page)
 - Hero → stats bar → work grid → about split → CTA → footer (the "premium AI" landing page — just as formulaic)
 - ANY predictable top-to-bottom section ordering that could be swapped between sites. Every site must have its own unique structural DNA — different number of sections, different ordering logic, sections that don't fit neatly into categories
@@ -48,12 +51,14 @@ Most AI-generated websites share a recognizable DNA. Avoiding it requires knowin
 - Static flat hero sections with just text — hero sections should be immersive spatial experiences
 
 **Motion sins**
+
 - Elements fading in from below on scroll (the overused AOS effect)
 - Identical transitions on everything (same duration, same easing, same direction)
 - Hover effects that just scale up or add a shadow
 - Loading spinners instead of skeleton screens or choreographed reveals
 
 **Imagery & decoration sins**
+
 - Blob shapes as background decorations
 - Floating geometric shapes (circles, triangles) as "design elements"
 - Generic gradient mesh backgrounds
@@ -71,12 +76,14 @@ Premium web design communicates craft through restraint, surprise, and obsessive
 Typography is the #1 differentiator between a $500 website and a $50,000 one.
 
 **Font selection philosophy:**
-- Use distinctive serif or display fonts for headlines — fonts with personality and opinion. Good starting points: *Playfair Display, Cormorant Garamond, DM Serif Display, Fraunces, Instrument Serif* for serifs. For sans-serifs that aren't overused: *Syne, General Sans, Satoshi, Switzer, Cabinet Grotesk, Nacelle, Inter Tight, IBM Plex Sans, Manrope, Archivo, Work Sans, Instrument Sans*.
+
+- Use distinctive serif or display fonts for headlines — fonts with personality and opinion. Good starting points: _Playfair Display, Cormorant Garamond, DM Serif Display, Fraunces, Instrument Serif_ for serifs. For sans-serifs that aren't overused: _Syne, General Sans, Satoshi, Switzer, Cabinet Grotesk, Nacelle, Inter Tight, IBM Plex Sans, Manrope, Archivo, Work Sans, Instrument Sans_.
 - Pair a characterful display font with a neutral-but-refined body font.
-- Monospaced fonts as accent typography (for labels, categories, dates) add an editorial quality — *JetBrains Mono, IBM Plex Mono, Space Mono*.
+- Monospaced fonts as accent typography (for labels, categories, dates) add an editorial quality — _JetBrains Mono, IBM Plex Mono, Space Mono_.
 - Mix weights dramatically — a 900-weight headline next to a 300-weight body creates visual tension.
 
 **Typography execution:**
+
 - `clamp()` for fluid type scaling instead of breakpoint jumps
 - Dramatic size contrast — headlines can be 8vw+ on desktop
 - Negative letter-spacing on large headlines (`-0.03em` to `-0.06em`)
@@ -96,45 +103,48 @@ Typography is the #1 differentiator between a $500 website and a $50,000 one.
 
 ### Layout as Storytelling
 
-The #1 failure mode of this skill is producing sites that *look different on the surface but share the same underlying structure* — a hero, three editorial sections, a pull quote, a form, a colophon. Over a batch of sites this starts to feel like a template with different colors. Fight this actively, and deliberately.
+The #1 failure mode of this skill is producing sites that _look different on the surface but share the same underlying structure_ — a hero, three editorial sections, a pull quote, a form, a colophon. Over a batch of sites this starts to feel like a template with different colors. Fight this actively, and deliberately.
 
 **The structural DNA uniqueness rule:**
 
-Before writing any markup, **name the primary structural concept out loud** — a single noun phrase, like *"index manuscript"* or *"sticky horizontal diorama"*. Inside one batch of sites, **no two sites may share the same primary structural concept.** If the previous site was a sticky-scroll narrative, this one is not. If the previous site was a 33/67 vertical split, this one is not. The structural idea is the first thing the user notices — varying color without varying structure is cosmetic.
+Before writing any markup, **name the primary structural concept out loud** — a single noun phrase, like _"index manuscript"_ or _"sticky horizontal diorama"_. Inside one batch of sites, **no two sites may share the same primary structural concept.** If the previous site was a sticky-scroll narrative, this one is not. If the previous site was a 33/67 vertical split, this one is not. The structural idea is the first thing the user notices — varying color without varying structure is cosmetic.
 
 #### Structural DNA Catalog
 
 These are distinct primary structures. Each skill invocation should pick a concept and commit to it. **Do not mix two structures into one site** (it dilutes both).
 
 1. **Index Manuscript** — A single long editorial column, no sections. One typographic rhythm from top to bottom. The whole page reads like a single manuscript that happens to be a website. (Good for: a chef's menu, a perfumer's letter, a manifesto.)
-2. **Sticky Horizontal Diorama** — The page is a long vertical scroll, but *what you see as you scroll* is a horizontally-panning scene. Use `position: sticky` + `translateX` driven by scroll. (Good for: a timeline of commissions, a process in stages, a collection of artifacts.)
+2. **Sticky Horizontal Diorama** — The page is a long vertical scroll, but _what you see as you scroll_ is a horizontally-panning scene. Use `position: sticky` + `translateX` driven by scroll. (Good for: a timeline of commissions, a process in stages, a collection of artifacts.)
 3. **Two-Pane Permanent Split** — The page is always a 50/50 (or 38/62) split; one pane is sticky, the other scrolls. Navigation happens inside a pane, never by scrolling the whole page. (Good for: an archive with a live-updating index, a librarian's catalogue.)
 4. **Slide Sequence** — Full-viewport-height "slides," one per screen, with snap scrolling. Each slide is a completely different composition. (Good for: a photographer's monograph, a gallery walkthrough, an editorial look-book.)
 5. **Staged Object on a Plinth** — A single 3D/image subject sits centered, rotatable, and the whole rest of the page is marginalia that orbits the object. (Good for: a single-product house — a watch, a flacon, a bottle.)
-6. **Pinned Narrative (Scrollytelling)** — A 2–4-screen-tall section pins in place while its contents advance through discrete states (image swaps, text swaps, progress). Used *once* in the page as its centerpiece. (Good for: a mission profile, a production process, a building collapse study.)
+6. **Pinned Narrative (Scrollytelling)** — A 2–4-screen-tall section pins in place while its contents advance through discrete states (image swaps, text swaps, progress). Used _once_ in the page as its centerpiece. (Good for: a mission profile, a production process, a building collapse study.)
 7. **Horizontal Navigation** — The primary page scroll is horizontal. Sections read left-to-right. Vertical scroll is disabled or reserved for detail reveals. (Good for: a horological archive, a museum's wing, a film studio's slate.)
 8. **Sidebar + Column** — A persistent left-hand sidebar never scrolls (navigation, metadata, running footer); the right column is the entire site. (Good for: a legal practice, a research institute, an academic publisher.)
-9. **Chapter Gates** — Full-viewport chapter dividers between very different tonal zones. Each chapter has its own background color, typographic weight, and layout rhythm. The page *changes character* as you descend. (Good for: a multi-discipline studio, a retrospective.)
+9. **Chapter Gates** — Full-viewport chapter dividers between very different tonal zones. Each chapter has its own background color, typographic weight, and layout rhythm. The page _changes character_ as you descend. (Good for: a multi-discipline studio, a retrospective.)
 10. **Ledger / Registry** — The page is presented as an old-school document — a bill of lading, a registry, a ship's manifest. Tabular rows dominate; typography reads like a ledger. (Good for: a waiting list, a batch register, an expedition manifest.)
 11. **Collage / Grid-Breaker** — A magazine-style asymmetric grid with deliberate ruptures — oversized images bleeding into columns, pull-quotes crossing gutters, footnotes in the margins. (Good for: editorial publications, cultural magazines, creative studios.)
-12. **Single Object, No Chrome** — The site is *just* the subject, rotatable, with a single short sentence below it. No nav, no footer, almost no UI. (Good for: an artist's single-piece release, a statement work.)
+12. **Single Object, No Chrome** — The site is _just_ the subject, rotatable, with a single short sentence below it. No nav, no footer, almost no UI. (Good for: an artist's single-piece release, a statement work.)
 13. **Product UI Slate** — The hero is a realistic simulation of the product's own interface (dashboard tiles, diff view, command palette). Used by tech/AI brands whose product IS a UI. (Good for: AI IDEs, dev tools.)
 14. **Dashboard Tile Grid** — The entire page is structured like a live-feeling dashboard with live counters, sparklines, pulsing pips. (Good for: infra, cybersecurity, observability.)
 15. **Conversation Timeline** — The page plays back a simulated conversation/transcript/call as the user scrolls. Feature callouts anchor to specific moments. (Good for: voice AI, support platforms, legal interviews.)
 
 **How to pick the concept:**
-- Start from the client's central fact. A restaurant whose whole identity is one nine-course menu wants an *Index Manuscript*. A watchmaker whose identity is precision and a single calibre wants a *Staged Object on a Plinth*. An expedition company whose brand is one yearly journey wants a *Pinned Narrative*.
+
+- Start from the client's central fact. A restaurant whose whole identity is one nine-course menu wants an _Index Manuscript_. A watchmaker whose identity is precision and a single calibre wants a _Staged Object on a Plinth_. An expedition company whose brand is one yearly journey wants a _Pinned Narrative_.
 - Reject the concept if it's the one used last time in this session. Pick the next-best.
-- Write down the concept and one sentence of justification *before* writing any JSX. Keep it visible in the prompt file.
+- Write down the concept and one sentence of justification _before_ writing any JSX. Keep it visible in the prompt file.
 
 **Layout principles (apply within whichever structural concept you pick):**
+
 - Break the grid intentionally. Full-width moments followed by narrow text columns. Oversized images bleeding off-screen. Asymmetric two-column splits (60/40, 70/30).
 - Generous whitespace isn't wasted space — it's a luxury signal. Padding of `8rem`+ between sections.
-- Horizontal scrolling sections for portfolios or galleries (done well, not as the main navigation pattern — unless you deliberately chose *Horizontal Navigation*).
+- Horizontal scrolling sections for portfolios or galleries (done well, not as the main navigation pattern — unless you deliberately chose _Horizontal Navigation_).
 - Overlapping elements — text over images, images breaking out of their containers, elements that cross section boundaries.
 - Sticky elements that accompany the scroll — a label that stays while content scrolls past.
 
 **Specific micro-patterns that read as premium:**
+
 - Masonry or staggered grids for visual content instead of uniform grids.
 - Text that overlaps images with mix-blend-mode for editorial effect.
 - Numbered or indexed sections with a visible progression.
@@ -144,23 +154,24 @@ These are distinct primary structures. Each skill invocation should pick a conce
 - Form fields that look like parts of an editorial document, not a SaaS form — labels in small monospace above serif inputs, no outlines, bottom-borders only.
 
 **Banned repeats (within a skill session):**
-- Do not give two sites both a *"sticky left column + scrolling right column"* process section. Pick it for one; invent something else for the other.
-- Do not open two sites with a *33/67 asymmetric hero*. If one did, the next opens with a centered stage, or a full-bleed backdrop, or a ledger, or no hero at all.
+
+- Do not give two sites both a _"sticky left column + scrolling right column"_ process section. Pick it for one; invent something else for the other.
+- Do not open two sites with a _33/67 asymmetric hero_. If one did, the next opens with a centered stage, or a full-bleed backdrop, or a ledger, or no hero at all.
 - Do not end two sites with the same "enquiry form + colophon grid" pair. Vary the closing move.
 
 **Nav-bar variety — a silent failure mode to watch.**
 
 The easiest default is a `grid-template-columns: auto 1fr auto` top bar with "brand mark on the left, something centred, something right-aligned, mix-blend-mode: difference". After three sites, it starts to read as a signature — not a design choice. In each session, **vary the nav substantially**:
 
-- *No nav at all* (Single Object, No Chrome brands).
-- *Nav baked into the sticky sidebar* (Sidebar + Column brands).
-- *Bottom-fixed command bar* styled like `⌘K` launcher (tech-product brands — Cursor / Linear / Arc).
-- *Inline centred wordmark* with tabs spread beneath as a secondary strip.
-- *Full-width horizontal scroll index* that doubles as the nav.
-- *Marquee nav* — continuously scrolling ticker with section names.
-- *Left-vertical nav* written bottom-to-top.
-- *Status-bar nav* with a live-operational pip.
-- *Marquee-ticker strip* (benchmark prices, metrics) plus a slim top bar.
+- _No nav at all_ (Single Object, No Chrome brands).
+- _Nav baked into the sticky sidebar_ (Sidebar + Column brands).
+- _Bottom-fixed command bar_ styled like `⌘K` launcher (tech-product brands — Cursor / Linear / Arc).
+- _Inline centred wordmark_ with tabs spread beneath as a secondary strip.
+- _Full-width horizontal scroll index_ that doubles as the nav.
+- _Marquee nav_ — continuously scrolling ticker with section names.
+- _Left-vertical nav_ written bottom-to-top.
+- _Status-bar nav_ with a live-operational pip.
+- _Marquee-ticker strip_ (benchmark prices, metrics) plus a slim top bar.
 
 Pick the nav that belongs to the brand and the structural DNA — do not default to the three-column top bar.
 
@@ -168,7 +179,7 @@ Pick the nav that belongs to the brand and the structural DNA — do not default
 
 This skill gravitates, under pressure, toward: warm cream ground, serif display (Fraunces / Cormorant), monospace metadata, a single brass accent, wide-tracked uppercase micro-labels, `◦` bullet symbols. It's a real aesthetic, appropriate for couture, parfumerie, haute cuisine, horlogerie. It is **not** appropriate for tech, AI, cybersecurity, consumer electronics, SaaS, or developer tooling — and repeatedly defaulting to it makes every site in a batch look like the same agency did them.
 
-**If the field is technology**, the aesthetic should skew toward: pure-white or near-black grounds (not cream); neo-grotesque sans-serifs (Söhne-feel, Inter Tight, IBM Plex Sans, Instrument Sans) as display type; monospace used as *display*, not just metadata; gradient-glow edges, shipped UI screenshots, live-feeling dashboard tiles, keyboard-shortcut chips inline with copy, code blocks rendered as the hero, iridescent/chrome/glass textures rather than brass-and-paper. See Vercel, Cursor, Linear, Windsurf, Stripe, Figma, Arc, Zed, Raycast, Supabase, v0.dev, Anthropic, OpenAI.
+**If the field is technology**, the aesthetic should skew toward: pure-white or near-black grounds (not cream); neo-grotesque sans-serifs (Söhne-feel, Inter Tight, IBM Plex Sans, Instrument Sans) as display type; monospace used as _display_, not just metadata; gradient-glow edges, shipped UI screenshots, live-feeling dashboard tiles, keyboard-shortcut chips inline with copy, code blocks rendered as the hero, iridescent/chrome/glass textures rather than brass-and-paper. See Vercel, Cursor, Linear, Windsurf, Stripe, Figma, Arc, Zed, Raycast, Supabase, v0.dev, Anthropic, OpenAI.
 
 ### 3D Components — The Core Differentiator
 
@@ -180,7 +191,7 @@ Every website built with this skill features 3D components. This is what makes t
 
 Most AI-generated "premium" sites look generic because the research step is skipped or done to a depth of two sentences. A real reference pull is the single biggest quality lever in this skill.
 
-**Depth requirement:** Study **at least 5 real reference sites** (not 2) — a mix of the most obvious industry leaders *and* less-famous editorial/cultural operators in the same space. The less-famous references are usually where the unique moves come from; the famous ones anchor the palette.
+**Depth requirement:** Study **at least 5 real reference sites** (not 2) — a mix of the most obvious industry leaders _and_ less-famous editorial/cultural operators in the same space. The less-famous references are usually where the unique moves come from; the famous ones anchor the palette.
 
 **Starting reference sets (expand, don't stop here):**
 
@@ -210,7 +221,7 @@ The design you build should feel like it belongs alongside these real competitor
 
 #### Step 2: Source Topic-Relevant 3D from Spline
 
-**Spline (spline.design)** is a 3D design platform with a large community library of professional, embeddable 3D scenes. A Spline scene only earns its place on a premium site if a visitor, glancing at it, immediately understands *what it represents*. A beautiful scene that has nothing to do with the subject is **worse** than no scene — it erodes the sense that every pixel is intentional, and reads as "some cool 3D the designer found," which is the opposite of premium.
+**Spline (spline.design)** is a 3D design platform with a large community library of professional, embeddable 3D scenes. A Spline scene only earns its place on a premium site if a visitor, glancing at it, immediately understands _what it represents_. A beautiful scene that has nothing to do with the subject is **worse** than no scene — it erodes the sense that every pixel is intentional, and reads as "some cool 3D the designer found," which is the opposite of premium.
 
 ##### No real-branded-product scenes — ever
 
@@ -218,9 +229,9 @@ Spline community scenes often depict **real, trademarked products**: a Nike Air 
 
 1. **Legal.** Real branded products have trademarks, design patents, and licensing agreements. Placing a Nike shoe on a website for a fictional "Trio Nord" footwear brand is trademark confusion at best, and infringement at worst.
 2. **Narrative.** A viewer who recognises the product — and most will — immediately knows the site is lying. The moment that recognition happens, the luxury illusion collapses.
-3. **Generic.** A scene that exists *because* a Nike designer or Sony visualizer made it reads as "someone on Spline recreated a famous product." It never reads as *our* product.
+3. **Generic.** A scene that exists _because_ a Nike designer or Sony visualizer made it reads as "someone on Spline recreated a famous product." It never reads as _our_ product.
 
-**Rule:** Before committing a Spline scene, ask: *Is the object in this scene a real, identifiable product from a real brand?* If yes — reject it, no matter how well-rendered it is. Look for **abstract, category-representative, or original-design** scenes instead:
+**Rule:** Before committing a Spline scene, ask: _Is the object in this scene a real, identifiable product from a real brand?_ If yes — reject it, no matter how well-rendered it is. Look for **abstract, category-representative, or original-design** scenes instead:
 
 - Instead of Nike Air Jordan → a generic hand-lasted leather shoe, or an abstract footwear silhouette.
 - Instead of Sony headphones → abstract floating audio-ring geometry, or a generic minimalist over-ear.
@@ -258,7 +269,7 @@ A Spline scene is acceptable only when it **literally depicts the subject of the
 - An Earth scene is fine for a **spaceflight company** (the Earth is what passengers see) or a **cartographer** (Earth is what they map) but **not** for a family office "with global reach" (the link is metaphorical).
 - A watch scene is fine for a watchmaker, not for a "time-respecting" consulting firm.
 
-Before using any Spline scene, state out loud in the `prompt.md`: *"The scene depicts X. My site's subject is X."* If those two X's are not the same noun, reject the scene. The brand itself must be in the business of whatever the scene shows — not merely invoke it symbolically.
+Before using any Spline scene, state out loud in the `prompt.md`: _"The scene depicts X. My site's subject is X."_ If those two X's are not the same noun, reject the scene. The brand itself must be in the business of whatever the scene shows — not merely invoke it symbolically.
 
 **The two-second test still applies:** with no caption, a viewer should name the subject of the scene. A "nice abstract composition" is not a subject.
 
@@ -275,7 +286,7 @@ Write down, in the `prompt.md`, the **scene's native backdrop color** and the **
 
 ##### Expand the search vocabulary before searching
 
-Never search Spline for just the topic word. A single-keyword search misses 90% of relevant scenes — most creators title their work by what's *in* it (wheel, tire, headlight) rather than the category.
+Never search Spline for just the topic word. A single-keyword search misses 90% of relevant scenes — most creators title their work by what's _in_ it (wheel, tire, headlight) rather than the category.
 
 Before searching, build a keyword map of **at least 8–12 terms** covering:
 
@@ -289,6 +300,7 @@ Before searching, build a keyword map of **at least 8–12 terms** covering:
 Also search Awwwards, Codrops, Tympanus, Dribbble, Twitter/X, and **production-site HTML** (`"<iframe" "my.spline.design"`, `"<spline-viewer" "scene.splinecode"`, `site:codepen.io "my.spline.design"`, `site:github.com "my.spline.design"`). URLs found inside working iframes on live sites are guaranteed to render.
 
 **Do a minimum of three search passes:**
+
 1. **Slug/topic pass** — direct `site:my.spline.design [keyword]` for every word in the keyword map.
 2. **Community-page pass** — `community.spline.design/tag/[keyword]`.
 3. **Harvesting pass** — `"<iframe" "my.spline.design/[topic keyword]"` to find URLs already embedded in live production sites.
@@ -297,12 +309,12 @@ Also search Awwwards, Codrops, Tympanus, Dribbble, Twitter/X, and **production-s
 
 Spline has **four** URL formats you will encounter. Only two of them are usable as embeds.
 
-| URL shape | What it is | Usable as embed? | How |
-|---|---|---|---|
-| `community.spline.design/file/[uuid]` | Community gallery page (HTML with JS viewer) | ❌ No | Sends `X-Frame-Options`, blocks iframe. Also does not expose the embed URL in its HTML — the `my.spline.design` slug is added client-side after the user hits Share. |
-| `app.spline.design/community/file/[uuid]` | Spline editor, opened to that community file | ❌ No | Editor page, not an embed. |
-| `my.spline.design/[slug]/` | Published HTML scene page | ✅ Yes, via **iframe** | `<iframe src="https://my.spline.design/[slug]/">` |
-| `prod.spline.design/[id]/scene.splinecode` | Raw runtime binary | ✅ Yes, via **spline-viewer** | `<spline-viewer url="https://prod.spline.design/[id]/scene.splinecode">` |
+| URL shape                                  | What it is                                   | Usable as embed?              | How                                                                                                                                                                  |
+| ------------------------------------------ | -------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `community.spline.design/file/[uuid]`      | Community gallery page (HTML with JS viewer) | ❌ No                         | Sends `X-Frame-Options`, blocks iframe. Also does not expose the embed URL in its HTML — the `my.spline.design` slug is added client-side after the user hits Share. |
+| `app.spline.design/community/file/[uuid]`  | Spline editor, opened to that community file | ❌ No                         | Editor page, not an embed.                                                                                                                                           |
+| `my.spline.design/[slug]/`                 | Published HTML scene page                    | ✅ Yes, via **iframe**        | `<iframe src="https://my.spline.design/[slug]/">`                                                                                                                    |
+| `prod.spline.design/[id]/scene.splinecode` | Raw runtime binary                           | ✅ Yes, via **spline-viewer** | `<spline-viewer url="https://prod.spline.design/[id]/scene.splinecode">`                                                                                             |
 
 **Critical misuse to avoid:** do NOT put a `.splinecode` URL into an `<iframe src>` — it renders as a broken placeholder or a binary download. Use the web component. Conversely, do NOT put a `my.spline.design/` URL into a `<spline-viewer url>` — the viewer expects the runtime binary, not an HTML page.
 
@@ -313,14 +325,15 @@ Spline has **four** URL formats you will encounter. Only two of them are usable 
 Scenes shown at `https://community.spline.design/file/[uuid]` are **not directly iframe-embeddable** — the community domain sends `X-Frame-Options` headers that block framing, and Google does not index the underlying `my.spline.design/[slug]/` URL. When search surfaces a perfect-looking community scene, you cannot simply iframe `community.spline.design/file/...`.
 
 Workarounds, in order of reliability:
-1. **Ask the user** to open the community file, hit *Share → Public URL*, and paste the `my.spline.design/…` link. This is the correct answer when you've found the *ideal* scene but can't extract its embed URL.
+
+1. **Ask the user** to open the community file, hit _Share → Public URL_, and paste the `my.spline.design/…` link. This is the correct answer when you've found the _ideal_ scene but can't extract its embed URL.
 2. **Check if the creator linked it on their portfolio** — many Spline creators embed their own scenes on their personal site.
-3. **Remix workflow** — the user opens the community file, clicks *Remix*, and the remixed copy belongs to their account with its own public `my.spline.design` URL they can share.
+3. **Remix workflow** — the user opens the community file, clicks _Remix_, and the remixed copy belongs to their account with its own public `my.spline.design` URL they can share.
 4. **Accept the limitation** — if you cannot verify a URL, do not guess the slug.
 
 ##### Spline embed — the bulletproof pattern (both methods)
 
-Spline sizing problems have one underlying cause: the **scene's internal canvas fills 100% of the container**, and **the space around the 3D object is filled with the scene's internal background color** — which defaults to a neutral color the creator chose, *not* your page's ground. When you drop a scene into a tall container, the scene looks correct in the part the object occupies and looks like a solid-color void in the rest. That void is the scene's background, not a rendering bug.
+Spline sizing problems have one underlying cause: the **scene's internal canvas fills 100% of the container**, and **the space around the 3D object is filled with the scene's internal background color** — which defaults to a neutral color the creator chose, _not_ your page's ground. When you drop a scene into a tall container, the scene looks correct in the part the object occupies and looks like a solid-color void in the rest. That void is the scene's background, not a rendering bug.
 
 **The fix has three parts, always applied together:**
 
@@ -336,10 +349,10 @@ Spline sizing problems have one underlying cause: the **scene's internal canvas 
   style={{
     position: "relative",
     width: "100%",
-    height: "100%",           // or a specific value / aspect-ratio / vh
-    minHeight: 420,           // guarantees a usable minimum
+    height: "100%", // or a specific value / aspect-ratio / vh
+    minHeight: 420, // guarantees a usable minimum
     overflow: "hidden",
-    background: "#0A0B0F",    // matches the page ground — seen during load
+    background: "#0A0B0F", // matches the page ground — seen during load
   }}
 >
   {/* skeleton loader underneath — visible until Spline paints */}
@@ -357,9 +370,12 @@ Spline sizing problems have one underlying cause: the **scene's internal canvas 
   <iframe
     src="https://my.spline.design/[scene-slug]/"
     style={{
-      position: "absolute", inset: 0,
-      width: "100%", height: "100%",
-      border: "none", display: "block",
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      border: "none",
+      display: "block",
       zIndex: 1,
     }}
     title="3D Scene"
@@ -378,7 +394,7 @@ This is the **preferred** method for tech sites where theme-harmony matters, bec
 ```jsx
 // Inject the viewer script once per app (put in main.jsx or the first component that uses it):
 useEffect(() => {
-  if (document.querySelector('script[data-spline-viewer]')) return;
+  if (document.querySelector("script[data-spline-viewer]")) return;
   const s = document.createElement("script");
   s.type = "module";
   s.src = "https://unpkg.com/@splinetool/viewer@1.9.28/build/spline-viewer.js";
@@ -388,7 +404,15 @@ useEffect(() => {
 
 // Then render the viewer inside a sized container.
 // Use dangerouslySetInnerHTML because JSX can't parse the custom tag's `background` attribute as a color.
-<div style={{ position: "relative", width: "100%", height: "100%", minHeight: 480, overflow: "hidden" }}>
+<div
+  style={{
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    minHeight: 480,
+    overflow: "hidden",
+  }}
+>
   <div
     dangerouslySetInnerHTML={{
       __html: `<spline-viewer
@@ -398,7 +422,7 @@ useEffect(() => {
       ></spline-viewer>`,
     }}
   />
-</div>
+</div>;
 ```
 
 The `background` attribute accepts any CSS color value — `#0A0B0F`, `transparent`, `rgba(11,16,20,0.9)`. **Set it to your page's ground color.** The empty area around the 3D object now blends into the page, and the "bottom half is black" problem disappears.
@@ -407,16 +431,16 @@ The `background` attribute accepts any CSS color value — `#0A0B0F`, `transpare
 
 Not every Spline scene is a discrete 3D object. The community is full of scenes titled things like:
 
-- *"reeded glass prism — hero section UI concept"*
-- *"AI landing page hero"*
-- *"SaaS hero with CTA"*
+- _"reeded glass prism — hero section UI concept"_
+- _"AI landing page hero"_
+- _"SaaS hero with CTA"_
 
 These scenes contain their own **baked-in HTML-like text, buttons, and layout**, rendered as part of the 3D composition. When you embed one, you get a full pre-designed hero inside your hero — the scene's own text fights with your page's text, and the scene's own CTA competes with yours.
 
-**Before committing a scene, read its title.** If the title contains *"hero section," "landing page," "UI concept,"* or *"website template"* — treat it with suspicion. Open it, look at it, and either:
+**Before committing a scene, read its title.** If the title contains _"hero section," "landing page," "UI concept,"_ or _"website template"_ — treat it with suspicion. Open it, look at it, and either:
 
 - Accept the scene AS the hero (delete your own hero HTML on top of it).
-- Reject the scene and find a pure-object scene (one whose title is just an object — *"watch," "shoe," "orb"* — not a composition).
+- Reject the scene and find a pure-object scene (one whose title is just an object — _"watch," "shoe," "orb"_ — not a composition).
 
 ##### Camera framing — how to fix "object too small / too zoomed"
 
@@ -434,8 +458,12 @@ Spline scenes are 1–16 MB binaries. They load in 2–8 seconds on a fast conne
 
 ```css
 @keyframes skl {
-  0% { background-position: 0% 50%; }
-  100% { background-position: -200% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
 }
 ```
 
@@ -446,7 +474,7 @@ The skeleton should use the page's ground color + one slightly lighter tint. Nev
 Once you have a candidate scene, run these **four** checks. If any fails, keep searching:
 
 1. **It actually resolves.** `curl -I [url]` returns 200, not 403/404. Guessed slugs from community UUIDs almost always 403. If you can't verify a 200, the URL doesn't exist.
-2. **It looks right when rendered.** Load the URL in a browser (or the preview iframe) and *look at it*. Many Spline URLs whose slug says "rocket" or "robot" turn out to be low-poly cartoon scenes in garish purple. A slug is not a guarantee of quality — your eye is. Screenshot the iframe before committing the site to use it.
+2. **It looks right when rendered.** Load the URL in a browser (or the preview iframe) and _look at it_. Many Spline URLs whose slug says "rocket" or "robot" turn out to be low-poly cartoon scenes in garish purple. A slug is not a guarantee of quality — your eye is. Screenshot the iframe before committing the site to use it.
 3. **Subject recognition** — With no caption and a two-second glance, would a viewer name the subject correctly? ("A car." "A rocket." "A perfume bottle.") A "nice composition" is not a subject.
 4. **Brand fit** — Does the scene's palette, lighting mood, and polish match the brand direction? A low-poly toy-car style is not luxury. A neon-glow cyber-robot is not a medical AI company.
 
@@ -454,7 +482,7 @@ Once you have a candidate scene, run these **four** checks. If any fails, keep s
 
 ##### After-build render-size check — MANDATORY
 
-Verifying the URL *works* is not the same as verifying the scene *renders at the right size in your layout.* Spline scenes have their own internal camera and framing — dropping one into a small viewport, a wide banner, or an awkward aspect ratio often crops the subject out of frame or shrinks it to a speck.
+Verifying the URL _works_ is not the same as verifying the scene _renders at the right size in your layout._ Spline scenes have their own internal camera and framing — dropping one into a small viewport, a wide banner, or an awkward aspect ratio often crops the subject out of frame or shrinks it to a speck.
 
 **After you build the site, before calling it done, do this in order:**
 
@@ -469,10 +497,11 @@ Verifying the URL *works* is not the same as verifying the scene *renders at the
 6. Screenshot again. Repeat until the scene renders correctly.
 
 Common size failures and fixes:
-- *Scene appears tiny in a huge container* → the scene's camera is at a fixed zoom and the creator set it for a different aspect. Either (a) put the scene in a smaller, matching-aspect container, or (b) apply `transform: scale(1.4)` on the iframe to zoom in.
-- *Scene is cropped off the side* → the scene's natural center is offset; use `transform: translateX()` on the iframe to recenter.
-- *Scene disappears into a dark-on-dark background* → your CSS veil is too heavy, or the site bg is suffocating the scene. Lower the veil opacity. Use `background` attribute.
-- *Scene backdrop is the wrong color for the site* → you violated the theme-harmony rule; use the `background` attribute (for spline-viewer) or pick a different scene.
+
+- _Scene appears tiny in a huge container_ → the scene's camera is at a fixed zoom and the creator set it for a different aspect. Either (a) put the scene in a smaller, matching-aspect container, or (b) apply `transform: scale(1.4)` on the iframe to zoom in.
+- _Scene is cropped off the side_ → the scene's natural center is offset; use `transform: translateX()` on the iframe to recenter.
+- _Scene disappears into a dark-on-dark background_ → your CSS veil is too heavy, or the site bg is suffocating the scene. Lower the veil opacity. Use `background` attribute.
+- _Scene backdrop is the wrong color for the site_ → you violated the theme-harmony rule; use the `background` attribute (for spline-viewer) or pick a different scene.
 
 This step is not optional. A site that contains a miscentered or wrong-sized Spline scene is strictly worse than a site with a well-composed still image.
 
@@ -482,7 +511,7 @@ Even the right scene fails if it's placed poorly. Pick one of these spatial logi
 
 - **Stage** — Scene is framed like a product on a plinth. Full viewport (or large contained area), centered, typography around it. Works for cars, watches, bottles, any physical object. The user can rotate it. This is usually the right choice.
 - **Backdrop** — Scene fills the entire viewport behind the hero typography, with a gradient veil so type stays legible. The scene is context/atmosphere, not focus. Works when the scene has a dominant subject that reads even at 20% opacity (earth, rocket, planet).
-- **Companion** — Scene lives in a dedicated panel (40/60 or 33/67 split) with typography on the other side. Only acceptable if the scene's subject is *obviously* topic-relevant.
+- **Companion** — Scene lives in a dedicated panel (40/60 or 33/67 split) with typography on the other side. Only acceptable if the scene's subject is _obviously_ topic-relevant.
 - **Object in a spread** — Scene is small-to-medium and anchored in a specific grid position, treated like a framed photograph in an editorial layout. Works in manifesto or story sections, not usually the hero.
 
 If your chosen scene doesn't fit any of these with clear logic, that's a signal to find a different scene — not to wedge it in.
@@ -497,7 +526,7 @@ If no topic-relevant Spline scene can be verified after a full search, do NOT fo
 2. **Verified Spline scene** (`my.spline.design/[slug]/` or `prod.spline.design/[id]/scene.splinecode`) that genuinely depicts the subject.
 3. **Professional still photography** (client-provided, or tightly curated from Unsplash) with CSS parallax + subtle grain/filter. Always screenshot-verify the image renders as expected.
 4. **CSS / SVG illustration** — a deliberate custom illustration (Geneva stripes, a hand-drawn diagram, a rendered mockup) built entirely in HTML/CSS/SVG. Deterministic, no network dependency.
-5. **Three.js atmospheric layer** — a minimal particle field, grid plane, or drifting-dust canvas as *background atmosphere only*, behind a still-image or typographic hero. Never the main visual.
+5. **Three.js atmospheric layer** — a minimal particle field, grid plane, or drifting-dust canvas as _background atmosphere only_, behind a still-image or typographic hero. Never the main visual.
 
 **Layered implementation (CSS-only fallback under Spline):**
 
@@ -532,7 +561,7 @@ When Spline uses `background="transparent"`, the empty space around the 3D objec
 
 ##### Photography fallback — verify the image, don't guess
 
-Unsplash URLs are convenient but unverifiable without loading. A URL like `https://images.unsplash.com/photo-1548484352-ea579e5233a8?w=1200&q=80` looks specific (it names a photo ID) but the photographer may have replaced or removed the file, the crop may be different from what you expect, and at a different viewport aspect ratio you may see a different subject entirely than what the photo is *named* for.
+Unsplash URLs are convenient but unverifiable without loading. A URL like `https://images.unsplash.com/photo-1548484352-ea579e5233a8?w=1200&q=80` looks specific (it names a photo ID) but the photographer may have replaced or removed the file, the crop may be different from what you expect, and at a different viewport aspect ratio you may see a different subject entirely than what the photo is _named_ for.
 
 When using photography fallback:
 
@@ -555,11 +584,13 @@ When using photography fallback:
 - **Finance / Legal**: Conservative palettes (navy, charcoal, forest), traditional serifs for authority, structured grids.
 
 **Bad color choices** that make sites look unprofessional:
+
 - Orange + white for aerospace (looks like a construction company)
 - Bright cyan on black for everything (looks like a hacker movie)
 - Using the same accent color across different industries
 
 **Critical technical rules:**
+
 - Always `import React` alongside hooks: `import React, { useState, useEffect, useRef } from "react";`
 - Never use JSX fragments (`<>...</>`) — use `<span>` or `<div>` instead for compatibility
 - When using iframes for Spline, set `loading="lazy"` and provide a styled loading placeholder
@@ -571,6 +602,7 @@ When using photography fallback:
 Scrolling should feel like a directed journey, not just moving down a page.
 
 **Scroll-driven techniques:**
+
 - **Parallax layers**: Multiple elements moving at different speeds. Track `window.scrollY` and apply different multipliers to different elements.
 - **Horizontal scroll sections**: A section that scrolls horizontally as the user scrolls vertically. Use `position: sticky` on a container with `overflow: hidden`, then `translateX` inner content based on scroll progress.
 - **Scale-on-scroll**: Elements that grow from small to full-size as you scroll through them. Use `IntersectionObserver` with a threshold array, or calculate progress from `getBoundingClientRect()`.
@@ -585,7 +617,7 @@ Scrolling should feel like a directed journey, not just moving down a page.
 const getScrollProgress = (element) => {
   const rect = element.getBoundingClientRect();
   const windowHeight = window.innerHeight;
-  return Math.max(0, Math.min(1, 1 - (rect.top / windowHeight)));
+  return Math.max(0, Math.min(1, 1 - rect.top / windowHeight));
 };
 
 useEffect(() => {
@@ -599,8 +631,8 @@ useEffect(() => {
       ticking = true;
     }
   };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  return () => window.removeEventListener('scroll', onScroll);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
 }, []);
 ```
 
@@ -638,11 +670,7 @@ These small things separate premium from "pretty good":
 ```jsx
 // Always use a default export with no required props
 export default function SiteName() {
-  return (
-    <div>
-      {/* Full implementation */}
-    </div>
-  );
+  return <div>{/* Full implementation */}</div>;
 }
 ```
 
@@ -651,7 +679,7 @@ export default function SiteName() {
 Import from Google Fonts via `@import` in a `<style>` tag or use `<link>` in the component. Always provide a thoughtful fallback stack.
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap");
 ```
 
 ### Available Libraries
@@ -670,13 +698,13 @@ Use inline styles or a `<style>` tag within the component. CSS variables are ess
 
 ```css
 :root {
-  --color-bg: #FAF9F6;
-  --color-text: #1A1A1A;
-  --color-text-muted: #6B6B6B;
-  --color-accent: #C8553D;
-  --font-display: 'Instrument Serif', Georgia, serif;
-  --font-body: 'DM Sans', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-bg: #faf9f6;
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-accent: #c8553d;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body: "DM Sans", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --space-unit: clamp(1rem, 2vw, 2rem);
 }
 ```
@@ -691,8 +719,10 @@ const ref = useRef(null);
 
 useEffect(() => {
   const observer = new IntersectionObserver(
-    ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-    { threshold: 0.15 }
+    ([entry]) => {
+      if (entry.isIntersecting) setIsVisible(true);
+    },
+    { threshold: 0.15 },
   );
   if (ref.current) observer.observe(ref.current);
   return () => observer.disconnect();
@@ -736,7 +766,7 @@ When the user asks for a premium website:
 1. **Absorb the brief — field-first.** Understand the brand, audience, purpose, and field/industry. The field must be a **real, plausible premium industry** a viewer would accept without explanation — automotive, horology, haute couture, fragrance, footwear, audio, eyewear, private medicine, etc. Do NOT invent a niche brand ("fountain-pen ink manufactory," "astronomical almanac publisher") as a dodge for an available Spline scene. Ask the user if they have product images, brand assets, videos, or specific 3D models they want used.
 2. **Research the industry — deeply.** Study **at least 5** real reference sites (a mix of industry giants and less-obvious editorial/cultural operators). For each, write down the primary display font, body font, palette in hex, the structural DNA used, and one signature move. Compose a 6–10 line **Design reference pull** block at the top of the site's `prompt.md`.
 3. **Source topic-relevant 3D from Spline — and confirm it's unique to this site.** Build a keyword map of 8–12 terms for the product you're selling. Run three search passes: `site:my.spline.design [keyword]`, `community.spline.design/tag/[keyword]`, production-site harvest (`"<iframe" "my.spline.design"`, `"spline-viewer" "scene.splinecode"`). Accept either embed format. Check the list of Spline URLs already used by previous sites in this session — **the new site's URL must not match any of them.** If all available scenes have already been used, fall back to photography or SVG/CSS illustration, do not recycle. Candidate scenes must pass the four-check test: resolves 200, renders at the expected quality when loaded, subject nameable in two seconds, mood matches the brand. Never fabricate a slug. Reject scenes depicting real-branded products. Decide positioning (stage / backdrop / companion / object-in-spread) before committing.
-4. **Pick the structural DNA, by name.** From the Structural DNA Catalog, choose *one* primary concept for the page and write it at the top of the prompt file as a single noun phrase. Confirm it is NOT the concept used by the previous site in this session.
+4. **Pick the structural DNA, by name.** From the Structural DNA Catalog, choose _one_ primary concept for the page and write it at the top of the prompt file as a single noun phrase. Confirm it is NOT the concept used by the previous site in this session.
 5. **Commit to a concept.** Based on the industry research and the structural DNA, define a creative direction that fits the field's visual language.
 6. **Build the type system.** Pick fonts that match the industry (based on research). Set the scale, define the hierarchy. Avoid blacklisted fonts.
 7. **Design scroll-driven transitions.** Plan how the user's scroll journey unfolds. Use at least 2–3 different scroll techniques throughout, but do not repeat the same technique already used as a centerpiece in a previous site this session.

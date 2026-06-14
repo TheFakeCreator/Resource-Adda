@@ -8,46 +8,49 @@ trigger: model_decision
 ## Vulnerability Disclosure Process
 
 ### Reception
+
 1. Researcher reports vulnerability via security contact
 2. Acknowledgment within 24 hours
 3. Assign severity level (Critical, High, Medium, Low)
 
 ### Investigation
+
 1. Investigate and confirm vulnerability
 2. Develop fix on private branch
 3. Write security advisory
 
 ### Remediation
+
 1. Release fix
 2. Public disclosure after fix deployed
 3. Post-mortem and lessons learned
 
 ## Incident Severity Levels
 
-| Level | Definition | Response Time | Action |
-|-------|-----------|---------------|--------|
-| P1 - Critical | System down, data breach | Immediate | All hands |
-| P2 - High | Major functionality broken | 1 hour | Incident commander assigned |
-| P3 - Medium | Partial degradation | 4 hours | Triage and plan |
-| P4 - Low | Minor issue | 1 day | Backlog planning |
+| Level         | Definition                 | Response Time | Action                      |
+| ------------- | -------------------------- | ------------- | --------------------------- |
+| P1 - Critical | System down, data breach   | Immediate     | All hands                   |
+| P2 - High     | Major functionality broken | 1 hour        | Incident commander assigned |
+| P3 - Medium   | Partial degradation        | 4 hours       | Triage and plan             |
+| P4 - Low      | Minor issue                | 1 day         | Backlog planning            |
 
 ## Response SLAs
 
 | Severity | Fix Timeline |
-|----------|-------------|
-| Critical | 72 hours |
-| High | 7 days |
-| Medium | 14 days |
-| Low | 30 days |
+| -------- | ------------ |
+| Critical | 72 hours     |
+| High     | 7 days       |
+| Medium   | 14 days      |
+| Low      | 30 days      |
 
 ## Compliance Frameworks
 
-| Framework | Relevance |
-|-----------|-----------|
-| GDPR | If serving EU users |
-| FERPA | Education records |
-| SOC 2 | Enterprise customers |
-| CCPA | If serving California users |
+| Framework | Relevance                   |
+| --------- | --------------------------- |
+| GDPR      | If serving EU users         |
+| FERPA     | Education records           |
+| SOC 2     | Enterprise customers        |
+| CCPA      | If serving California users |
 
 ## Security Monitoring Practices
 

@@ -17,6 +17,7 @@ description: "Logging, error tracking, debugging, health checks for Resource-Add
 ### Phase 1: Built-in Logging
 
 Resource-Adda has a request logger middleware (`middleware/logger.js`):
+
 - Assigns `req.id` as a trace ID for each request
 - Logs: method, path, status code, duration
 - Use `req.id` to correlate logs across a request lifecycle
@@ -26,11 +27,13 @@ Resource-Adda has a request logger middleware (`middleware/logger.js`):
 Error middleware (`middleware/error.js`) provides two handlers:
 
 **404 Handler** — catches unmatched routes:
+
 ```json
 { "error": "Route /api/v1/unknown not found" }
 ```
 
 **Error Handler** — catches all thrown errors:
+
 - Validation errors → 400 with field-level details
 - Other errors → status from `err.status` or 500
 - Stack traces only in development (`NODE_ENV === 'development'`)
@@ -70,9 +73,9 @@ netstat -ano | findstr :4000
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
+| Issue                      | Solution                                                 |
+| -------------------------- | -------------------------------------------------------- |
 | 500 errors with no details | Check `NODE_ENV` — set to `development` for stack traces |
-| Request ID missing | Ensure logger middleware is before routes in `app.js` |
-| MongoDB not responding | `docker start mongodb`; check `MONGODB_URI` |
-| Sensitive data in logs | Never log passwords, tokens, or PII |
+| Request ID missing         | Ensure logger middleware is before routes in `app.js`    |
+| MongoDB not responding     | `docker start mongodb`; check `MONGODB_URI`              |
+| Sensitive data in logs     | Never log passwords, tokens, or PII                      |

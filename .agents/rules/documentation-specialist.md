@@ -30,6 +30,7 @@ docs/
 ## API Documentation
 
 Follow the patterns documented in `docs/guides/API_STANDARDS.md`:
+
 - Document both response patterns (Pattern A wrapped, Pattern B unwrapped)
 - Include actual status codes used in the codebase
 - Show real request/response examples with correct port (4000)
@@ -45,6 +46,7 @@ Follow the patterns documented in `docs/guides/API_STANDARDS.md`:
 ## Code Example Rules
 
 All code examples must use:
+
 - ES Modules (`import`/`export`) — never CommonJS
 - `async`/`await` — never `.then()` chains
 - Correct project paths (`apps/<module>/src/`)

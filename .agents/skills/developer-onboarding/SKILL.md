@@ -108,9 +108,9 @@ pnpm build            # Build all
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| pnpm not found | `npm install -g pnpm@8` |
-| Port in use | Check for existing processes on 3000/4000 |
+| Issue               | Solution                                   |
+| ------------------- | ------------------------------------------ |
+| pnpm not found      | `npm install -g pnpm@8`                    |
+| Port in use         | Check for existing processes on 3000/4000  |
 | DB connection fails | `docker start mongodb` — check MONGODB_URI |
-| Module not found | Run `pnpm install` from root |
+| Module not found    | Run `pnpm install` from root               |

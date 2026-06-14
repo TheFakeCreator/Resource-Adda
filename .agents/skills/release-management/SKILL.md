@@ -17,6 +17,7 @@ description: "Semantic versioning, changelog generation, release tags, version b
 ### Phase 1: Semantic Versioning
 
 Format: `MAJOR.MINOR.PATCH`
+
 - MAJOR: Breaking API changes
 - MINOR: New features (backwards compatible)
 - PATCH: Bug fixes only
@@ -68,8 +69,8 @@ git tag --list                     # List all tags
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Version already tagged | `git tag -d v2.1.0 && git push -d origin v2.1.0` |
-| Changelog missing commits | Verify commits follow `feat:`, `fix:` format |
-| Version mismatch | Re-sync tag with package.json version |
+| Issue                     | Solution                                         |
+| ------------------------- | ------------------------------------------------ |
+| Version already tagged    | `git tag -d v2.1.0 && git push -d origin v2.1.0` |
+| Changelog missing commits | Verify commits follow `feat:`, `fix:` format     |
+| Version mismatch          | Re-sync tag with package.json version            |

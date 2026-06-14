@@ -7,16 +7,16 @@ trigger: model_decision
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|-----------|---------|---------|
-| Next.js | 16.2.2 | Framework — App Router, SSR, file-based routing |
-| React | 19.2.4 | UI library |
-| TypeScript | 5.x | Type safety |
-| Tailwind CSS | 4.x | Utility-first styling |
-| shadcn/ui | 4.6.0 | Pre-built UI components |
-| react-hook-form | 7.x | Form state management |
-| Zod | 3.x | Schema validation |
-| Lucide React | 1.x | Icon library |
+| Technology      | Version | Purpose                                         |
+| --------------- | ------- | ----------------------------------------------- |
+| Next.js         | 16.2.2  | Framework — App Router, SSR, file-based routing |
+| React           | 19.2.4  | UI library                                      |
+| TypeScript      | 5.x     | Type safety                                     |
+| Tailwind CSS    | 4.x     | Utility-first styling                           |
+| shadcn/ui       | 4.6.0   | Pre-built UI components                         |
+| react-hook-form | 7.x     | Form state management                           |
+| Zod             | 3.x     | Schema validation                               |
+| Lucide React    | 1.x     | Icon library                                    |
 
 ## Directory Structure
 
@@ -43,12 +43,13 @@ frontend/
 API clients use `fetch` directly (not Axios):
 
 ```typescript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 async function request(path: string, options?: RequestInit) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    ...options
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    ...options,
   });
   if (!response.ok) throw new ApiError(/* ... */);
   return response.json();
@@ -76,6 +77,7 @@ async function request(path: string, options?: RequestInit) {
 ## Design System
 
 Follow `docs/frontend/DESIGN_SYSTEM.md`:
+
 - Primary: Sky Blue (#0ea5e9)
 - Secondary: Violet (#8b5cf6)
 - Accent: Orange (#f97316)

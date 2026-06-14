@@ -1,29 +1,44 @@
-import { Request, Response } from 'express';
-import { AuthRequest } from '../middlewares/auth';
-import { uploadToCloudinary } from '../middlewares/upload';
-import Document from '../models/Document';
-import Contribution, { ContributionStatus } from '../models/Contribution';
-import Review from '../models/Review';
+import { Request, Response } from "express";
+import { AuthRequest } from "../middlewares/auth";
+import { uploadToCloudinary } from "../middlewares/upload";
+import Document from "../models/Document";
+import Contribution, { ContributionStatus } from "../models/Contribution";
+import Review from "../models/Review";
 
-export const uploadResource = async (req: AuthRequest, res: Response): Promise<void> => {
+export const uploadResource = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
   try {
-    const { title, description, subject, semester, branch, type, externalLink, isExternalLink } = req.body;
-    
-    let fileUrl = '';
+    const {
+      title,
+      description,
+      subject,
+      semester,
+      branch,
+      type,
+      externalLink,
+      isExternalLink,
+    } = req.body;
 
-    if (isExternalLink === 'true' || isExternalLink === true) {
+    let fileUrl = "";
+
+    if (isExternalLink === "true" || isExternalLink === true) {
       if (!externalLink) {
-        res.status(400).json({ error: 'External link URL is required' });
+        res.status(400).json({ error: "External link URL is required" });
         return;
       }
       fileUrl = externalLink;
     } else {
       if (!req.file) {
-        res.status(400).json({ error: 'No file uploaded' });
+        res.status(400).json({ error: "No file uploaded" });
         return;
       }
       // Upload to Cloudinary
-      fileUrl = await uploadToCloudinary(req.file.buffer, 'resource_adda/documents');
+      fileUrl = await uploadToCloudinary(
+        req.file.buffer,
+        "resource_adda/documents",
+      );
     }
 
     // Create Document
@@ -31,7 +46,7 @@ export const uploadResource = async (req: AuthRequest, res: Response): Promise<v
       title,
       description,
       fileUrl,
-      isExternalLink: isExternalLink === 'true' || isExternalLink === true,
+      isExternalLink: isExternalLink === "true" || isExternalLink === true,
       subject,
       semester: parseInt(semester),
       branch,
@@ -48,44 +63,59 @@ export const uploadResource = async (req: AuthRequest, res: Response): Promise<v
     });
     await contribution.save();
 
-    res.status(201).json({ message: 'Resource uploaded successfully. Awaiting admin approval.', document });
+    res.status(201).json({
+      message: "Resource uploaded successfully. Awaiting admin approval.",
+      document,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const getPendingContributions = async (req: Request, res: Response): Promise<void> => {
+export const getPendingContributions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
-    const contributions = await Contribution.find({ status: ContributionStatus.PENDING })
-      .populate('documentId')
-      .populate('userId', 'email role branch semester rollNumber');
-    
+    const contributions = await Contribution.find({
+      status: ContributionStatus.PENDING,
+    })
+      .populate("documentId")
+      .populate("userId", "email role branch semester rollNumber");
+
     res.status(200).json(contributions);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const reviewContribution = async (req: Request, res: Response): Promise<void> => {
+export const reviewContribution = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { status } = req.body; // 'approved' or 'rejected'
 
-    if (![ContributionStatus.APPROVED, ContributionStatus.REJECTED].includes(status)) {
-      res.status(400).json({ error: 'Invalid status' });
+    if (
+      ![ContributionStatus.APPROVED, ContributionStatus.REJECTED].includes(
+        status,
+      )
+    ) {
+      res.status(400).json({ error: "Invalid status" });
       return;
     }
 
     const contribution = await Contribution.findById(id);
     if (!contribution) {
-      res.status(404).json({ error: 'Contribution not found' });
+      res.status(404).json({ error: "Contribution not found" });
       return;
     }
 
     contribution.status = status;
     await contribution.save();
 
-    // If rejected, we might want to delete the document or just keep it hidden. 
+    // If rejected, we might want to delete the document or just keep it hidden.
     // For now, we just update the status. Only approved contributions show in public search.
 
     res.status(200).json({ message: `Contribution ${status}`, contribution });
@@ -94,11 +124,16 @@ export const reviewContribution = async (req: Request, res: Response): Promise<v
   }
 };
 
-export const getApprovedDocuments = async (req: Request, res: Response): Promise<void> => {
+export const getApprovedDocuments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     // We only want documents that have an APPROVED contribution
-    const approvedContributions = await Contribution.find({ status: ContributionStatus.APPROVED });
-    const approvedDocIds = approvedContributions.map(c => c.documentId);
+    const approvedContributions = await Contribution.find({
+      status: ContributionStatus.APPROVED,
+    });
+    const approvedDocIds = approvedContributions.map((c) => c.documentId);
 
     // Build query filters based on req.query
     const { subject, semester, search, branch, type, minRating } = req.query;
@@ -108,12 +143,16 @@ export const getApprovedDocuments = async (req: Request, res: Response): Promise
     if (semester) filter.semester = parseInt(semester as string);
     if (branch) filter.branch = branch;
     if (type) filter.type = type;
-    if (minRating) filter.averageRating = { $gte: parseFloat(minRating as string) };
+    if (minRating)
+      filter.averageRating = { $gte: parseFloat(minRating as string) };
     if (search) {
-      filter.title = { $regex: search as string, $options: 'i' };
+      filter.title = { $regex: search as string, $options: "i" };
     }
 
-    const documents = await Document.find(filter).populate('uploadedBy', 'name avatarUrl email branch semester');
+    const documents = await Document.find(filter).populate(
+      "uploadedBy",
+      "name avatarUrl email branch semester",
+    );
 
     res.status(200).json(documents);
   } catch (error: any) {
@@ -121,11 +160,17 @@ export const getApprovedDocuments = async (req: Request, res: Response): Promise
   }
 };
 
-export const getDocumentById = async (req: Request, res: Response): Promise<void> => {
+export const getDocumentById = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
-    const document = await Document.findById(req.params.id).populate('uploadedBy', 'name avatarUrl email branch semester');
+    const document = await Document.findById(req.params.id).populate(
+      "uploadedBy",
+      "name avatarUrl email branch semester",
+    );
     if (!document) {
-      res.status(404).json({ error: 'Document not found' });
+      res.status(404).json({ error: "Document not found" });
       return;
     }
     res.status(200).json(document);
@@ -134,23 +179,37 @@ export const getDocumentById = async (req: Request, res: Response): Promise<void
   }
 };
 
-export const incrementDownload = async (req: Request, res: Response): Promise<void> => {
+export const incrementDownload = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
-    const document = await Document.findByIdAndUpdate(req.params.id, { $inc: { downloadCount: 1 } }, { new: true });
+    const document = await Document.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { downloadCount: 1 } },
+      { new: true },
+    );
     if (!document) {
-      res.status(404).json({ error: 'Document not found' });
+      res.status(404).json({ error: "Document not found" });
       return;
     }
-    res.status(200).json({ message: 'Download count incremented', downloadCount: document.downloadCount, fileUrl: document.fileUrl });
+    res.status(200).json({
+      message: "Download count incremented",
+      downloadCount: document.downloadCount,
+      fileUrl: document.fileUrl,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const getReviews = async (req: Request, res: Response): Promise<void> => {
+export const getReviews = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const reviews = await Review.find({ documentId: req.params.id })
-      .populate('userId', 'name avatarUrl branch semester')
+      .populate("userId", "name avatarUrl branch semester")
       .sort({ createdAt: -1 });
     res.status(200).json(reviews);
   } catch (error: any) {
@@ -158,24 +217,27 @@ export const getReviews = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const addReview = async (req: AuthRequest, res: Response): Promise<void> => {
+export const addReview = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { rating, comment } = req.body;
     const documentId = req.params.id;
     const userId = req.user?._id;
 
     if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
     if (!rating || rating < 1 || rating > 5) {
-      res.status(400).json({ error: 'Rating must be between 1 and 5' });
+      res.status(400).json({ error: "Rating must be between 1 and 5" });
       return;
     }
 
     let review = await Review.findOne({ documentId, userId });
-    
+
     if (review) {
       // Update existing review
       review.rating = rating;
@@ -190,43 +252,51 @@ export const addReview = async (req: AuthRequest, res: Response): Promise<void> 
     // Recalculate average rating
     const allReviews = await Review.find({ documentId });
     const totalRatings = allReviews.length;
-    const averageRating = allReviews.reduce((acc, curr) => acc + curr.rating, 0) / totalRatings;
+    const averageRating =
+      allReviews.reduce((acc, curr) => acc + curr.rating, 0) / totalRatings;
 
     await Document.findByIdAndUpdate(documentId, {
       averageRating: parseFloat(averageRating.toFixed(1)),
-      totalRatings
+      totalRatings,
     });
 
-    res.status(200).json({ message: 'Review added successfully', review });
+    res.status(200).json({ message: "Review added successfully", review });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const voteReview = async (req: AuthRequest, res: Response): Promise<void> => {
+export const voteReview = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { reviewId } = req.params;
     const { voteType } = req.body; // 'upvote' or 'downvote'
     const userId = req.user?._id;
 
     if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
     const review = await Review.findById(reviewId);
     if (!review) {
-      res.status(404).json({ error: 'Review not found' });
+      res.status(404).json({ error: "Review not found" });
       return;
     }
 
     // Remove user from both arrays first to reset their vote
-    review.upvotedBy = review.upvotedBy.filter(id => id.toString() !== userId?.toString());
-    review.downvotedBy = review.downvotedBy.filter(id => id.toString() !== userId?.toString());
+    review.upvotedBy = review.upvotedBy.filter(
+      (id) => id.toString() !== userId?.toString(),
+    );
+    review.downvotedBy = review.downvotedBy.filter(
+      (id) => id.toString() !== userId?.toString(),
+    );
 
-    if (voteType === 'upvote') {
+    if (voteType === "upvote") {
       review.upvotedBy.push(userId);
-    } else if (voteType === 'downvote') {
+    } else if (voteType === "downvote") {
       review.downvotedBy.push(userId);
     }
 
@@ -234,40 +304,45 @@ export const voteReview = async (req: AuthRequest, res: Response): Promise<void>
     review.downvotes = review.downvotedBy.length;
 
     await review.save();
-    res.status(200).json({ message: 'Vote recorded', review });
+    res.status(200).json({ message: "Vote recorded", review });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const getFeaturedDocuments = async (req: Request, res: Response): Promise<void> => {
+export const getFeaturedDocuments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     // We only want to show documents that have been approved
     // First, find approved contributions
-    const approvedContributions = await Contribution.find({ status: ContributionStatus.APPROVED });
-    const approvedDocIds = approvedContributions.map(c => c.documentId);
+    const approvedContributions = await Contribution.find({
+      status: ContributionStatus.APPROVED,
+    });
+    const approvedDocIds = approvedContributions.map((c) => c.documentId);
 
     const baseFilter = { _id: { $in: approvedDocIds } };
 
     const [adminPicks, topRated, trending] = await Promise.all([
       Document.find({ ...baseFilter, isFeatured: true })
-        .populate('uploadedBy', 'name avatarUrl branch semester')
+        .populate("uploadedBy", "name avatarUrl branch semester")
         .sort({ createdAt: -1 })
         .limit(10),
       Document.find(baseFilter)
-        .populate('uploadedBy', 'name avatarUrl branch semester')
+        .populate("uploadedBy", "name avatarUrl branch semester")
         .sort({ averageRating: -1, totalRatings: -1 })
         .limit(10),
       Document.find(baseFilter)
-        .populate('uploadedBy', 'name avatarUrl branch semester')
+        .populate("uploadedBy", "name avatarUrl branch semester")
         .sort({ downloadCount: -1 })
-        .limit(10)
+        .limit(10),
     ]);
 
     res.status(200).json({
       adminPicks,
       topRated,
-      trending
+      trending,
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

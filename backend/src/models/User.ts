@@ -1,9 +1,9 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  STUDENT = 'student',
+  SUPER_ADMIN = "super_admin",
+  ADMIN = "admin",
+  STUDENT = "student",
 }
 
 export interface IUser extends Document {
@@ -42,7 +42,7 @@ export interface IUser extends Document {
 
   // Saved Content
   bookmarkedResources: mongoose.Types.ObjectId[];
-  
+
   // Roadmap Progress
   activeRoadmaps: {
     roadmapId: mongoose.Types.ObjectId;
@@ -67,10 +67,20 @@ export interface IUser extends Document {
 
 const UserSchema: Schema = new Schema(
   {
-    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
     password_hash: { type: String, required: true },
-    role: { type: String, enum: Object.values(UserRole), default: UserRole.STUDENT },
-    
+    role: {
+      type: String,
+      enum: Object.values(UserRole),
+      default: UserRole.STUDENT,
+    },
+
     // Profile
     name: { type: String },
     avatarUrl: { type: String },
@@ -97,19 +107,21 @@ const UserSchema: Schema = new Schema(
     badges: [{ type: String }],
 
     // Social
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
     // Saved Content
-    bookmarkedResources: [{ type: Schema.Types.ObjectId, ref: 'Document' }],
+    bookmarkedResources: [{ type: Schema.Types.ObjectId, ref: "Document" }],
 
     // Roadmap Progress
-    activeRoadmaps: [{
-      roadmapId: { type: Schema.Types.ObjectId, ref: 'Roadmap' },
-      completedSteps: [{ type: Number }],
-      startedAt: { type: Date, default: Date.now },
-      lastAccessedAt: { type: Date, default: Date.now }
-    }],
+    activeRoadmaps: [
+      {
+        roadmapId: { type: Schema.Types.ObjectId, ref: "Roadmap" },
+        completedSteps: [{ type: Number }],
+        startedAt: { type: Date, default: Date.now },
+        lastAccessedAt: { type: Date, default: Date.now },
+      },
+    ],
 
     // Preferences
     preferredSubjects: [{ type: String }],
@@ -124,7 +136,7 @@ const UserSchema: Schema = new Schema(
     isBanned: { type: Boolean, default: false },
     banReason: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);

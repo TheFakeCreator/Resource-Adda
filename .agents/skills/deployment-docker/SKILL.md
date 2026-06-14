@@ -61,21 +61,21 @@ CMD ["node", "server.js"]
 services:
   backend:
     build: { context: ., dockerfile: Dockerfile }
-    ports: ['4000:4000']
+    ports: ["4000:4000"]
     environment:
       MONGODB_URI: mongodb://mongo:27017/Resource-Adda
       JWT_SECRET: ${JWT_SECRET}
     depends_on: [mongo]
   frontend:
     build: { context: ., dockerfile: Dockerfile.frontend }
-    ports: ['3000:3000']
+    ports: ["3000:3000"]
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://backend:4000
     depends_on: [backend]
   mongo:
     image: mongo:7
-    ports: ['27017:27017']
-    volumes: ['mongo-data:/data/db']
+    ports: ["27017:27017"]
+    volumes: ["mongo-data:/data/db"]
 volumes:
   mongo-data:
 ```
@@ -102,9 +102,9 @@ docker compose exec backend sh    # Shell into backend
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Container crashes | Check logs: `docker compose logs backend` |
-| DB connection refused | Ensure `depends_on: [mongo]`; wait for startup |
-| Port conflict | Change ports in compose file |
-| Image too large | Use Alpine base, multi-stage build, .dockerignore |
+| Issue                 | Solution                                          |
+| --------------------- | ------------------------------------------------- |
+| Container crashes     | Check logs: `docker compose logs backend`         |
+| DB connection refused | Ensure `depends_on: [mongo]`; wait for startup    |
+| Port conflict         | Change ports in compose file                      |
+| Image too large       | Use Alpine base, multi-stage build, .dockerignore |

@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/lib/api";
 import {
   Dialog,
@@ -61,9 +62,9 @@ function CommentNode({
 
         {comment.replies && comment.replies.length > 0 && (
           <div className="space-y-2">
-            {comment.replies.map((reply: any) => (
+            {comment.replies.map((reply: any, index: number) => (
               <CommentNode
-                key={reply._id || Math.random()}
+                key={reply._id || index}
                 comment={reply}
                 onReply={onReply}
                 nestingLevel={nestingLevel + 1}
@@ -95,13 +96,7 @@ export default function WellbeingPostModal({
   const [comments, setComments] = useState<any[]>(post?.comments || []);
   const [loadingComments, setLoadingComments] = useState(false);
 
-  useEffect(() => {
-    if (open && post?._id) {
-      fetchComments();
-    }
-  }, [open, post?._id]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     if (!post?._id || post._id.startsWith("dummy-")) {
       // If it's a dummy post, just use the local dummy comments
       setComments(post.comments || []);
@@ -117,7 +112,13 @@ export default function WellbeingPostModal({
     } finally {
       setLoadingComments(false);
     }
-  };
+  }, [post]);
+
+  useEffect(() => {
+    if (open && post?._id) {
+      fetchComments();
+    }
+  }, [open, post?._id, fetchComments]);
 
   if (!post) return null;
 

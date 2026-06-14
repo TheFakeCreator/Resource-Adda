@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,14 +8,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, PlaySquare } from "lucide-react";
+import { MessageCircle, PlaySquare } from "lucide-react";
 import SubmitWellbeingModal from "./SubmitWellbeingModal";
 import WellbeingPostModal from "./WellbeingPostModal";
 import WellbeingReaction, { ReactionType } from "./WellbeingReaction";
@@ -120,6 +120,7 @@ export default function WellbeingFeed() {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   return (

@@ -1,5 +1,5 @@
-import mongoose, { Document as MongooseDocument, Schema } from 'mongoose';
-import { ContributionStatus } from './Contribution';
+import mongoose, { Document as MongooseDocument, Schema } from "mongoose";
+import { ContributionStatus } from "./Contribution";
 
 export interface IRoadmapStep {
   title: string;
@@ -19,7 +19,7 @@ export interface IRoadmap extends MongooseDocument {
   difficulty: string; // e.g., Beginner, Intermediate, Advanced
   estimatedTime: string; // e.g., 4 Weeks
   targetAudience: string;
-  
+
   introNotes: string; // Markdown supported intro
   globalPrerequisites: string[];
   steps: IRoadmapStep[];
@@ -28,13 +28,13 @@ export interface IRoadmap extends MongooseDocument {
   isAnonymous: boolean;
   status: ContributionStatus;
   isOfficial: boolean;
-  
+
   tags: string[];
   upvotes: number;
   downvotes: number;
   upvotedBy: mongoose.Types.ObjectId[];
   downvotedBy: mongoose.Types.ObjectId[];
-  
+
   averageRating: number;
   totalRatings: number;
 
@@ -46,11 +46,13 @@ const RoadmapStepSchema: Schema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   prerequisites: [{ type: String }],
-  resources: [{
-    title: { type: String, required: true },
-    url: { type: String, required: true },
-    type: { type: String, required: true },
-  }]
+  resources: [
+    {
+      title: { type: String, required: true },
+      url: { type: String, required: true },
+      type: { type: String, required: true },
+    },
+  ],
 });
 
 const RoadmapSchema: Schema = new Schema(
@@ -58,29 +60,38 @@ const RoadmapSchema: Schema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
-    difficulty: { type: String, required: true, enum: ['Beginner', 'Intermediate', 'Advanced'], default: 'Beginner' },
+    difficulty: {
+      type: String,
+      required: true,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
     estimatedTime: { type: String, required: true },
     targetAudience: { type: String },
-    
+
     introNotes: { type: String },
     globalPrerequisites: [{ type: String }],
     steps: [RoadmapStepSchema],
 
-    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     isAnonymous: { type: Boolean, default: false },
-    status: { type: String, enum: Object.values(ContributionStatus), default: ContributionStatus.PENDING },
+    status: {
+      type: String,
+      enum: Object.values(ContributionStatus),
+      default: ContributionStatus.PENDING,
+    },
     isOfficial: { type: Boolean, default: false },
-    
+
     tags: [{ type: String }],
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
-    upvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    downvotedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    
+    upvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    downvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+
     averageRating: { type: Number, default: 0 },
     totalRatings: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<IRoadmap>('Roadmap', RoadmapSchema);
+export default mongoose.model<IRoadmap>("Roadmap", RoadmapSchema);

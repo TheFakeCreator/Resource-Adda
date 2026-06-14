@@ -19,6 +19,7 @@ description: "Linting rules, architecture enforcement, code patterns, tech debt 
 Resource-Adda enforces these patterns project-wide:
 
 **ES Modules only:**
+
 ```javascript
 // ✅ Always
 import express from 'express';
@@ -30,15 +31,17 @@ module.exports = createApp;
 ```
 
 **Variable declarations:**
+
 ```javascript
-const vendors = await service.getAll();  // ✅ const by default
-let retries = 3;                          // ✅ let only when mutated
+const vendors = await service.getAll(); // ✅ const by default
+let retries = 3; // ✅ let only when mutated
 // var vendors = [];                      // ❌ Never
 ```
 
 **Async patterns:**
+
 ```javascript
-const result = await service.create(data);  // ✅ Always async/await
+const result = await service.create(data); // ✅ Always async/await
 // service.create(data).then(...)           // ❌ Never .then() chains
 ```
 
@@ -51,15 +54,15 @@ const result = await service.create(data);  // ✅ Always async/await
 
 ### Phase 3: Naming Conventions
 
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Files | `kebab-case.js` | `vendor.service.js` |
-| Variables | `camelCase` | `vendorService` |
-| Classes | `PascalCase` | `VendorService` |
-| Functions | `camelCase` | `createVendor` |
-| Constants | `UPPER_SNAKE_CASE` | `PUBLIC_ROUTES` |
-| React components | `PascalCase` | `ThemeToggle` |
-| API routes | `/api/v1/kebab-case` | `/api/v1/vendors` |
+| Element          | Convention           | Example             |
+| ---------------- | -------------------- | ------------------- |
+| Files            | `kebab-case.js`      | `vendor.service.js` |
+| Variables        | `camelCase`          | `vendorService`     |
+| Classes          | `PascalCase`         | `VendorService`     |
+| Functions        | `camelCase`          | `createVendor`      |
+| Constants        | `UPPER_SNAKE_CASE`   | `PUBLIC_ROUTES`     |
+| React components | `PascalCase`         | `ThemeToggle`       |
+| API routes       | `/api/v1/kebab-case` | `/api/v1/vendors`   |
 
 ### Phase 4: Testing Coverage
 

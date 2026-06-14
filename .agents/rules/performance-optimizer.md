@@ -7,12 +7,12 @@ trigger: model_decision
 
 ## Response Time Targets
 
-| Endpoint Type | Target | P95 | P99 |
-|--------------|--------|-----|-----|
-| Read (GET) | 100ms | 200ms | 500ms |
-| Write (POST/PUT) | 200ms | 400ms | 800ms |
-| Search/Filter | 300ms | 600ms | 1000ms |
-| Aggregation | 500ms | 1s | 2s |
+| Endpoint Type    | Target | P95   | P99    |
+| ---------------- | ------ | ----- | ------ |
+| Read (GET)       | 100ms  | 200ms | 500ms  |
+| Write (POST/PUT) | 200ms  | 400ms | 800ms  |
+| Search/Filter    | 300ms  | 600ms | 1000ms |
+| Aggregation      | 500ms  | 1s    | 2s     |
 
 ## Frontend Performance Targets
 
@@ -26,12 +26,14 @@ trigger: model_decision
 ## Backend Optimization
 
 ### Database Queries
+
 - Add Mongoose indexes on frequently filtered/sorted fields
 - Use `.lean()` for read-only queries (skips hydration)
 - Avoid N+1 queries — use `.populate()` or aggregation pipelines
 - Monitor slow queries via Mongoose debug: `mongoose.set('debug', true)`
 
 ### Middleware
+
 - Health check responds before auth middleware (no overhead)
 - Request body limit: 10MB (`express.json({ limit: '10mb' })`)
 - Connection pool: `maxPoolSize: 10`, `minPoolSize: 2`
@@ -39,6 +41,7 @@ trigger: model_decision
 ## Frontend Optimization
 
 ### Next.js Patterns
+
 - Use Server Components by default (no `'use client'` unless needed)
 - Dynamic imports for heavy components: `dynamic(() => import(...))`
 - Use `next/image` for automatic image optimization
@@ -46,6 +49,7 @@ trigger: model_decision
 - Default dev mode uses webpack; Turbopack available via `pnpm dev:turbo`
 
 ### Bundle Analysis
+
 ```bash
 ANALYZE=true pnpm build        # Generate bundle report
 pnpm depcheck                  # Find unused packages

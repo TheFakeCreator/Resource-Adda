@@ -47,12 +47,12 @@ description: "Comprehensive code review for architecture, security, quality, and
 
 ## Decision Points
 
-| Finding | Action |
-|---------|--------|
-| ✅ All passing | Approve & merge |
-| ⚠️ Minor issues | Comment, proceed |
+| Finding                            | Action            |
+| ---------------------------------- | ----------------- |
+| ✅ All passing                     | Approve & merge   |
+| ⚠️ Minor issues                    | Comment, proceed  |
 | 🔴 Security/architecture violation | Block until fixed |
-| 🔴 Test failures | Block until fixed |
+| 🔴 Test failures                   | Block until fixed |
 
 ## Quick Reference
 

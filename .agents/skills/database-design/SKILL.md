@@ -20,22 +20,34 @@ description: "MongoDB/Mongoose schema design, indexing, relationships, query pat
 Resource-Adda uses **MongoDB with Mongoose** for all data persistence.
 
 ```javascript
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const vendorSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  category: { type: String, required: true, enum: ['catering', 'technology', 'venue', 'equipment', 'other'] },
-  contactPerson: { type: String, required: true },
-  email: { type: String, required: true, lowercase: true },
-  phone: { type: String, required: true },
-  status: { type: String, default: 'active', enum: ['active', 'inactive', 'suspended'] },
-  rating: { type: Number, default: 0, min: 0, max: 5 }
-}, { timestamps: true });
+const vendorSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    category: {
+      type: String,
+      required: true,
+      enum: ["catering", "technology", "venue", "equipment", "other"],
+    },
+    contactPerson: { type: String, required: true },
+    email: { type: String, required: true, lowercase: true },
+    phone: { type: String, required: true },
+    status: {
+      type: String,
+      default: "active",
+      enum: ["active", "inactive", "suspended"],
+    },
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+  },
+  { timestamps: true },
+);
 
-export const Vendor = mongoose.model('Vendor', vendorSchema);
+export const Vendor = mongoose.model("Vendor", vendorSchema);
 ```
 
 Rules:
+
 - Always use `timestamps: true` for `createdAt`/`updatedAt`
 - Use enums for constrained values
 - Mark `required: true` explicitly
@@ -68,7 +80,7 @@ const options = {
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   maxPoolSize: 10,
-  minPoolSize: 2
+  minPoolSize: 2,
 };
 ```
 
@@ -89,9 +101,9 @@ curl http://localhost:4000/health
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
+| Issue              | Solution                                           |
+| ------------------ | -------------------------------------------------- |
 | Connection refused | Ensure MongoDB is running (`docker start mongodb`) |
-| Validation error | Check required fields and enum values in schema |
-| Slow queries | Add indexes on filter/sort fields |
-| Duplicate key | Check `unique: true` indexes, handle in service |
+| Validation error   | Check required fields and enum values in schema    |
+| Slow queries       | Add indexes on filter/sort fields                  |
+| Duplicate key      | Check `unique: true` indexes, handle in service    |

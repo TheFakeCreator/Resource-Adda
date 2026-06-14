@@ -10,20 +10,24 @@ trigger: model_decision
 ### Label System
 
 **Priority:**
+
 - `priority-critical` — Blocks release
 - `priority-high` — Sprint focus
 - `priority-medium` — Next quarter
 - `priority-low` — Backlog
 
 **Type:**
+
 - `type-bug`, `type-feature`, `type-documentation`, `type-question`
 
 **Contributor Level:**
+
 - `good-first-issue` — Self-contained, <2hr effort, clear scope
 - `intermediate` — Some project experience needed
 - `advanced` — Expert level, deep understanding required
 
 **Status:**
+
 - `status-in-progress`, `status-blocked`, `status-review`, `status-done`
 
 ## Contributor Workflow
@@ -37,11 +41,11 @@ trigger: model_decision
 
 ## Contributor Levels
 
-| Level | Criteria | Privileges |
-|-------|----------|------------|
-| Contributor | 1st PR merged | Listed in CONTRIBUTORS.md |
-| Collaborator | 3+ quality PRs | Can approve PRs, assign issues |
-| Maintainer | Long-term, strategic | Merge PRs, release management |
+| Level        | Criteria             | Privileges                     |
+| ------------ | -------------------- | ------------------------------ |
+| Contributor  | 1st PR merged        | Listed in CONTRIBUTORS.md      |
+| Collaborator | 3+ quality PRs       | Can approve PRs, assign issues |
+| Maintainer   | Long-term, strategic | Merge PRs, release management  |
 
 ## Communication Guidelines
 

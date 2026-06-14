@@ -17,6 +17,7 @@ description: "Express server scaffolding, plugin architecture, middleware patter
 ### Phase 1: Project Structure
 
 The backend lives in `/backend/src/`:
+
 ```
 backend/src/
 ├── index.js              # Entry point — connectDB → createApp → startServer
@@ -44,16 +45,21 @@ backend/src/
 
 ```javascript
 export async function init(app, registry) {
-  const requireRoles = registry.getService('requireRoles');
+  const requireRoles = registry.getService("requireRoles");
   // Register routes
-  app.get('/api/v1/my-resource', controller.list);
-  app.post('/api/v1/my-resource', requireRoles('admin', 'coordinator'), controller.create);
+  app.get("/api/v1/my-resource", controller.list);
+  app.post(
+    "/api/v1/my-resource",
+    requireRoles("admin", "coordinator"),
+    controller.create,
+  );
   // Register module
-  registry.registerModule('my-module', { routes: ['/api/v1/my-resource'] });
+  registry.registerModule("my-module", { routes: ["/api/v1/my-resource"] });
 }
 ```
 
 3. Create module structure:
+
 ```
 apps/<module>/src/
 ├── index.js          # Plugin entry (exports init)
@@ -93,10 +99,10 @@ curl http://localhost:4000/health   # Test health
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Plugin not loading | Check entry file exports `init()` — must be `plugin.js` or `src/index.js` |
-| MongoDB connection failed | Ensure MongoDB is running: `docker start mongodb` |
-| Port in use | Backend uses port 4000, check `PORT` env var |
-| Services not found | Use `registry.getService('name')` — not direct imports |
-| Module imports another module | Use registry or shared DB — never direct imports |
+| Issue                         | Solution                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| Plugin not loading            | Check entry file exports `init()` — must be `plugin.js` or `src/index.js` |
+| MongoDB connection failed     | Ensure MongoDB is running: `docker start mongodb`                         |
+| Port in use                   | Backend uses port 4000, check `PORT` env var                              |
+| Services not found            | Use `registry.getService('name')` — not direct imports                    |
+| Module imports another module | Use registry or shared DB — never direct imports                          |

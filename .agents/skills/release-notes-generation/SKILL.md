@@ -17,6 +17,7 @@ description: "Automated changelog, version summaries, release announcements for 
 ### Phase 1: Conventional Commits
 
 Resource-Adda uses Conventional Commits: `type(scope): description`
+
 - `feat(api): add vendor assignment endpoint`
 - `fix(auth): handle expired token gracefully`
 - `BREAKING CHANGE: /old-endpoint deprecated, use /new-endpoint`
@@ -29,34 +30,42 @@ pnpm exec standard-changelog
 ```
 
 Output adds to `CHANGELOG.md`:
+
 ```markdown
 ## [v2.1.0] - 2026-03-15
 
 ### Features
+
 - **api**: Add vendor assignment endpoint (#548)
 - **ui**: Improve form validation messages (#551)
 
 ### Bug Fixes
+
 - **db**: Fix missing index on category (#545)
 
 ### Breaking Changes
+
 - `/activities/*/comments` endpoint removed, use `/courses/*/discussions`
 ```
 
 ### Phase 3: Release Notes for Users
 
 Create user-friendly summary:
+
 ```markdown
 # Resource-Adda v2.1.0
 
 ## What's New
+
 - **Vendor Assignment**: Assign vendors directly to events
 - **Better Forms**: Clearer validation error messages
 
 ## Fixed Issues
+
 - Fixed slow loading on vendor list page (#545)
 
 ## Migration Guide
+
 If you're using `/activities/*/comments`, update to:
 GET /courses/:courseId/discussions
 ```

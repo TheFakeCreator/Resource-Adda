@@ -4,7 +4,6 @@ description: "Translate Figma nodes into production-ready code with 1:1 visual f
 author: openai
 ---
 
-
 # Implement Design
 
 ## Overview

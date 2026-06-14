@@ -1,28 +1,30 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import User, { UserRole } from '../models/User';
-import SystemSettings from '../models/SystemSettings';
-import { AuthRequest } from '../middlewares/auth';
-import { z } from 'zod';
+import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import User, { UserRole } from "../models/User";
+import SystemSettings from "../models/SystemSettings";
+import { AuthRequest } from "../middlewares/auth";
+import { z } from "zod";
 
 const registerSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  rollNumber: z.string().min(5, 'Invalid roll number'),
-  branch: z.string().min(2, 'Invalid branch'),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  rollNumber: z.string().min(5, "Invalid roll number"),
+  branch: z.string().min(2, "Invalid branch"),
   semester: z.number().int().min(1).max(10),
 });
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '7d' });
+  return jwt.sign({ userId }, process.env.JWT_SECRET || "fallback_secret", {
+    expiresIn: "7d",
+  });
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -33,11 +35,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const { email, password, firstName, lastName, rollNumber, branch, semester } = validatedData.data;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      rollNumber,
+      branch,
+      semester,
+    } = validatedData.data;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ error: 'Email already exists' });
+      res.status(400).json({ error: "Email already exists" });
       return;
     }
 
@@ -51,10 +61,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       isVerified = true;
     } else {
       const settings = await SystemSettings.findOne();
-      if (settings?.allowedEmailPatterns && settings.allowedEmailPatterns.length > 0) {
-        isVerified = settings.allowedEmailPatterns.some(pattern => {
+      if (
+        settings?.allowedEmailPatterns &&
+        settings.allowedEmailPatterns.length > 0
+      ) {
+        isVerified = settings.allowedEmailPatterns.some((pattern) => {
           // Simple regex conversion from wildcard like *@*.nitrr.ac.in
-          const regexStr = pattern.replace(/\*/g, '.*');
+          const regexStr = pattern.replace(/\*/g, ".*");
           const regex = new RegExp(`^${regexStr}$`);
           return regex.test(email);
         });
@@ -83,7 +96,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const token = generateToken(user._id.toString());
 
     res.status(201).json({
-      message: 'Registration successful',
+      message: "Registration successful",
       token,
       user: {
         id: user._id,
@@ -111,13 +124,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).json({ error: 'Invalid credentials' });
+      res.status(400).json({ error: "Invalid credentials" });
       return;
     }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-      res.status(400).json({ error: 'Invalid credentials' });
+      res.status(400).json({ error: "Invalid credentials" });
       return;
     }
 
@@ -128,7 +141,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = generateToken(user._id.toString());
 
     res.status(200).json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       user: {
         id: user._id,
@@ -147,12 +160,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ error: 'User not found' });
+      res.status(401).json({ error: "User not found" });
       return;
     }
-    
+
     // Don't send password hash back
-    const user = await User.findById(req.user._id).select('-password_hash');
+    const user = await User.findById(req.user._id).select("-password_hash");
     res.status(200).json(user);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -15,25 +15,25 @@ trigger: model_decision
 
 ## Current Stack Versions
 
-| Package | Version | Notes |
-|---------|---------|-------|
-| Node.js | 18+ | ES Modules |
-| Express | 5.2.1 | v5, not v4 |
-| Next.js | 16.2.2 | App Router |
-| React | 19.2.4 | React 19 |
-| Tailwind CSS | 4.x | v4 |
-| shadcn/ui | 4.6.0 | UI components |
-| Mongoose | Latest | MongoDB ODM |
-| Vitest | Latest | Test runner |
+| Package      | Version | Notes         |
+| ------------ | ------- | ------------- |
+| Node.js      | 18+     | ES Modules    |
+| Express      | 5.2.1   | v5, not v4    |
+| Next.js      | 16.2.2  | App Router    |
+| React        | 19.2.4  | React 19      |
+| Tailwind CSS | 4.x     | v4            |
+| shadcn/ui    | 4.6.0   | UI components |
+| Mongoose     | Latest  | MongoDB ODM   |
+| Vitest       | Latest  | Test runner   |
 
 ## Vulnerability Response SLA
 
-| Severity | Response Time | Action |
-|----------|---------------|--------|
-| Critical | Immediate | Hotfix within 24h |
-| High | 24 hours | Include in next release |
-| Medium | 1 week | Plan for next sprint |
-| Low | 1 month | Track for future update |
+| Severity | Response Time | Action                  |
+| -------- | ------------- | ----------------------- |
+| Critical | Immediate     | Hotfix within 24h       |
+| High     | 24 hours      | Include in next release |
+| Medium   | 1 week        | Plan for next sprint    |
+| Low      | 1 month       | Track for future update |
 
 ## Audit Commands
 

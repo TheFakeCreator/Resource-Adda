@@ -34,10 +34,10 @@ Request → Body parsing → CORS → Logger → Health check → Auth → Plugi
 The registry (`utils/registry.js`) is a singleton `ModuleRegistry` with 4 Map-based stores:
 
 ```javascript
-registry.modules;        // Map — loaded plugin metadata
-registry.services;       // Map — shared service instances
+registry.modules; // Map — loaded plugin metadata
+registry.services; // Map — shared service instances
 registry.authenticators; // Map — auth strategies (e.g., 'jwt')
-registry.resolvers;      // Map — data resolvers
+registry.resolvers; // Map — data resolvers
 ```
 
 Accessed via `app.locals.registry` in any middleware or route handler.

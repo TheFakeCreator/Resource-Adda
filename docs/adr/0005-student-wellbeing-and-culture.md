@@ -12,9 +12,10 @@ Academic environments are notoriously stressful, and platforms built for sharing
 
 ## Decision
 
-We have decided that **student mental well-being and fostering a warm, inclusive culture** will be core design principles of the Resource-Adda platform. 
+We have decided that **student mental well-being and fostering a warm, inclusive culture** will be core design principles of the Resource-Adda platform.
 
 This decision will influence product design, copywriting, UI/UX, and community guidelines in the following ways:
+
 1. **Warm & Welcoming UI/UX:** The interface will use calming, accessible colors and positive micro-copy. Error messages should be helpful and encouraging rather than robotic or intimidating.
 2. **Mental Health Check-ins & Reminders:** Implement gentle, non-intrusive elements (e.g., occasional friendly toasts, banners during exam seasons) reminding students to take breaks, prioritize sleep, and seek help if feeling overwhelmed.
 3. **Collaboration over Competition:** Gamification elements (like contribution points) should highlight communal effort and helpfulness rather than pitting students against each other on harsh leaderboards.
@@ -24,4 +25,4 @@ This decision will influence product design, copywriting, UI/UX, and community g
 ## Consequences
 
 - **Positive:** Creates a safe psychological space for students, leading to higher engagement, a healthier community, and a net positive impact on the student body.
-- **Negative:** Requires thoughtful content moderation and careful UI design to ensure well-being features do not feel patronizing or annoying to users. 
+- **Negative:** Requires thoughtful content moderation and careful UI design to ensure well-being features do not feel patronizing or annoying to users.

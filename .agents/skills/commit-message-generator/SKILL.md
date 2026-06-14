@@ -35,7 +35,7 @@ Analyze the diff output and categorize changes into one of the Conventional Comm
 
 | Type       | When to Use                                      |
 | ---------- | ------------------------------------------------ |
-| `feat`     | New functionality, new endpoints, new components  |
+| `feat`     | New functionality, new endpoints, new components |
 | `fix`      | Bug fixes, error corrections                     |
 | `docs`     | Documentation only changes                       |
 | `test`     | Adding or updating tests                         |
@@ -146,6 +146,7 @@ and redirect to the login page.
 **Changes detected**: Added new vendor endpoint + updated documentation + fixed lint config.
 
 **Commit 1/3:**
+
 ```bash
 git add backend/src/routes/vendors/
 git commit -m "feat(api): add vendor assignment endpoint
@@ -157,12 +158,14 @@ Closes #45"
 ```
 
 **Commit 2/3:**
+
 ```bash
 git add docs/
 git commit -m "docs: add vendor API reference"
 ```
 
 **Commit 3/3:**
+
 ```bash
 git add .eslintrc.js
 git commit -m "chore(config): update eslint rules for new endpoint patterns"

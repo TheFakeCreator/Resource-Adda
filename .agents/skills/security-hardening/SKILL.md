@@ -18,6 +18,7 @@ description: "OWASP vulnerabilities, authentication hardening, encryption, secre
 ### Phase 1: Authentication Hardening
 
 Resource-Adda uses JWT authentication:
+
 - JWT via `jwt-authenticator.js` — uses `jsonwebtoken` library
 - Algorithm: HS256
 - Default expiry: 15 minutes (`JWT_EXPIRES_IN`)
@@ -38,6 +39,7 @@ FRONTEND_URLS=http://localhost:3000
 ```
 
 Rules:
+
 - Never commit `.env` files
 - Never hardcode secrets in code
 - Different secrets per environment
@@ -60,11 +62,12 @@ Rules:
 ### Phase 5: RBAC
 
 ```javascript
-const requireRoles = registry.getService('requireRoles');
-app.delete('/api/v1/vendors/:id', requireRoles('admin'), controller.delete);
+const requireRoles = registry.getService("requireRoles");
+app.delete("/api/v1/vendors/:id", requireRoles("admin"), controller.delete);
 ```
 
 Valid roles: `admin`, `coordinator`, `volunteer`
+
 - `user` role exists in schema but is rejected by `requireRoles()`
 - First signup gets `admin` role automatically
 
@@ -83,9 +86,9 @@ pnpm audit
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| JWT token invalid | Verify `JWT_SECRET` matches signing key |
+| Issue              | Solution                                     |
+| ------------------ | -------------------------------------------- |
+| JWT token invalid  | Verify `JWT_SECRET` matches signing key      |
 | 401 on valid token | Check `Authorization: Bearer <token>` format |
-| CORS blocked | Add origin to `FRONTEND_URLS` env var |
-| Secrets in logs | Never log passwords, tokens, or PII |
+| CORS blocked       | Add origin to `FRONTEND_URLS` env var        |
+| Secrets in logs    | Never log passwords, tokens, or PII          |

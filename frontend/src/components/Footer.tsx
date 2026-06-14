@@ -12,39 +12,92 @@ export function Footer() {
               <div className="bg-primary/10 p-2 rounded-lg text-primary">
                 <BookOpen className="h-6 w-6" />
               </div>
-              <span className="font-bold text-xl tracking-tight">Resource-Adda</span>
+              <span className="font-bold text-xl tracking-tight">
+                Resource-Adda
+              </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              The open-source academic hub designed by students, for students. Share notes and study stress-free.
+              The open-source academic hub designed by students, for students.
+              Share notes and study stress-free.
             </p>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="/documents" className="hover:text-primary transition-colors">Study Materials</Link></li>
-              <li><Link href="/guidelines" className="hover:text-primary transition-colors">Contribution Guidelines</Link></li>
-              <li><Link href="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+              <li>
+                <Link
+                  href="/documents"
+                  className="hover:text-primary transition-colors"
+                >
+                  Study Materials
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guidelines"
+                  className="hover:text-primary transition-colors"
+                >
+                  Contribution Guidelines
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/faq"
+                  className="hover:text-primary transition-colors"
+                >
+                  FAQ
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-              <li><Link href="/security" className="hover:text-primary transition-colors">Security Policy</Link></li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:text-primary transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:text-primary transition-colors"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/security"
+                  className="hover:text-primary transition-colors"
+                >
+                  Security Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Community</h3>
             <div className="flex space-x-4 mb-4">
-              <a href="https://github.com/NITRR-Official/CampusOS" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://github.com/NITRR-Official/CampusOS"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <FaGithub className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <FaTwitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
@@ -54,9 +107,12 @@ export function Footer() {
             </p>
           </div>
         </div>
-        
+
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Resource-Adda. Open Source under MIT License.</p>
+          <p>
+            © {new Date().getFullYear()} Resource-Adda. Open Source under MIT
+            License.
+          </p>
         </div>
       </div>
     </footer>

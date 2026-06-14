@@ -26,6 +26,7 @@ description: "Vulnerability disclosure, responsible reporting, compliance, secur
 Email: security@Resource-Adda.org
 
 Include:
+
 - Description of vulnerability
 - Steps to reproduce
 - Potential impact
@@ -50,21 +51,21 @@ Include:
 
 ### Phase 3: Incident Response
 
-| Severity | Definition | Fix Timeline |
-|----------|-----------|-------------|
-| Critical | Data breach, auth bypass | 72 hours |
-| High | DoS, privilege escalation | 7 days |
-| Medium | Info disclosure, authz bypass | 14 days |
-| Low | Low-impact issues | 30 days |
+| Severity | Definition                    | Fix Timeline |
+| -------- | ----------------------------- | ------------ |
+| Critical | Data breach, auth bypass      | 72 hours     |
+| High     | DoS, privilege escalation     | 7 days       |
+| Medium   | Info disclosure, authz bypass | 14 days      |
+| Low      | Low-impact issues             | 30 days      |
 
 ### Phase 4: Compliance
 
-| Framework | Relevance |
-|-----------|-----------|
-| GDPR | If serving EU users |
-| FERPA | Education records |
-| SOC 2 | Enterprise customers |
-| CCPA | California users |
+| Framework | Relevance            |
+| --------- | -------------------- |
+| GDPR      | If serving EU users  |
+| FERPA     | Education records    |
+| SOC 2     | Enterprise customers |
+| CCPA      | California users     |
 
 ### Phase 5: Automated Scanning
 

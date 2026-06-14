@@ -20,18 +20,20 @@ description: "Build React components in Next.js using Resource-Adda patterns. Us
 Components live in `frontend/components/` (shared) or `frontend/app/components/` (page-level):
 
 ```tsx
-'use client';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+"use client";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface EventCardProps {
   title: string;
-  status: 'draft' | 'published';
+  status: "draft" | "published";
 }
 
 export function EventCard({ title, status }: EventCardProps) {
   return (
-    <div className={cn("rounded-lg p-6 shadow-sm", "bg-white dark:bg-neutral-900")}>
+    <div
+      className={cn("rounded-lg p-6 shadow-sm", "bg-white dark:bg-neutral-900")}
+    >
       <h3>{title}</h3>
       <span className="text-sm text-neutral-500">{status}</span>
     </div>
@@ -49,7 +51,7 @@ export default async function EventsPage() {
 }
 
 // Client Component (needs 'use client' directive)
-'use client';
+("use client");
 export function EventFilter({ onFilter }: { onFilter: (q: string) => void }) {
   return <input onChange={(e) => onFilter(e.target.value)} />;
 }
@@ -60,11 +62,12 @@ export function EventFilter({ onFilter }: { onFilter: (q: string) => void }) {
 API clients in `frontend/lib/` use `fetch` (not Axios):
 
 ```typescript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 export async function getEvents() {
   const response = await fetch(`${API_BASE_URL}/api/v1/events`);
-  if (!response.ok) throw new Error('Failed to fetch events');
+  if (!response.ok) throw new Error("Failed to fetch events");
   return response.json();
 }
 ```
@@ -80,14 +83,14 @@ export async function getEvents() {
 ### 5. Forms
 
 ```tsx
-'use client';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(6),
 });
 
 export function LoginForm() {
@@ -107,9 +110,9 @@ pnpm lint         # ESLint
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Hydration mismatch | Add `'use client'` to interactive components |
-| API URL wrong | Backend is port 4000: `NEXT_PUBLIC_API_BASE_URL` |
-| Styling not applied | Check Tailwind CSS v4 config in `globals.css` |
+| Issue               | Solution                                         |
+| ------------------- | ------------------------------------------------ |
+| Hydration mismatch  | Add `'use client'` to interactive components     |
+| API URL wrong       | Backend is port 4000: `NEXT_PUBLIC_API_BASE_URL` |
+| Styling not applied | Check Tailwind CSS v4 config in `globals.css`    |
 | Form not validating | Ensure `zodResolver(schema)` passed to `useForm` |

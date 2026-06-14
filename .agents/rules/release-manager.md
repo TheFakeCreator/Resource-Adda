@@ -27,6 +27,7 @@ trigger: model_decision
 ## Commit Convention
 
 Resource-Adda uses Conventional Commits:
+
 - `feat:` — new feature
 - `fix:` — bug fix
 - `chore:` — maintenance

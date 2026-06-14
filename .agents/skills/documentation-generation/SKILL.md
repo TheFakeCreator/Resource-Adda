@@ -27,6 +27,7 @@ Document Resource-Adda endpoints following `docs/guides/API_STANDARDS.md`:
 ### Phase 2: Code Examples
 
 All code examples must use:
+
 ```javascript
 // ✅ ES Modules
 import express from 'express';
@@ -41,6 +42,7 @@ Never use `require()`, `.then()`, or CommonJS patterns in documentation.
 ### Phase 3: Documentation Structure
 
 Maintain docs in `/docs/` following existing structure:
+
 ```
 docs/
 ├── architecture/       # Backend, plugin system, overview
@@ -54,6 +56,7 @@ docs/
 ### Phase 4: Architecture Diagrams
 
 Use Mermaid for diagrams. Document actual flows:
+
 - Startup: `index.js → connectDB → createApp → startServer`
 - Request: `Body parsing → CORS → Logger → Auth → Routes → Error handler`
 - Plugin: `scan /apps/ → import entry → call init(app, registry)`

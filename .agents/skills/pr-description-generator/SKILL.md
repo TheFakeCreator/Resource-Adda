@@ -54,12 +54,12 @@ Group the commits by their type and scope to understand the overall PR:
 
 #### Examples
 
-| Commits | PR Title |
-| ------- | -------- |
-| `feat(api): add vendor endpoint` + `test(api): add vendor tests` + `docs: update api reference` | `feat(api): add vendor rating system` |
-| `fix(auth): handle expired tokens` + `fix(auth): validate refresh token` | `fix(auth): improve token expiration handling` |
-| `docs: update setup guide` + `docs: add api reference` + `chore: update readme` | `docs: consolidate developer documentation` |
-| `feat(ci): add preview deployments` + `chore(config): add dynamic api url` + `docs: update ci guide` | `feat(ci): add automated preview deployments` |
+| Commits                                                                                              | PR Title                                       |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `feat(api): add vendor endpoint` + `test(api): add vendor tests` + `docs: update api reference`      | `feat(api): add vendor rating system`          |
+| `fix(auth): handle expired tokens` + `fix(auth): validate refresh token`                             | `fix(auth): improve token expiration handling` |
+| `docs: update setup guide` + `docs: add api reference` + `chore: update readme`                      | `docs: consolidate developer documentation`    |
+| `feat(ci): add preview deployments` + `chore(config): add dynamic api url` + `docs: update ci guide` | `feat(ci): add automated preview deployments`  |
 
 ### Step 4: Generate PR Description
 
@@ -119,6 +119,7 @@ If applicable, add screenshots or GIFs demonstrating the changes.
 <List the individual commits included in this PR:>
 
 ### Commits included:
+
 - `<commit hash>` — <commit message>
 - `<commit hash>` — <commit message>
 ```
@@ -127,12 +128,12 @@ If applicable, add screenshots or GIFs demonstrating the changes.
 
 Based on the commit types, auto-check the appropriate items:
 
-| If commits include...     | Auto-check                                                           |
-| ------------------------- | -------------------------------------------------------------------- |
-| `test:` commits           | ✅ "I have added tests for new functionality"                       |
-| `docs:` commits           | ✅ "I have updated documentation if needed"                        |
-| `test:` commits           | ✅ "Unit tests added/updated" or "Integration tests added/updated" |
-| Only `docs:` / `chore:`   | ✅ Mark test items as N/A with a note                              |
+| If commits include...   | Auto-check                                                         |
+| ----------------------- | ------------------------------------------------------------------ |
+| `test:` commits         | ✅ "I have added tests for new functionality"                      |
+| `docs:` commits         | ✅ "I have updated documentation if needed"                        |
+| `test:` commits         | ✅ "Unit tests added/updated" or "Integration tests added/updated" |
+| Only `docs:` / `chore:` | ✅ Mark test items as N/A with a note                              |
 
 ### Step 6: Present to User
 
@@ -146,6 +147,7 @@ Output two clearly separated sections:
 ---
 
 **PR Title:**
+
 ```
 feat(api): add vendor rating system
 ```
@@ -201,6 +203,7 @@ database write operation.
 ## 📚 Additional Context
 
 ### Commits included:
+
 - `a1b2c3d` — feat(api): add vendor rating endpoint
 - `e4f5g6h` — test(api): add vendor rating tests
 - `i7j8k9l` — docs: update API reference for vendor rating

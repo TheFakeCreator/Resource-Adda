@@ -45,11 +45,11 @@ description: "Issues, labels, contributor workflow, pull request process for Res
 
 ### Phase 4: Contributor Levels
 
-| Level | Criteria | Privileges |
-|-------|----------|------------|
-| Contributor | 1st PR | Listed in CONTRIBUTORS.md |
+| Level        | Criteria       | Privileges                 |
+| ------------ | -------------- | -------------------------- |
+| Contributor  | 1st PR         | Listed in CONTRIBUTORS.md  |
 | Collaborator | 3+ quality PRs | Approve PRs, assign issues |
-| Maintainer | Long-term | Merge, release management |
+| Maintainer   | Long-term      | Merge, release management  |
 
 ## Quick Reference
 

@@ -60,6 +60,7 @@ pnpm store prune                   # Clear pnpm cache
 ```
 
 Use overrides in `package.json` if needed:
+
 ```json
 { "pnpm": { "overrides": { "lodash": "4.17.21" } } }
 ```
@@ -73,9 +74,9 @@ Use overrides in `package.json` if needed:
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
+| Issue                       | Solution                                           |
+| --------------------------- | -------------------------------------------------- |
 | High-severity vulnerability | Check if fix available; override version if needed |
-| Update breaks tests | Revert lockfile; check migration guide |
-| Peer dependency conflict | Use `pnpm.overrides` to pin version |
-| pnpm install hangs | `pnpm store prune` then retry |
+| Update breaks tests         | Revert lockfile; check migration guide             |
+| Peer dependency conflict    | Use `pnpm.overrides` to pin version                |
+| pnpm install hangs          | `pnpm store prune` then retry                      |

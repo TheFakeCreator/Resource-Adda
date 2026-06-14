@@ -33,6 +33,7 @@ For lists: `{ "count": 5, "vendors": [...] }`
 ### Error responses
 
 Pattern A modules return structured errors with `code` and `details`:
+
 ```json
 { "success": false, "error": "Validation Error", "code": "VALIDATION_ERROR", "details": [...], "requestId": "REQ-..." }
 ```
@@ -59,6 +60,7 @@ async createVendor(req, res, next) {
 ```
 
 **Rules:**
+
 - Extract specific fields from `req.body` — never spread the whole body
 - Always wrap in `try/catch`
 - Always call `next(error)` in catch blocks
@@ -93,24 +95,32 @@ Routes register directly on the `app` object inside `init(app, registry)`:
 
 ```javascript
 export function registerVendorRoutes(app, requireRoles) {
-  app.post('/api/v1/vendors', requireRoles('admin', 'coordinator'), controller.create);
-  app.get('/api/v1/vendors', controller.list);
-  app.delete('/api/v1/vendors/:vendorId', requireRoles('admin'), controller.delete);
+  app.post(
+    "/api/v1/vendors",
+    requireRoles("admin", "coordinator"),
+    controller.create,
+  );
+  app.get("/api/v1/vendors", controller.list);
+  app.delete(
+    "/api/v1/vendors/:vendorId",
+    requireRoles("admin"),
+    controller.delete,
+  );
 }
 ```
 
 ## Status Codes
 
-| Code | When |
-|------|------|
-| 200 | Successful GET, PUT, PATCH, DELETE |
-| 201 | Successful POST (resource created) |
-| 400 | Missing required fields, invalid data |
-| 401 | Missing/invalid/expired token |
-| 403 | Valid token but insufficient role |
-| 404 | Resource or route not found |
-| 409 | Conflict — duplicate email, capacity reached |
-| 500 | Unhandled server errors |
+| Code | When                                         |
+| ---- | -------------------------------------------- |
+| 200  | Successful GET, PUT, PATCH, DELETE           |
+| 201  | Successful POST (resource created)           |
+| 400  | Missing required fields, invalid data        |
+| 401  | Missing/invalid/expired token                |
+| 403  | Valid token but insufficient role            |
+| 404  | Resource or route not found                  |
+| 409  | Conflict — duplicate email, capacity reached |
+| 500  | Unhandled server errors                      |
 
 ## Tech Stack Reminders
 

@@ -61,6 +61,7 @@ gh pr create --title "feat: add enrollment" --body "Closes #123"
 ### 5. Merge to Main
 
 Squash merge for clean history:
+
 ```bash
 gh pr merge --squash 123
 # Auto-deletes feature branch
@@ -77,8 +78,8 @@ git fetch && git rebase origin/main        # Update
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Merge conflict | Edit conflicted files, `git add .`, `git rebase --continue` |
-| Committed to main | `git revert <hash>` — never force-push main |
-| Need to reset | `git reset --hard origin/main` (loses local changes) |
+| Issue             | Solution                                                    |
+| ----------------- | ----------------------------------------------------------- |
+| Merge conflict    | Edit conflicted files, `git add .`, `git rebase --continue` |
+| Committed to main | `git revert <hash>` — never force-push main                 |
+| Need to reset     | `git reset --hard origin/main` (loses local changes)        |

@@ -32,13 +32,13 @@ diagrammer path/to/spec.json > path/to/diagram.svg
 ```json
 {
   "nodes": [
-    {"id": "client", "type": "box", "label": "client"},
-    {"id": "api", "type": "box", "label": "api"},
-    {"id": "db", "type": "database", "label": "postgres"}
+    { "id": "client", "type": "box", "label": "client" },
+    { "id": "api", "type": "box", "label": "api" },
+    { "id": "db", "type": "database", "label": "postgres" }
   ],
   "edges": [
-    {"from": "client", "to": "api", "label": "request"},
-    {"from": "api", "to": "db", "label": "query"}
+    { "from": "client", "to": "api", "label": "request" },
+    { "from": "api", "to": "db", "label": "query" }
   ]
 }
 ```

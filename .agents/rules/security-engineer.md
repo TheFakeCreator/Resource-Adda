@@ -8,6 +8,7 @@ trigger: model_decision
 ## Authentication Implementation
 
 ### JWT Configuration
+
 - Algorithm: HS256
 - Default expiry: 15 minutes (`JWT_EXPIRES_IN` env var)
 - Secret: Required in production (`JWT_SECRET` env var)
@@ -15,6 +16,7 @@ trigger: model_decision
 - Server crashes if `JWT_SECRET` is not set in production
 
 ### Password Security
+
 - Uses `node:crypto` scrypt — **not bcrypt**
 - 16 random bytes salt per password
 - 64-byte key length
@@ -22,6 +24,7 @@ trigger: model_decision
 - Comparison: `crypto.timingSafeEqual()` (timing-safe)
 
 ### Public Routes (no auth)
+
 ```
 GET  /health
 POST /api/v1/auth/signup

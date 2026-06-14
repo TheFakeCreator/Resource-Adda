@@ -17,6 +17,7 @@ description: "GitHub Actions workflows, testing automation, deployment triggers 
 ### Phase 1: Workflow Configuration
 
 Create `.github/workflows/ci.yml`:
+
 ```yaml
 on:
   push: { branches: [main] }
@@ -32,18 +33,18 @@ steps:
   - uses: actions/setup-node@v4
     with:
       node-version: 18
-      cache: 'pnpm'
+      cache: "pnpm"
   - run: pnpm install --frozen-lockfile
 ```
 
 ### Phase 3: Testing Automation
 
 ```yaml
-  - run: pnpm lint
-  - run: pnpm -C apps/vendor test -- --run
-  - run: pnpm -C apps/resource test -- --run
-  - run: pnpm -C apps/scheduling test -- --run
-  - run: pnpm -C apps/budget test -- --run
+- run: pnpm lint
+- run: pnpm -C apps/vendor test -- --run
+- run: pnpm -C apps/resource test -- --run
+- run: pnpm -C apps/scheduling test -- --run
+- run: pnpm -C apps/budget test -- --run
 ```
 
 Note: Resource-Adda uses **Vitest** (not Jest). Each module has its own `vitest.config.js`.
@@ -51,8 +52,8 @@ Note: Resource-Adda uses **Vitest** (not Jest). Each module has its own `vitest.
 ### Phase 4: Build
 
 ```yaml
-  - run: pnpm build          # Backend build
-  - run: cd frontend && pnpm build  # Frontend build (Next.js)
+- run: pnpm build # Backend build
+- run: cd frontend && pnpm build # Frontend build (Next.js)
 ```
 
 ### Phase 5: Deployment Triggers
@@ -76,8 +77,8 @@ act -j test_job
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| pnpm cache not working | Use `actions/setup-node@v4` with `cache: 'pnpm'` |
-| Tests fail in CI, pass locally | Use `--frozen-lockfile`; check env vars |
-| Node version mismatch | Pin to Node 18 in workflow |
+| Issue                          | Solution                                         |
+| ------------------------------ | ------------------------------------------------ |
+| pnpm cache not working         | Use `actions/setup-node@v4` with `cache: 'pnpm'` |
+| Tests fail in CI, pass locally | Use `--frozen-lockfile`; check env vars          |
+| Node version mismatch          | Pin to Node 18 in workflow                       |

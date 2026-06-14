@@ -23,7 +23,8 @@ const markerFont = Permanent_Marker({
 
 export const metadata: Metadata = {
   title: "Resource-Adda | Open Source Academic Hub",
-  description: "Share notes, explore PYQs, and collaborate seamlessly with your peers.",
+  description:
+    "Share notes, explore PYQs, and collaborate seamlessly with your peers.",
 };
 
 export default function RootLayout({

@@ -22,19 +22,31 @@ Mongoose models live in two places depending on the module:
 ## Schema Design Patterns
 
 ```javascript
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const vendorSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  category: { type: String, required: true, enum: ['catering', 'technology', 'venue', 'equipment', 'other'] },
-  email: { type: String, required: true, lowercase: true },
-  status: { type: String, default: 'active', enum: ['active', 'inactive', 'suspended'] }
-}, { timestamps: true });
+const vendorSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    category: {
+      type: String,
+      required: true,
+      enum: ["catering", "technology", "venue", "equipment", "other"],
+    },
+    email: { type: String, required: true, lowercase: true },
+    status: {
+      type: String,
+      default: "active",
+      enum: ["active", "inactive", "suspended"],
+    },
+  },
+  { timestamps: true },
+);
 
-export const Vendor = mongoose.model('Vendor', vendorSchema);
+export const Vendor = mongoose.model("Vendor", vendorSchema);
 ```
 
 **Rules:**
+
 - Always use `timestamps: true` for `createdAt`/`updatedAt`
 - Use enums for constrained values
 - Use `trim: true` on string fields
@@ -62,7 +74,7 @@ Services that interact with the database return result objects:
 
 ```javascript
 return { success: true, vendor: vendor.toObject() };
-return { success: false, error: 'Missing required fields' };
+return { success: false, error: "Missing required fields" };
 ```
 
 - Don't throw for business errors — return error objects

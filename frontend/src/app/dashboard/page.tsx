@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "@/lib/api";
 import {
   LogOut,
@@ -78,18 +78,7 @@ export default function DashboardPage() {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(
-        `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
-      );
-    } else if (isAuthenticated) {
-      fetchContributions();
-      fetchBookmarks();
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  const fetchContributions = async () => {
+  const fetchContributions = useCallback(async () => {
     setLoadingData(true);
     try {
       const token = localStorage.getItem("token");
@@ -106,16 +95,27 @@ export default function DashboardPage() {
     } finally {
       setLoadingData(false);
     }
-  };
+  }, []);
 
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = useCallback(async () => {
     try {
       const res = await api.get("/users/me/bookmarks");
       setBookmarks(res.data);
     } catch (err) {
       console.error("Failed to fetch bookmarks", err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push(
+        `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+      );
+    } else if (isAuthenticated) {
+      fetchContributions();
+      fetchBookmarks();
+    }
+  }, [isAuthenticated, isLoading, router, fetchContributions, fetchBookmarks]);
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
