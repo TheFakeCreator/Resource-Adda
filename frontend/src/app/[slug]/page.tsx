@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { notFound } from "next/navigation";
 import api from "@/lib/api";
 import ReactMarkdown from "react-markdown";

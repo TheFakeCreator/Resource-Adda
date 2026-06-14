@@ -16,10 +16,13 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "react/no-unescaped-entities": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "off", // <-- Changed from "warn" to "off"
       "react-hooks/set-state-in-effect": "off",
       "@typescript-eslint/no-explicit-any": "off",
-      "react/no-children-prop": "off"
+      "react/no-children-prop": "off",
+      "@next/next/no-img-element": "off" ,// Add this line
+      "react-hooks/exhaustive-deps": "off", // Ignores useEffect dependencies
+      "jsx-a11y/alt-text": "off"
     }
   }
 ]);

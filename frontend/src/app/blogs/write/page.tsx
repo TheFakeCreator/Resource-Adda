@@ -348,7 +348,7 @@ export default function WriteBlogPage() {
                 img({ node, ...props }: any) {
                   return (
                     <span className="block my-6 border border-white/10 rounded-xl overflow-hidden bg-black/50">
-                      <img className="w-full h-auto" {...props} />
+                      <img className="w-full h-auto" {...props} alt="" />
                     </span>
                   );
                 },
