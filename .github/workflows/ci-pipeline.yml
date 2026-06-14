@@ -3,9 +3,9 @@ name: MERN CI Pipeline
 # This tells GitHub to run the pipeline every time you push to the main branch
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "2.0", "master" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "2.0", "master" ]
 
 jobs:
   # JOB 1: Test the Frontend
