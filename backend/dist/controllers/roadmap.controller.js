@@ -1,43 +1,167 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApprovedRoadmaps = void 0;
+exports.completeStep =
+  exports.enrollRoadmap =
+  exports.submitRoadmap =
+  exports.getRoadmapById =
+  exports.getApprovedRoadmaps =
+    void 0;
 const Roadmap_1 = __importDefault(require("../models/Roadmap"));
+const User_1 = __importDefault(require("../models/User"));
 const Contribution_1 = require("../models/Contribution");
 const getApprovedRoadmaps = async (req, res) => {
-    try {
-        const { category, targetAudience } = req.query;
-        // Build filter
-        const filter = { status: Contribution_1.ContributionStatus.APPROVED };
-        if (category && typeof category === 'string' && category !== 'all') {
-            filter.category = category;
-        }
-        if (targetAudience && typeof targetAudience === 'string') {
-            filter.targetAudience = { $regex: targetAudience, $options: 'i' };
-        }
-        const roadmaps = await Roadmap_1.default.find(filter)
-            .populate('author', 'name avatarUrl branch semester')
-            .sort({ isOfficial: -1, upvotes: -1, createdAt: -1 }); // Official first, then highly upvoted
-        // Handle anonymity
-        const sanitizedRoadmaps = roadmaps.map(rmap => {
-            const doc = rmap.toObject();
-            if (doc.isAnonymous) {
-                doc.author = {
-                    _id: doc.author._id,
-                    name: 'Anonymous Creator',
-                    branch: 'Confidential',
-                    avatarUrl: 'https://ui-avatars.com/api/?name=Anonymous&background=random',
-                    semester: 0
-                };
-            }
-            return doc;
-        });
-        res.status(200).json(sanitizedRoadmaps);
+  try {
+    const { category, targetAudience } = req.query;
+    // Build filter
+    const filter = { status: Contribution_1.ContributionStatus.APPROVED };
+    if (category && typeof category === "string" && category !== "all") {
+      filter.category = category;
     }
-    catch (error) {
-        res.status(500).json({ error: error.message });
+    if (targetAudience && typeof targetAudience === "string") {
+      filter.targetAudience = { $regex: targetAudience, $options: "i" };
     }
+    const roadmaps = await Roadmap_1.default
+      .find(filter)
+      .populate("author", "name avatarUrl branch semester")
+      .sort({ isOfficial: -1, upvotes: -1, createdAt: -1 }); // Official first, then highly upvoted
+    // Handle anonymity
+    const sanitizedRoadmaps = roadmaps.map((rmap) => {
+      const doc = rmap.toObject();
+      if (doc.isAnonymous) {
+        doc.author = {
+          _id: doc.author._id,
+          name: "Anonymous Creator",
+          branch: "Confidential",
+          avatarUrl:
+            "https://ui-avatars.com/api/?name=Anonymous&background=random",
+          semester: 0,
+        };
+      }
+      return doc;
+    });
+    res.status(200).json(sanitizedRoadmaps);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 exports.getApprovedRoadmaps = getApprovedRoadmaps;
+const getRoadmapById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const roadmap = await Roadmap_1.default
+      .findById(id)
+      .populate("author", "name avatarUrl branch semester role");
+    if (!roadmap) {
+      res.status(404).json({ error: "Roadmap not found" });
+      return;
+    }
+    const doc = roadmap.toObject();
+    if (doc.isAnonymous) {
+      doc.author = {
+        _id: doc.author._id,
+        name: "Anonymous Creator",
+        branch: "Confidential",
+        avatarUrl:
+          "https://ui-avatars.com/api/?name=Anonymous&background=random",
+        semester: 0,
+        role: "student",
+      };
+    }
+    res.status(200).json(doc);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.getRoadmapById = getRoadmapById;
+const submitRoadmap = async (req, res) => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: "Not authenticated" });
+      return;
+    }
+    const newRoadmap = new Roadmap_1.default({
+      ...req.body,
+      author: req.user._id,
+      status: Contribution_1.ContributionStatus.PENDING,
+      isOfficial: req.user.role === "admin" || req.user.role === "super_admin",
+      upvotes: 0,
+      downvotes: 0,
+      upvotedBy: [],
+      downvotedBy: [],
+      averageRating: 0,
+      totalRatings: 0,
+    });
+    await newRoadmap.save();
+    res.status(201).json(newRoadmap);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.submitRoadmap = submitRoadmap;
+const enrollRoadmap = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const user = await User_1.default.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    const isAlreadyEnrolled = user.activeRoadmaps.some(
+      (ar) => ar.roadmapId.toString() === id,
+    );
+    if (isAlreadyEnrolled) {
+      res.status(400).json({ error: "Already enrolled in this roadmap" });
+      return;
+    }
+    user.activeRoadmaps.push({
+      roadmapId: id,
+      completedSteps: [],
+      startedAt: new Date(),
+      lastAccessedAt: new Date(),
+    });
+    await user.save();
+    res.status(200).json({
+      message: "Successfully enrolled",
+      activeRoadmaps: user.activeRoadmaps,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.enrollRoadmap = enrollRoadmap;
+const completeStep = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stepIndex } = req.body;
+    const userId = req.user._id;
+    const user = await User_1.default.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    const activeRoadmap = user.activeRoadmaps.find(
+      (ar) => ar.roadmapId.toString() === id,
+    );
+    if (!activeRoadmap) {
+      res.status(400).json({ error: "Not enrolled in this roadmap" });
+      return;
+    }
+    if (!activeRoadmap.completedSteps.includes(stepIndex)) {
+      activeRoadmap.completedSteps.push(stepIndex);
+      activeRoadmap.lastAccessedAt = new Date();
+      await user.save();
+    }
+    res
+      .status(200)
+      .json({ message: "Step completed", activeRoadmaps: user.activeRoadmaps });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.completeStep = completeStep;

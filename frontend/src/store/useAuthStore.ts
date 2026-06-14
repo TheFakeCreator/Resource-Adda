@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import axios from 'axios';
+import { create } from "zustand";
+import api from "@/lib/api";
 
 export interface User {
   id: string;
   _id?: string;
   email: string;
-  role: 'super_admin' | 'admin' | 'student';
+  role: "super_admin" | "admin" | "student";
   name?: string;
   avatarUrl?: string;
   isVerified: boolean;
@@ -13,6 +13,10 @@ export interface User {
   badges?: string[];
   branch?: string;
   semester?: number;
+  bio?: string;
+  rollNumber?: string;
+  section?: string;
+  graduationYear?: number;
 }
 
 interface AuthState {
@@ -31,28 +35,36 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
   login: (token, user) => {
-    localStorage.setItem('token', token);
+    localStorage.setItem("token", token);
     set({ user, token, isAuthenticated: true, isLoading: false });
   },
   logout: () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     set({ user: null, token: null, isAuthenticated: false, isLoading: false });
   },
   checkAuth: async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
       set({ isLoading: false });
       return;
     }
-    
+
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await api.get("/auth/me");
+      set({
+        user: response.data,
+        token,
+        isAuthenticated: true,
+        isLoading: false,
       });
-      set({ user: response.data, token, isAuthenticated: true, isLoading: false });
     } catch (error) {
-      localStorage.removeItem('token');
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      localStorage.removeItem("token");
+      set({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
     }
-  }
+  },
 }));

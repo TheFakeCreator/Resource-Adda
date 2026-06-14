@@ -1,18 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import axios from 'axios';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { LogIn } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import api from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { LogIn, Loader2 } from "lucide-react";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -20,56 +27,60 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters." }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isAuthenticated, isLoading } = useAuthStore();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      const redirect = searchParams.get("redirect");
+      router.push(redirect ? redirect : "/dashboard");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, searchParams]);
 
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', data);
+      const response = await api.post("/auth/login", data);
       login(response.data.token, response.data.user);
-      
-      if (response.data.user.role === 'super_admin') {
-        const setupRes = await axios.get('http://localhost:5000/api/setup/status');
-        if (setupRes.data.isSetup) {
-          router.push('/dashboard');
-        } else {
-          router.push('/setup');
+
+      if (response.data.user.role === "super_admin") {
+        const setupRes = await api.get("/setup/status");
+        if (!setupRes.data.isSetup) {
+          router.push("/setup");
+          return;
         }
-      } else {
-        router.push('/dashboard');
       }
+
+      const redirect = searchParams.get("redirect");
+      router.push(redirect ? redirect : "/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -83,7 +94,9 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-none shadow-xl">
         <CardHeader className="space-y-1 text-center pb-6">
-          <CardTitle className="text-3xl font-bold tracking-tight text-foreground">Welcome back</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+            Welcome back
+          </CardTitle>
           <CardDescription className="text-muted-foreground">
             Enter your email and password to access your account
           </CardDescription>
@@ -96,7 +109,7 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
-              
+
               <FormField
                 control={form.control}
                 name="email"
@@ -104,7 +117,11 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m.bluth@example.com" className="h-11" {...field} />
+                      <Input
+                        placeholder="m.bluth@example.com"
+                        className="h-11"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,7 +135,10 @@ export default function LoginPage() {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <Link href="#" className="text-sm text-primary hover:underline font-medium">
+                      <Link
+                        href="#"
+                        className="text-sm text-primary hover:underline font-medium"
+                      >
                         Forgot password?
                       </Link>
                     </div>
@@ -130,8 +150,12 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full h-11 text-base font-medium mt-2" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign In'}
+              <Button
+                type="submit"
+                className="w-full h-11 text-base font-medium mt-2"
+                disabled={loading}
+              >
+                {loading ? "Signing in..." : "Sign In"}
                 {!loading && <LogIn className="ml-2 h-4 w-4" />}
               </Button>
             </form>
@@ -139,8 +163,11 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 pt-4 border-t border-slate-100">
           <div className="text-sm text-center text-muted-foreground w-full">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-primary hover:underline font-semibold">
+            Don't have an account?{" "}
+            <Link
+              href={`/register${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ""}`}
+              className="text-primary hover:underline font-semibold"
+            >
               Sign up
             </Link>
           </div>

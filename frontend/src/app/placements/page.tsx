@@ -1,16 +1,41 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Building2, Briefcase, Calendar, CheckCircle2, XCircle, Clock, Search, Ghost, IndianRupee } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  User as UserIcon,
+  Building2,
+  Briefcase,
+  Calendar,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Search,
+  Ghost,
+  IndianRupee,
+  PlusCircle,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Uploader {
   _id: string;
@@ -36,7 +61,7 @@ interface InterviewExperience {
   upvotes: number;
 }
 
-const USE_DUMMY_DATA = true;
+const USE_DUMMY_DATA = false;
 
 const DUMMY_EXPERIENCES: InterviewExperience[] = [
   {
@@ -53,12 +78,13 @@ const DUMMY_EXPERIENCES: InterviewExperience[] = [
     author: {
       _id: "u1",
       name: "Sneha Gupta",
-      avatarUrl: "https://ui-avatars.com/api/?name=Sneha+Gupta&background=random",
+      avatarUrl:
+        "https://ui-avatars.com/api/?name=Sneha+Gupta&background=random",
       branch: "Computer Science",
-      semester: 6
+      semester: 6,
     },
     createdAt: new Date().toISOString(),
-    upvotes: 142
+    upvotes: 142,
   },
   {
     _id: "2",
@@ -75,10 +101,10 @@ const DUMMY_EXPERIENCES: InterviewExperience[] = [
       name: "Anonymous Student",
       avatarUrl: "https://ui-avatars.com/api/?name=Anonymous&background=random",
       branch: "Confidential",
-      semester: 0
+      semester: 0,
     },
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    upvotes: 89
+    upvotes: 89,
   },
   {
     _id: "3",
@@ -94,32 +120,49 @@ const DUMMY_EXPERIENCES: InterviewExperience[] = [
     author: {
       _id: "u3",
       name: "Ravi Kumar",
-      avatarUrl: "https://ui-avatars.com/api/?name=Ravi+Kumar&background=random",
+      avatarUrl:
+        "https://ui-avatars.com/api/?name=Ravi+Kumar&background=random",
       branch: "Information Technology",
-      semester: 8
+      semester: 8,
     },
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    upvotes: 45
-  }
+    upvotes: 45,
+  },
 ];
 
 const getStatusConfig = (status: string) => {
-  switch(status.toLowerCase()) {
-    case 'accepted': return { icon: <CheckCircle2 className="w-4 h-4 mr-1 text-emerald-500" />, class: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" };
-    case 'rejected': return { icon: <XCircle className="w-4 h-4 mr-1 text-rose-500" />, class: "text-rose-500 bg-rose-500/10 border-rose-500/20" };
-    case 'pending': return { icon: <Clock className="w-4 h-4 mr-1 text-amber-500" />, class: "text-amber-500 bg-amber-500/10 border-amber-500/20" };
-    default: return { icon: <CheckCircle2 className="w-4 h-4 mr-1 text-muted-foreground" />, class: "text-muted-foreground bg-muted border-border" };
+  switch (status.toLowerCase()) {
+    case "accepted":
+      return {
+        icon: <CheckCircle2 className="w-4 h-4 mr-1 text-emerald-500" />,
+        class: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      };
+    case "rejected":
+      return {
+        icon: <XCircle className="w-4 h-4 mr-1 text-rose-500" />,
+        class: "text-rose-500 bg-rose-500/10 border-rose-500/20",
+      };
+    case "pending":
+      return {
+        icon: <Clock className="w-4 h-4 mr-1 text-amber-500" />,
+        class: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      };
+    default:
+      return {
+        icon: <CheckCircle2 className="w-4 h-4 mr-1 text-muted-foreground" />,
+        class: "text-muted-foreground bg-muted border-border",
+      };
   }
 };
 
 export default function PlacementsPage() {
   const [experiences, setExperiences] = useState<InterviewExperience[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filters
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -135,14 +178,19 @@ export default function PlacementsPage() {
         setTimeout(() => {
           let filtered = DUMMY_EXPERIENCES;
           if (debouncedSearch) {
-            filtered = filtered.filter(e => 
-              e.company.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
-              e.role.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-              e.title.toLowerCase().includes(debouncedSearch.toLowerCase())
+            filtered = filtered.filter(
+              (e) =>
+                e.company
+                  .toLowerCase()
+                  .includes(debouncedSearch.toLowerCase()) ||
+                e.role.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                e.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
             );
           }
-          if (typeFilter !== 'all') {
-            filtered = filtered.filter(e => e.type.toLowerCase() === typeFilter.toLowerCase());
+          if (typeFilter !== "all") {
+            filtered = filtered.filter(
+              (e) => e.type.toLowerCase() === typeFilter.toLowerCase(),
+            );
           }
           setExperiences(filtered);
           setLoading(false);
@@ -152,13 +200,13 @@ export default function PlacementsPage() {
 
       try {
         const params = new URLSearchParams();
-        if (debouncedSearch) params.append('company', debouncedSearch); // Simulating basic search
-        if (typeFilter !== 'all') params.append('type', typeFilter);
+        if (debouncedSearch) params.append("company", debouncedSearch); // Simulating basic search
+        if (typeFilter !== "all") params.append("type", typeFilter);
 
-        const response = await axios.get(`http://localhost:5000/api/placements?${params.toString()}`);
+        const response = await api.get(`/placements?${params.toString()}`);
         setExperiences(response.data);
       } catch (error) {
-        console.error('Failed to fetch experiences', error);
+        console.error("Failed to fetch experiences", error);
       } finally {
         setLoading(false);
       }
@@ -170,19 +218,17 @@ export default function PlacementsPage() {
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row gap-8">
-        
         {/* Sidebar Filters */}
         <aside className="w-full md:w-64 flex-shrink-0 space-y-6">
           <div>
             <h2 className="text-xl font-bold mb-4">Filters</h2>
             <div className="space-y-4">
-              
               <div className="space-y-2">
                 <Label>Search Company/Role</Label>
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="e.g. Google, Amazon..." 
+                  <Input
+                    placeholder="e.g. Google, Amazon..."
                     className="pl-9 bg-background"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -192,7 +238,10 @@ export default function PlacementsPage() {
 
               <div className="space-y-2">
                 <Label>Opportunity Type</Label>
-                <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value || 'all')}>
+                <Select
+                  value={typeFilter}
+                  onValueChange={(value) => setTypeFilter(value || "all")}
+                >
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
@@ -205,12 +254,12 @@ export default function PlacementsPage() {
                 </Select>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => {
-                  setSearch('');
-                  setTypeFilter('all');
+                  setSearch("");
+                  setTypeFilter("all");
                 }}
               >
                 Reset Filters
@@ -223,15 +272,28 @@ export default function PlacementsPage() {
         <main className="flex-1">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Interview Experiences</h1>
-              <p className="text-muted-foreground mt-1">Learn from the community's placement journeys.</p>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Interview Experiences
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Learn from the community's placement journeys.
+              </p>
             </div>
+            <Link href="/dashboard/placements/write">
+              <Button className="gap-2">
+                <PlusCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Add Experience</span>
+              </Button>
+            </Link>
           </div>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="animate-pulse bg-card border-border h-48" />
+                <Card
+                  key={i}
+                  className="animate-pulse bg-card border-border h-48"
+                />
               ))}
             </div>
           ) : experiences.length > 0 ? (
@@ -239,15 +301,25 @@ export default function PlacementsPage() {
               {experiences.map((exp) => {
                 const statusConfig = getStatusConfig(exp.offerStatus);
                 return (
-                  <Link href={`/placements/${exp._id}`} key={exp._id} className="block group">
+                  <Link
+                    href={`/placements/${exp._id}`}
+                    key={exp._id}
+                    className="block group"
+                  >
                     <Card className="h-full relative overflow-hidden border border-border bg-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border-t-4 border-t-indigo-500">
                       <CardHeader className="pb-4">
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                            <Badge
+                              variant="outline"
+                              className="bg-primary/10 text-primary border-primary/20"
+                            >
                               {exp.type}
                             </Badge>
-                            <Badge variant="outline" className={statusConfig.class}>
+                            <Badge
+                              variant="outline"
+                              className={statusConfig.class}
+                            >
                               {statusConfig.icon}
                               {exp.offerStatus}
                             </Badge>
@@ -269,11 +341,15 @@ export default function PlacementsPage() {
                       </CardHeader>
                       <CardContent className="flex-1 space-y-3">
                         <div className="flex flex-wrap gap-2">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border ${
-                            exp.difficulty === 'Easy' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
-                            exp.difficulty === 'Medium' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-                            'bg-rose-500/10 text-rose-600 border-rose-500/20'
-                          }`}>
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border ${
+                              exp.difficulty === "Easy"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : exp.difficulty === "Medium"
+                                  ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                  : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                            }`}
+                          >
                             {exp.difficulty}
                           </span>
                           {exp.ctc && (
@@ -295,18 +371,40 @@ export default function PlacementsPage() {
                             </div>
                           ) : (
                             <Avatar className="h-8 w-8 border border-border">
-                              <AvatarImage src={exp.author?.avatarUrl} alt={exp.author?.name} />
-                              <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
+                              <AvatarImage
+                                src={exp.author?.avatarUrl}
+                                alt={exp.author?.name}
+                              />
+                              <AvatarFallback>
+                                <UserIcon className="h-4 w-4" />
+                              </AvatarFallback>
                             </Avatar>
                           )}
                           <div className="text-xs">
-                            <p className="font-medium text-foreground">{exp.author?.name}</p>
+                            <p className="font-medium text-foreground">
+                              {exp.author?.name}
+                            </p>
                             <div className="flex items-center text-muted-foreground mt-0.5">
-                              <button 
-                                onClick={(e) => { e.preventDefault(); /* Handle upvote */ }}
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault(); /* Handle upvote */
+                                }}
                                 className="flex items-center hover:text-emerald-500 transition-colors"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="m18 15-6-6-6 6"/></svg>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="mr-1"
+                                >
+                                  <path d="m18 15-6-6-6 6" />
+                                </svg>
                                 {exp.upvotes}
                               </button>
                             </div>
@@ -326,14 +424,15 @@ export default function PlacementsPage() {
               <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
               <h3 className="text-lg font-medium">No experiences found</h3>
               <p className="text-muted-foreground max-w-sm mx-auto mt-2">
-                We couldn't find any interview experiences matching your filters.
+                We couldn't find any interview experiences matching your
+                filters.
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="mt-6"
                 onClick={() => {
-                  setSearch('');
-                  setTypeFilter('all');
+                  setSearch("");
+                  setTypeFilter("all");
                 }}
               >
                 Clear Filters
@@ -341,7 +440,6 @@ export default function PlacementsPage() {
             </div>
           )}
         </main>
-
       </div>
     </div>
   );

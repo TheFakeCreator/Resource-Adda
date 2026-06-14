@@ -1,16 +1,40 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User as UserIcon, Map, Target, BookOpen, Search, ShieldCheck, Flame, Ghost, Clock } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  User as UserIcon,
+  Map,
+  Target,
+  BookOpen,
+  Search,
+  ShieldCheck,
+  Flame,
+  Ghost,
+  Clock,
+  PlusCircle,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Uploader {
   _id: string;
@@ -35,13 +59,14 @@ interface Roadmap {
   upvotes: number;
 }
 
-const USE_DUMMY_DATA = true;
+const USE_DUMMY_DATA = false;
 
 const DUMMY_ROADMAPS: Roadmap[] = [
   {
     _id: "1",
     title: "Complete MERN Stack Roadmap 2024",
-    description: "A step-by-step guide to mastering MongoDB, Express, React, and Node.js for placements.",
+    description:
+      "A step-by-step guide to mastering MongoDB, Express, React, and Node.js for placements.",
     category: "Skill",
     difficulty: "Intermediate",
     estimatedTime: "12 Weeks",
@@ -51,17 +76,19 @@ const DUMMY_ROADMAPS: Roadmap[] = [
     author: {
       _id: "admin",
       name: "Resource Adda Team",
-      avatarUrl: "https://ui-avatars.com/api/?name=Resource+Adda&background=0D8ABC&color=fff",
+      avatarUrl:
+        "https://ui-avatars.com/api/?name=Resource+Adda&background=0D8ABC&color=fff",
       branch: "Admin",
-      semester: 0
+      semester: 0,
     },
     createdAt: new Date().toISOString(),
-    upvotes: 342
+    upvotes: 342,
   },
   {
     _id: "2",
     title: "Cracking FAANG Off-Campus",
-    description: "How to build your resume, cold email recruiters, and prepare for system design rounds.",
+    description:
+      "How to build your resume, cold email recruiters, and prepare for system design rounds.",
     category: "Placement",
     difficulty: "Advanced",
     estimatedTime: "4 Weeks",
@@ -73,15 +100,16 @@ const DUMMY_ROADMAPS: Roadmap[] = [
       name: "Anonymous Creator",
       avatarUrl: "https://ui-avatars.com/api/?name=Anonymous&background=random",
       branch: "Confidential",
-      semester: 0
+      semester: 0,
     },
     createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
-    upvotes: 215
+    upvotes: 215,
   },
   {
     _id: "3",
     title: "How to ace OS & DBMS in 1 week",
-    description: "Focused topics and important PYQs to pass your semester exams for core CS subjects.",
+    description:
+      "Focused topics and important PYQs to pass your semester exams for core CS subjects.",
     category: "Academic",
     difficulty: "Beginner",
     estimatedTime: "1 Week",
@@ -91,32 +119,49 @@ const DUMMY_ROADMAPS: Roadmap[] = [
     author: {
       _id: "u2",
       name: "Anjali Sharma",
-      avatarUrl: "https://ui-avatars.com/api/?name=Anjali+Sharma&background=random",
+      avatarUrl:
+        "https://ui-avatars.com/api/?name=Anjali+Sharma&background=random",
       branch: "Computer Science",
-      semester: 7
+      semester: 7,
     },
     createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
-    upvotes: 189
-  }
+    upvotes: 189,
+  },
 ];
 
 const getCategoryConfig = (category: string) => {
-  switch(category.toLowerCase()) {
-    case 'academic': return { icon: <BookOpen className="w-4 h-4 mr-1" />, class: "text-blue-500 bg-blue-500/10 border-blue-500/20" };
-    case 'placement': return { icon: <Target className="w-4 h-4 mr-1" />, class: "text-purple-500 bg-purple-500/10 border-purple-500/20" };
-    case 'skill': return { icon: <Flame className="w-4 h-4 mr-1" />, class: "text-orange-500 bg-orange-500/10 border-orange-500/20" };
-    default: return { icon: <Map className="w-4 h-4 mr-1" />, class: "text-slate-500 bg-slate-500/10 border-slate-500/20" };
+  switch (category.toLowerCase()) {
+    case "academic":
+      return {
+        icon: <BookOpen className="w-4 h-4 mr-1" />,
+        class: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+      };
+    case "placement":
+      return {
+        icon: <Target className="w-4 h-4 mr-1" />,
+        class: "text-purple-500 bg-purple-500/10 border-purple-500/20",
+      };
+    case "skill":
+      return {
+        icon: <Flame className="w-4 h-4 mr-1" />,
+        class: "text-orange-500 bg-orange-500/10 border-orange-500/20",
+      };
+    default:
+      return {
+        icon: <Map className="w-4 h-4 mr-1" />,
+        class: "text-slate-500 bg-slate-500/10 border-slate-500/20",
+      };
   }
 };
 
 export default function RoadmapsPage() {
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filters
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -132,13 +177,18 @@ export default function RoadmapsPage() {
         setTimeout(() => {
           let filtered = DUMMY_ROADMAPS;
           if (debouncedSearch) {
-            filtered = filtered.filter(r => 
-              r.title.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
-              r.description.toLowerCase().includes(debouncedSearch.toLowerCase())
+            filtered = filtered.filter(
+              (r) =>
+                r.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                r.description
+                  .toLowerCase()
+                  .includes(debouncedSearch.toLowerCase()),
             );
           }
-          if (categoryFilter !== 'all') {
-            filtered = filtered.filter(r => r.category.toLowerCase() === categoryFilter.toLowerCase());
+          if (categoryFilter !== "all") {
+            filtered = filtered.filter(
+              (r) => r.category.toLowerCase() === categoryFilter.toLowerCase(),
+            );
           }
           setRoadmaps(filtered);
           setLoading(false);
@@ -148,13 +198,13 @@ export default function RoadmapsPage() {
 
       try {
         const params = new URLSearchParams();
-        if (debouncedSearch) params.append('targetAudience', debouncedSearch); // Simulating basic search
-        if (categoryFilter !== 'all') params.append('category', categoryFilter);
+        if (debouncedSearch) params.append("targetAudience", debouncedSearch); // Simulating basic search
+        if (categoryFilter !== "all") params.append("category", categoryFilter);
 
-        const response = await axios.get(`http://localhost:5000/api/roadmaps?${params.toString()}`);
+        const response = await api.get(`/roadmaps?${params.toString()}`);
         setRoadmaps(response.data);
       } catch (error) {
-        console.error('Failed to fetch roadmaps', error);
+        console.error("Failed to fetch roadmaps", error);
       } finally {
         setLoading(false);
       }
@@ -165,23 +215,18 @@ export default function RoadmapsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      
-
-
       <div className="flex flex-col md:flex-row gap-8">
-        
         {/* Sidebar Filters */}
         <aside className="w-full md:w-64 flex-shrink-0 space-y-6">
           <div>
             <h2 className="text-xl font-bold mb-4">Filters</h2>
             <div className="space-y-4">
-              
               <div className="space-y-2">
                 <Label>Search</Label>
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="e.g. React, DBMS..." 
+                  <Input
+                    placeholder="e.g. React, DBMS..."
                     className="pl-9 bg-background"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -191,7 +236,10 @@ export default function RoadmapsPage() {
 
               <div className="space-y-2">
                 <Label>Category</Label>
-                <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value || 'all')}>
+                <Select
+                  value={categoryFilter}
+                  onValueChange={(value) => setCategoryFilter(value || "all")}
+                >
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
@@ -204,12 +252,12 @@ export default function RoadmapsPage() {
                 </Select>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => {
-                  setSearch('');
-                  setCategoryFilter('all');
+                  setSearch("");
+                  setCategoryFilter("all");
                 }}
               >
                 Clear Filters
@@ -222,14 +270,28 @@ export default function RoadmapsPage() {
         <main className="flex-1">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Community Roadmaps</h1>
-              <p className="text-muted-foreground mt-1">Structured guides to help you navigate academics, skills, and placements.</p>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Community Roadmaps
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Structured guides to help you navigate academics, skills, and
+                placements.
+              </p>
             </div>
+            <Link href="/dashboard/roadmaps/write">
+              <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+                <PlusCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Build Roadmap</span>
+              </Button>
+            </Link>
           </div>
           {loading ? (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="animate-pulse bg-card border-border h-56" />
+                <Card
+                  key={i}
+                  className="animate-pulse bg-card border-border h-56"
+                />
               ))}
             </div>
           ) : roadmaps.length > 0 ? (
@@ -237,11 +299,18 @@ export default function RoadmapsPage() {
               {roadmaps.map((roadmap) => {
                 const categoryConfig = getCategoryConfig(roadmap.category);
                 return (
-                  <Link href={`/roadmaps/${roadmap._id}`} key={roadmap._id} className="block group">
-                    <Card className={`h-full relative overflow-hidden border border-border bg-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col ${
-                      roadmap.isOfficial ? 'border-l-4 border-l-blue-500' : 'border-t-4 border-t-emerald-500'
-                    }`}>
-                      
+                  <Link
+                    href={`/roadmaps/${roadmap._id}`}
+                    key={roadmap._id}
+                    className="block group"
+                  >
+                    <Card
+                      className={`h-full relative overflow-hidden border border-border bg-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col ${
+                        roadmap.isOfficial
+                          ? "border-l-4 border-l-blue-500"
+                          : "border-t-4 border-t-emerald-500"
+                      }`}
+                    >
                       {roadmap.isOfficial && (
                         <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg flex items-center shadow-sm">
                           <ShieldCheck className="w-3 h-3 mr-1" />
@@ -251,7 +320,10 @@ export default function RoadmapsPage() {
 
                       <CardHeader className="pb-4">
                         <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className={categoryConfig.class}>
+                          <Badge
+                            variant="outline"
+                            className={categoryConfig.class}
+                          >
                             {categoryConfig.icon}
                             {roadmap.category}
                           </Badge>
@@ -265,11 +337,15 @@ export default function RoadmapsPage() {
                       </CardHeader>
                       <CardContent className="flex-1 space-y-3">
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border ${
-                            roadmap.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
-                            roadmap.difficulty === 'Intermediate' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-                            'bg-rose-500/10 text-rose-600 border-rose-500/20'
-                          }`}>
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border ${
+                              roadmap.difficulty === "Beginner"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : roadmap.difficulty === "Intermediate"
+                                  ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                  : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                            }`}
+                          >
                             {roadmap.difficulty}
                           </span>
                           <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border bg-slate-500/10 text-slate-600 border-slate-500/20 dark:text-slate-400 flex items-center">
@@ -290,20 +366,42 @@ export default function RoadmapsPage() {
                             </div>
                           ) : (
                             <Avatar className="h-8 w-8 border border-border">
-                              <AvatarImage src={roadmap.author?.avatarUrl} alt={roadmap.author?.name} />
-                              <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
+                              <AvatarImage
+                                src={roadmap.author?.avatarUrl}
+                                alt={roadmap.author?.name}
+                              />
+                              <AvatarFallback>
+                                <UserIcon className="h-4 w-4" />
+                              </AvatarFallback>
                             </Avatar>
                           )}
                           <div className="text-xs">
                             <p className="font-medium text-foreground">
-                              {roadmap.isOfficial ? "Resource Adda" : roadmap.author?.name}
+                              {roadmap.isOfficial
+                                ? "Resource Adda"
+                                : roadmap.author?.name}
                             </p>
                             <div className="flex items-center text-muted-foreground mt-0.5">
-                              <button 
-                                onClick={(e) => { e.preventDefault(); /* Handle upvote */ }}
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault(); /* Handle upvote */
+                                }}
                                 className="flex items-center hover:text-emerald-500 transition-colors"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="m18 15-6-6-6 6"/></svg>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="mr-1"
+                                >
+                                  <path d="m18 15-6-6-6 6" />
+                                </svg>
                                 {roadmap.upvotes}
                               </button>
                             </div>
@@ -325,12 +423,12 @@ export default function RoadmapsPage() {
               <p className="text-muted-foreground max-w-sm mx-auto mt-2">
                 We couldn't find any roadmaps matching your filters.
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="mt-6"
                 onClick={() => {
-                  setSearch('');
-                  setCategoryFilter('all');
+                  setSearch("");
+                  setCategoryFilter("all");
                 }}
               >
                 Clear Filters
@@ -338,7 +436,6 @@ export default function RoadmapsPage() {
             </div>
           )}
         </main>
-
       </div>
     </div>
   );

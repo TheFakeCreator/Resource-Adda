@@ -1,82 +1,85 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, LibraryBig, CheckCircle, XCircle, ExternalLink, FileText } from 'lucide-react';
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  FileText,
+  User as UserIcon,
+  BookOpen,
+  ExternalLink,
+  Calendar,
+} from "lucide-react";
 
-interface Contribution {
-  _id: string;
-  documentId: {
-    _id: string;
-    title: string;
-    description: string;
-    type: string;
-    branch: string;
-    semester: number;
-    subject: string;
-    fileUrl: string;
-    isExternalLink: boolean;
-  };
-  userId: {
-    _id: string;
-    email: string;
-    role: string;
-    branch: string;
-    semester: number;
-    rollNumber?: string;
-  };
-  status: string;
-  createdAt: string;
+interface PendingQueue {
+  documents: any[];
+  experiences: any[];
+  roadmaps: any[];
 }
 
-export default function PendingContributionsPage() {
+export default function AdminModerationQueuePage() {
   const { token } = useAuthStore();
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [queue, setQueue] = useState<PendingQueue>({
+    documents: [],
+    experiences: [],
+    roadmaps: [],
+  });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [actionLoading, setActionLoading] = useState<string | null>(null); // e.g. 'document-123'
 
   const fetchPending = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/resources/contributions/pending', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to fetch pending contributions');
-      const data = await res.json();
-      setContributions(data);
+      const res = await api.get("/moderation/pending");
+      setQueue(res.data);
     } catch (err: any) {
-      setError(err.message);
+      setError(
+        err.response?.data?.error ||
+          err.message ||
+          "Failed to fetch pending queue",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPending();
+    if (token) fetchPending();
   }, [token]);
 
-  const handleReview = async (id: string, status: 'approved' | 'rejected') => {
-    setActionLoading(id);
+  const handleReview = async (
+    type: "document" | "experience" | "roadmap",
+    id: string,
+    action: "approve" | "reject",
+  ) => {
+    setActionLoading(`${type}-${id}`);
     try {
-      const res = await fetch(`http://localhost:5000/api/resources/contributions/${id}/review`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
-      });
-      
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to review contribution');
-      }
+      await api.post(`/moderation/${type}/${id}/review`, { action });
 
-      // Remove the reviewed contribution from the list
-      setContributions(prev => prev.filter(c => c._id !== id));
+      // Remove the item from the queue instantly without a reload
+      setQueue((prev) => {
+        const next = { ...prev };
+        if (type === "document")
+          next.documents = next.documents.filter((d) => d._id !== id);
+        if (type === "experience")
+          next.experiences = next.experiences.filter((e) => e._id !== id);
+        if (type === "roadmap")
+          next.roadmaps = next.roadmaps.filter((r) => r._id !== id);
+        return next;
+      });
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -84,99 +87,297 @@ export default function PendingContributionsPage() {
     }
   };
 
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Pending Contributions</h1>
-        <p className="text-muted-foreground mt-2">Review and approve resources uploaded by students.</p>
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-      
+    );
+  }
+
+  const totalPending =
+    queue.documents.length + queue.experiences.length + queue.roadmaps.length;
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Moderation Queue
+          </h2>
+          <p className="text-muted-foreground mt-1">
+            Review pending contributions before they go live.
+          </p>
+        </div>
+        <Badge
+          variant="outline"
+          className="text-sm px-3 py-1 border-primary/20 bg-primary/10 text-primary"
+        >
+          {totalPending} Items Pending
+        </Badge>
+      </div>
+
       {error && (
-        <div className="p-3 bg-red-100 text-red-600 border border-red-300 rounded-md text-sm">
+        <div className="p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl">
           {error}
         </div>
       )}
 
-      {loading ? (
-        <div className="flex justify-center p-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      {totalPending === 0 ? (
+        <div className="text-center py-20 bg-card border border-border rounded-2xl flex flex-col items-center">
+          <CheckCircle className="h-16 w-16 text-emerald-500 mb-4 opacity-80" />
+          <h3 className="text-xl font-bold">All caught up!</h3>
+          <p className="text-muted-foreground">
+            The moderation queue is completely empty.
+          </p>
         </div>
-      ) : contributions.length === 0 ? (
-        <Card className="w-full border shadow-sm">
-          <CardContent className="p-12 text-center flex flex-col items-center">
-            <LibraryBig className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Queue is empty</h3>
-            <p className="text-muted-foreground">
-              There are no pending resources awaiting approval at this time.
-            </p>
-          </CardContent>
-        </Card>
       ) : (
-        <div className="space-y-4">
-          {contributions.map((contribution) => {
-            const doc = contribution.documentId;
-            const uploader = contribution.userId;
-            
-            return (
-              <Card key={contribution._id} className="w-full border shadow-sm">
-                <CardHeader className="pb-3 border-b bg-muted/30">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-xl flex items-center gap-2">
-                        {doc.title}
-                        <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                          {doc.type || 'Resource'}
+        <div className="space-y-12">
+          {/* RESOURCES (DOCUMENTS) */}
+          {queue.documents.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 border-b border-border pb-2">
+                <FileText className="h-5 w-5 text-blue-500" /> Academic
+                Resources ({queue.documents.length})
+              </h3>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {queue.documents.map((contrib) => (
+                  <Card
+                    key={contrib._id}
+                    className="border-border shadow-sm flex flex-col"
+                  >
+                    <CardHeader className="pb-3 bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg leading-tight line-clamp-1">
+                          {contrib.documentId?.title || "Unknown Title"}
+                        </CardTitle>
+                        <Badge variant="secondary" className="capitalize">
+                          {contrib.documentId?.type}
                         </Badge>
-                      </CardTitle>
-                      <CardDescription className="mt-2 text-sm space-y-1">
-                        <p><strong>Subject:</strong> {doc.subject}</p>
-                        <p><strong>Branch / Sem:</strong> {doc.branch} - Sem {doc.semester}</p>
-                        {doc.description && <p className="italic text-muted-foreground line-clamp-2">"{doc.description}"</p>}
+                      </div>
+                      <CardDescription className="line-clamp-2 mt-2">
+                        {contrib.documentId?.description}
                       </CardDescription>
-                    </div>
-                    <div className="text-right text-sm text-muted-foreground">
-                      <p>Uploaded by: <strong>{uploader.email}</strong></p>
-                      <p>{uploader.branch} - Sem {uploader.semester}</p>
-                      <p>{new Date(contribution.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="py-4">
-                  <div className="flex items-center gap-2">
-                    {doc.isExternalLink ? <ExternalLink className="h-4 w-4 text-amber-500" /> : <FileText className="h-4 w-4 text-blue-500" />}
-                    <a 
-                      href={doc.fileUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline font-medium text-sm"
-                    >
-                      View {doc.isExternalLink ? 'External Link' : 'Uploaded File'}
-                    </a>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-end gap-3 pt-4 border-t bg-muted/10">
-                  <Button 
-                    variant="outline" 
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                    disabled={actionLoading === contribution._id}
-                    onClick={() => handleReview(contribution._id, 'rejected')}
+                    </CardHeader>
+                    <CardContent className="pt-4 flex-1">
+                      <div className="grid grid-cols-2 gap-y-2 text-sm text-muted-foreground mb-4">
+                        <div>
+                          <span className="font-semibold text-foreground">
+                            Subject:
+                          </span>{" "}
+                          {contrib.documentId?.subject}
+                        </div>
+                        <div>
+                          <span className="font-semibold text-foreground">
+                            Semester:
+                          </span>{" "}
+                          {contrib.documentId?.semester} (
+                          {contrib.documentId?.branch})
+                        </div>
+                        <div className="col-span-2 flex items-center gap-2 mt-2">
+                          <UserIcon className="h-4 w-4" />
+                          <span className="font-medium text-foreground">
+                            {contrib.userId?.name || contrib.userId?.email}
+                          </span>
+                          <span className="text-xs">
+                            ({new Date(contrib.createdAt).toLocaleDateString()})
+                          </span>
+                        </div>
+                      </div>
+                      <a
+                        href={contrib.documentId?.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
+                      >
+                        View Attached File{" "}
+                        <ExternalLink className="ml-1 h-3 w-3" />
+                      </a>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex gap-3 border-t border-border mt-auto px-6 py-4">
+                      <Button
+                        className="flex-1 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-500/20"
+                        onClick={() =>
+                          handleReview("document", contrib._id, "approve")
+                        }
+                        disabled={actionLoading === `document-${contrib._id}`}
+                      >
+                        {actionLoading === `document-${contrib._id}` ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                            (+50 XP)
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        className="flex-1 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white border border-rose-500/20"
+                        onClick={() =>
+                          handleReview("document", contrib._id, "reject")
+                        }
+                        disabled={actionLoading === `document-${contrib._id}`}
+                      >
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* INTERVIEW EXPERIENCES */}
+          {queue.experiences.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 border-b border-border pb-2">
+                <UserIcon className="h-5 w-5 text-amber-500" /> Placement
+                Experiences ({queue.experiences.length})
+              </h3>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {queue.experiences.map((exp) => (
+                  <Card
+                    key={exp._id}
+                    className="border-border shadow-sm flex flex-col"
                   >
-                    {actionLoading === contribution._id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
-                    Reject
-                  </Button>
-                  <Button 
-                    variant="default"
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                    disabled={actionLoading === contribution._id}
-                    onClick={() => handleReview(contribution._id, 'approved')}
+                    <CardHeader className="pb-3 bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg leading-tight">
+                          {exp.company}
+                        </CardTitle>
+                        <Badge
+                          variant="outline"
+                          className="text-amber-600 border-amber-600/30 bg-amber-500/10"
+                        >
+                          {exp.role}
+                        </Badge>
+                      </div>
+                      <div className="text-sm font-medium text-emerald-500">
+                        {exp.verdict}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-4 flex-1">
+                      <div className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                        {exp.content.replace(/<[^>]*>?/gm, "")}{" "}
+                        {/* Strip HTML for preview */}
+                      </div>
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center">
+                          <Calendar className="mr-1 h-4 w-4" /> {exp.year}
+                        </span>
+                        <span className="flex items-center">
+                          <UserIcon className="mr-1 h-4 w-4" />{" "}
+                          {exp.author?.name}
+                        </span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex gap-3 border-t border-border mt-auto px-6 py-4">
+                      <Button
+                        className="flex-1 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-500/20"
+                        onClick={() =>
+                          handleReview("experience", exp._id, "approve")
+                        }
+                        disabled={actionLoading === `experience-${exp._id}`}
+                      >
+                        {actionLoading === `experience-${exp._id}` ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                            (+100 XP)
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        className="flex-1 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white border border-rose-500/20"
+                        onClick={() =>
+                          handleReview("experience", exp._id, "reject")
+                        }
+                        disabled={actionLoading === `experience-${exp._id}`}
+                      >
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ROADMAPS */}
+          {queue.roadmaps.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 border-b border-border pb-2">
+                <BookOpen className="h-5 w-5 text-purple-500" /> Roadmaps (
+                {queue.roadmaps.length})
+              </h3>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {queue.roadmaps.map((rm) => (
+                  <Card
+                    key={rm._id}
+                    className="border-border shadow-sm flex flex-col"
                   >
-                    {actionLoading === contribution._id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
-                    Approve
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
+                    <CardHeader className="pb-3 bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg leading-tight">
+                          {rm.title}
+                        </CardTitle>
+                      </div>
+                      <CardDescription className="line-clamp-2 mt-2">
+                        {rm.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-4 flex-1">
+                      <div className="text-sm font-semibold mb-2">
+                        {rm.steps?.length || 0} Steps Included
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {rm.tags?.slice(0, 3).map((tag: string, i: number) => (
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <UserIcon className="h-4 w-4" /> {rm.author?.name}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex gap-3 border-t border-border mt-auto px-6 py-4">
+                      <Button
+                        className="flex-1 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-500/20"
+                        onClick={() =>
+                          handleReview("roadmap", rm._id, "approve")
+                        }
+                        disabled={actionLoading === `roadmap-${rm._id}`}
+                      >
+                        {actionLoading === `roadmap-${rm._id}` ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                            (+200 XP)
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        className="flex-1 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white border border-rose-500/20"
+                        onClick={() =>
+                          handleReview("roadmap", rm._id, "reject")
+                        }
+                        disabled={actionLoading === `roadmap-${rm._id}`}
+                      >
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
