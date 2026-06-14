@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: ["main", "refactor/modern-architecture"]
+    branches: ["2.0", "master"]
   pull_request:
-    branches: ["main"]
+    branches: ["2.0", "master"]
 
 jobs:
   format:
