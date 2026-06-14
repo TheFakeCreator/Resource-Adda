@@ -1,0 +1,107 @@
+/* Main container for the page layout */
+.res-super {
+    height: 80vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Inner container that holds all input fields and labels */
+.res-inner-super {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5vh;
+    font-size: 5vh;
+    background-color: var(--primary-back);
+    padding: 7vh 3vw;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+/* Hover effect for the inner container */
+.res-inner-super:hover {
+    transform: scale(1.02);
+}
+
+/* Flex layout for individual input containers */
+.res-inner-super div {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+/* Label styling to match the theme */
+.text-super {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 5px;
+}
+
+/* Styling for admin page inputs */
+.admin-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    margin-top: 10px;
+    color: white; /* Text color set to black */
+    background-color: transparent; /* Keeps the input background consistent with the theme */
+}
+
+/* Placeholder styling inside the input boxes */
+.admin-input::placeholder {
+    color: #999;
+    opacity: 0.7;
+}
+
+/* Container for password inputs (used to position the checkbox) */
+.input-container {
+    position: relative;
+}
+
+/* Hide the checkbox for the "Show Password" */
+.toggle-checkbox {
+    display: none;
+}
+
+/* Styling for the show password label */
+.show-password {
+    font-size: 1rem;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .res-inner-super {
+        padding: 5vh 2vw;
+        gap: 3vh;
+    }
+
+    .res-inner-super div {
+        flex-direction: column;
+    }
+
+    .text-super {
+        font-size: 1.5rem;
+    }
+
+    .admin-input {
+        font-size: 14px;
+    }
+}
+
+
+/* Extra styles to ensure a cohesive theme */
+.admin-input:focus {
+    border-color: #00ffcc;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+}
+

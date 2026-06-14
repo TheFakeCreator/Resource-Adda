@@ -1,0 +1,10 @@
+.hide {
+    display: none;
+}
+
+
+.hover-effect:hover{
+    color: var(--hover-color);
+    border-color: var(--hover-color);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}

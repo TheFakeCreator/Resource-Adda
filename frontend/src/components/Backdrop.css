@@ -1,0 +1,42 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    bottom: -2px;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.frontdrop{
+    position: fixed;
+    bottom: -2px;
+    right: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 80;
+}
+
+.bg-img {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    object-fit: cover;
+    object-position: center;
+}
+
+.front-img{
+    width: 100%;
+}
+
+.overlay {
+    background-color: var(--overlay-color);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    inset: 0;
+}
+
+/* @media (max-width: 768px) {
+    .overlay{
+        background-color: rgba(0, 0, 0, .5);
+    }
+} */

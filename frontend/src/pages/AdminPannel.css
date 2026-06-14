@@ -1,0 +1,121 @@
+.admin-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+}
+
+.admin-inner-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-back);
+    padding: 7vh 3vw;
+    border-radius: 20px;
+    font-size: 5vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+.admin-inner-cont:hover {
+    transform: scale(1.02);
+}
+
+.login-dialog,
+.uploader-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    max-width: 550px;
+    width: 50vw;
+}
+
+
+.login-dialog input,
+.uploader-cont input {
+    background-color: transparent;
+    border: solid white 2px;
+    height: 5vh;
+    margin-top: 1vh;
+    border-radius: 3vh;
+    padding: 5px;
+    width: 250px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+
+.login-dialog div,
+.uploader-cont div {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.uploader-cont div.btn-cont {
+    justify-content: center;
+    gap: 50px;
+}
+
+
+.add-file-btn {
+    height: 50px;
+    width: 50px;
+    background-color: var(--primary-back);
+    border-radius: 50%;
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    transition: .3s transform ease-in-out, 3s border ease-in-out;
+    cursor: pointer;
+    color: white;
+    z-index: 99;
+}
+
+.add-file-btn:hover {
+    transform: scale(1.2);
+}
+
+.admin-file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.delete-btn {
+    font-size: .7em;
+}
+
+
+@media(max-width: 768px) {
+
+    .login-dialog div,
+    .uploader-cont div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .login-dialog input,
+    .uploader-cont input {
+        width: auto;
+        font-size: 2vh;
+    }
+
+    .login-dialog h2{
+        font-size: 5vh;
+    }
+
+    .login-dialog label,
+    .uploader-cont label{
+        font-size: 3vh;
+    }
+
+    .uploader-cont div.btn-cont {
+        margin-top: 20px;
+        gap: 8px;
+    }
+}

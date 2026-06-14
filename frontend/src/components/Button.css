@@ -1,0 +1,23 @@
+
+.btn {
+    /* background-image: url("../assets/bluechalkbuttonbg.jpg"); */
+    /* background: url("https://www.shutterstock.com/image-illustration/colorful-gold-yellow-chalk-pastel-260nw-1047047281.jpg"); */
+    /* color: rgb(133, 100, 7); */
+    color: rgb(44, 169, 232);
+    padding: 10px 20px;
+    border-radius: 3vh;
+    user-select: none;
+    font-size: 4vh;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color .3s ease-in-out, color .3s ease-in-out;
+    cursor: pointer;
+    font-family: var(--akshat-font);
+    font-weight: bolder;
+    border: 2px solid rgb(44, 169, 232);;
+}
+
+
+@media (max-width: 768px) {
+    .btn {
+        font-size: 2vh;
+    }
+}

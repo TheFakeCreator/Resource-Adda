@@ -1,0 +1,90 @@
+.res{
+    height: 80vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.res-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5vh;
+    font-size: 5vh;
+    padding: 7vh 3vw;
+    border-radius: 8px;
+    margin-left: 3vw;
+    transition: transform 0.3s;
+    filter: contrast(150%) blur(.5px); 
+    position: absolute;
+}
+.notice-board{
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+/* 
+.res-inner:hover {
+    transform: scale(1.02);
+} */
+
+.res-inner div{
+    display: flex;
+    justify-content: center;
+    gap: 5vw;
+    align-items: center;
+}
+
+.res-inner label {
+    font-size: 4vh;
+    margin-right: 1vw;
+    /* color: black; */
+    white-space: nowrap;
+}
+
+.res-inner div select{
+    border: 2px solid white;
+    border-radius: 25px;
+    min-width: max-content;
+    cursor: pointer;
+    padding: 0.5vh 1vw;
+    min-width: 14ch; 
+    /* color: black; */
+    width: fit-content;
+    background-color: transparent;
+    font-family:'Courier New', Courier, monospace;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.res-inner div select:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.res-inner div option{
+    font-family:'Courier New', Courier, monospace;
+    background-color: black;
+    cursor: pointer;
+}
+
+.res-inner div select:focus {
+    outline: none;
+}
+
+.go-btn{
+    align-self: center;
+    background: url("https://www.shutterstock.com/image-illustration/colorful-gold-yellow-chalk-pastel-260nw-1047047281.jpg");
+    color: rgb(133, 100, 7);
+    border: none;
+}
+
+@media (max-width: 768px){
+    .res-inner div{
+        gap: 5vw;
+        flex-direction: column;
+    }
+}

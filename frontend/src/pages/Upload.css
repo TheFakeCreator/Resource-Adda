@@ -1,0 +1,118 @@
+.multi-select-container {
+    width: 200px;
+    position: relative;
+}
+.multi-select-container *{
+    font-family: 'Courier New', Courier, monospace;
+}
+.multi-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 25px;
+    padding: 0.5vh 1vw;
+}
+
+.dropdown-icon {
+    transition: transform 0.3s ease;
+}
+
+.dropdown-icon.open {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    background-color: black;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.dropdown-menu::-webkit-scrollbar{
+    background-color: #616161;
+}
+
+.dropdown-menu::-webkit-scrollbar-button{
+    background-color: rgb(136, 136, 136);
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb{
+    background-color: rgb(136, 136, 136);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.dropdown-item:hover {
+    background-color: #616161;
+}
+
+.selected-branches {
+    margin-top: 10px;
+}
+
+
+.upload-select {
+    height: 80vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-select-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5vh;
+    padding: 7vh 3vw;
+    border-radius: 8px;
+    margin-left: 3vw;
+    transition: transform 0.3s;
+    filter: contrast(150%) blur(.5px);
+    position: absolute;
+}
+
+
+.upload-select-inner div select {
+    border: 1px solid white;
+    border-radius: 25px;
+    min-width: max-content;
+    cursor: pointer;
+    padding: 0.5vh 1vw;
+    min-width: 14ch;
+    width: fit-content;
+    background-color: transparent;
+    font-family: 'Courier New', Courier, monospace;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.upload-select-inner>div {
+    display: flex;
+    justify-content: center;
+    gap: 5vw;
+    align-items: center;
+}
+
+.upload-select-inner option{
+    font-family:'Courier New', Courier, monospace;
+    background-color: black;
+    cursor: pointer;
+}
+
+.admin-folder-list>hr{
+    margin: 10px 0;
+}

@@ -1,0 +1,70 @@
+@font-face {
+  font-family: eraser;
+  src: url('./assets/EraserRegular.ttf');
+}
+
+@font-face {
+  font-family: rusty-cage;
+  src: url('./assets/Neucha-Regular.ttf');
+}
+
+@font-face {
+  font-family: kalam;
+  src: url('./assets/Kalam-Regular.ttf');
+}
+
+@font-face {
+  font-family: akshata;
+  src: url('./assets/akshata-font.ttf');
+}
+
+@font-face {
+  font-family: devesh;
+  src: url('./assets/devesh-font.ttf');
+}
+
+@font-face {
+  font-family: divyansh;
+  src: url('./assets/divyansh-font.otf');
+}
+
+@font-face {
+  font-family: akshat;
+  src: url('./assets/akshat-font.ttf');
+}
+
+
+:root {
+  --hover-color: #16ad23;
+  --text-color: white;
+  --overlay-color: rgba(0, 0, 0, .7);
+  --primary-back: rgba(0, 0, 0, .5);
+  --shadow-color: rgba(68, 141, 70, 0.5);
+  --font-family: "eraser";
+  --secondary-font: "Courier New";
+  --kalam-font: "kalam";
+  --akshata-font: "akshata";
+  --devesh-font: "devesh";
+  --akshat-font: "akshat";
+  --divyansh-font: "divyansh";
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Permanent Marker', sans-serif;
+  color: var(--text-color);
+  font-family: var(--font-family);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: black;
+  min-height: 100vh;
+  min-width: 100vw;
+}
