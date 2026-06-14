@@ -22,6 +22,15 @@ import {
   IndianRupee,
 } from "lucide-react";
 
+// 1. Defined the Round interface to fix the implicit 'any' type error
+interface Round {
+  _id: string | number;
+  title: string;
+  duration?: string;
+  description: string;
+  topics?: string[];
+}
+
 const getStatusConfig = (status: string) => {
   switch (status.toLowerCase()) {
     case "accepted":
@@ -240,7 +249,8 @@ export default function PlacementDetailPage() {
           {/* Vertical Timeline Line */}
           <div className="absolute left-[35px] md:left-[51px] top-4 bottom-4 w-0.5 bg-border z-0"></div>
 
-          {experience.rounds.map((round, index) => (
+          {/* 2. Added types 'Round' and 'number' to the map function parameters */}
+          {experience.rounds.map((round: Round, index: number) => (
             <div
               key={round._id}
               className="relative z-10 flex gap-6 md:gap-8 group"

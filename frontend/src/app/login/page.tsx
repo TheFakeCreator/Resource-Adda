@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
@@ -38,7 +38,8 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+// 1. Rename your main logic to an internal component
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated, isLoading } = useAuthStore();
@@ -91,88 +92,103 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-none shadow-xl">
-        <CardHeader className="space-y-1 text-center pb-6">
-          <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
-            Welcome back
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Enter your email and password to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
-                  {error}
-                </div>
+    <Card className="w-full max-w-md border-none shadow-xl">
+      <CardHeader className="space-y-1 text-center pb-6">
+        <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+          Welcome back
+        </CardTitle>
+        <CardDescription className="text-muted-foreground">
+          Enter your email and password to access your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+                {error}
+              </div>
+            )}
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="m.bluth@example.com"
+                      className="h-11"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
+            />
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="m.bluth@example.com"
-                        className="h-11"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Password</FormLabel>
+                    <Link
+                      href="#"
+                      className="text-sm text-primary hover:underline font-medium"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <FormControl>
+                    <Input type="password" className="h-11" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Link
-                        href="#"
-                        className="text-sm text-primary hover:underline font-medium"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <FormControl>
-                      <Input type="password" className="h-11" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full h-11 text-base font-medium mt-2"
-                disabled={loading}
-              >
-                {loading ? "Signing in..." : "Sign In"}
-                {!loading && <LogIn className="ml-2 h-4 w-4" />}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4 pt-4 border-t border-slate-100">
-          <div className="text-sm text-center text-muted-foreground w-full">
-            Don't have an account?{" "}
-            <Link
-              href={`/register${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ""}`}
-              className="text-primary hover:underline font-semibold"
+            <Button
+              type="submit"
+              className="w-full h-11 text-base font-medium mt-2"
+              disabled={loading}
             >
-              Sign up
-            </Link>
+              {loading ? "Signing in..." : "Sign In"}
+              {!loading && <LogIn className="ml-2 h-4 w-4" />}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-4 pt-4 border-t border-slate-100">
+        <div className="text-sm text-center text-muted-foreground w-full">
+          Don't have an account?{" "}
+          <Link
+            href={`/register${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ""}`}
+            className="text-primary hover:underline font-semibold"
+          >
+            Sign up
+          </Link>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+// 2. Wrap the inner component with a Suspense boundary in your default export
+export default function LoginPage() {
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center w-full max-w-md h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-        </CardFooter>
-      </Card>
+        }
+      >
+        <LoginContent />
+      </Suspense>
     </div>
   );
 }

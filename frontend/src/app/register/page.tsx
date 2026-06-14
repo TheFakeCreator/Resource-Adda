@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
@@ -89,7 +89,8 @@ const createRegisterSchema = (allowedPatterns: string[]) =>
       .max(10, { message: "Must be between 1 and 10" }),
   });
 
-export default function RegisterPage() {
+// 1. Rename your main logic to an internal component
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated, isLoading } = useAuthStore();
@@ -151,64 +152,96 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 py-12">
-      <Card className="w-full max-w-md border-none shadow-xl">
-        <CardHeader className="space-y-1 text-center pb-6">
-          <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Sign up using your institute email to get automatically verified.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
-                  {error}
-                </div>
+    <Card className="w-full max-w-md border-none shadow-xl">
+      <CardHeader className="space-y-1 text-center pb-6">
+        <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+          Create an account
+        </CardTitle>
+        <CardDescription className="text-muted-foreground">
+          Sign up using your institute email to get automatically verified.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+                {error}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John" className="h-11" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Doe" className="h-11" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Institute Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="example@nitrr.ac.in"
+                      className="h-11"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
+            />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John" className="h-11" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Doe" className="h-11" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" className="h-11" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="rollNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Institute Email</FormLabel>
+                    <FormLabel>Roll Number</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="example@nitrr.ac.in"
+                        placeholder="e.g. 19111000"
                         className="h-11"
                         {...field}
                       />
@@ -217,70 +250,18 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
-                name="password"
+                name="semester"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" className="h-11" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="rollNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Roll Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="e.g. 19111000"
-                          className="h-11"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="semester"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Semester</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="10"
-                          placeholder="e.g. 3"
-                          className="h-11"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="branch"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Branch / Department</FormLabel>
+                    <FormLabel>Semester</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g. Computer Science"
+                        type="number"
+                        min="1"
+                        max="10"
+                        placeholder="e.g. 3"
                         className="h-11"
                         {...field}
                       />
@@ -289,30 +270,65 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
+            </div>
 
-              <Button
-                type="submit"
-                className="w-full h-11 text-base font-medium mt-4"
-                disabled={loading}
-              >
-                {loading ? "Creating account..." : "Create Account"}
-                {!loading && <UserPlus className="ml-2 h-4 w-4" />}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4 pt-4 border-t border-slate-100">
-          <div className="text-sm text-center text-muted-foreground w-full">
-            Already have an account?{" "}
-            <Link
-              href={`/login${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ""}`}
-              className="text-primary hover:underline font-semibold"
+            <FormField
+              control={form.control}
+              name="branch"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Branch / Department</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Computer Science"
+                      className="h-11"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full h-11 text-base font-medium mt-4"
+              disabled={loading}
             >
-              Sign in
-            </Link>
+              {loading ? "Creating account..." : "Create Account"}
+              {!loading && <UserPlus className="ml-2 h-4 w-4" />}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-4 pt-4 border-t border-slate-100">
+        <div className="text-sm text-center text-muted-foreground w-full">
+          Already have an account?{" "}
+          <Link
+            href={`/login${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ""}`}
+            className="text-primary hover:underline font-semibold"
+          >
+            Sign in
+          </Link>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+// 2. Wrap the inner component with a Suspense boundary in your default export
+export default function RegisterPage() {
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 py-12">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center w-full max-w-md h-[500px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-        </CardFooter>
-      </Card>
+        }
+      >
+        <RegisterContent />
+      </Suspense>
     </div>
   );
 }

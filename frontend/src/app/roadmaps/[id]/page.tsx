@@ -24,6 +24,21 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+// 1. Added Interfaces to properly type the nested arrays and prevent further build errors
+interface Resource {
+  type: string;
+  title: string;
+  url: string;
+}
+
+interface RoadmapStep {
+  _id: string | number;
+  title: string;
+  description: string;
+  prerequisites?: string[];
+  resources?: Resource[];
+}
+
 export default function RoadmapDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -79,10 +94,12 @@ export default function RoadmapDetailPage() {
     );
   };
 
-  const progressPercentage = useMemo(() => {
-    if (!roadmap.steps.length) return 0;
-    return Math.round((completedSteps.length / roadmap.steps.length) * 100);
-  }, [completedSteps, roadmap.steps]);
+  let progressPercentage = 0;
+  if (roadmap?.steps?.length) {
+    progressPercentage = Math.round(
+      (completedSteps.length / roadmap.steps.length) * 100,
+    );
+  }
 
   // Trigger confetti and scroll when 100% reached
   useEffect(() => {
@@ -284,9 +301,12 @@ export default function RoadmapDetailPage() {
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                  {roadmap.globalPrerequisites.map((prereq, idx) => (
-                    <li key={idx}>{prereq}</li>
-                  ))}
+                  {/* 2. Added types 'string' and 'number' */}
+                  {roadmap.globalPrerequisites.map(
+                    (prereq: string, idx: number) => (
+                      <li key={idx}>{prereq}</li>
+                    ),
+                  )}
                 </ul>
               </CardContent>
             </Card>
@@ -298,7 +318,8 @@ export default function RoadmapDetailPage() {
           <div className="absolute left-[35px] md:left-[51px] top-4 bottom-4 w-0.5 bg-border z-0"></div>
 
           <div className="space-y-12">
-            {roadmap.steps.map((step, index) => {
+            {/* 3. Added types 'RoadmapStep' and 'number' */}
+            {roadmap.steps.map((step: RoadmapStep, index: number) => {
               const isCompleted = completedSteps.includes(index);
 
               return (
@@ -357,15 +378,18 @@ export default function RoadmapDetailPage() {
                             Knowledge
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            {step.prerequisites.map((req, i) => (
-                              <Badge
-                                key={i}
-                                variant="secondary"
-                                className="bg-background text-xs"
-                              >
-                                {req}
-                              </Badge>
-                            ))}
+                            {/* 4. Added types 'string' and 'number' */}
+                            {step.prerequisites.map(
+                              (req: string, i: number) => (
+                                <Badge
+                                  key={i}
+                                  variant="secondary"
+                                  className="bg-background text-xs"
+                                >
+                                  {req}
+                                </Badge>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
@@ -378,7 +402,8 @@ export default function RoadmapDetailPage() {
                             Recommended Resources
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {step.resources.map((res, i) => (
+                            {/* 5. Added types 'Resource' and 'number' */}
+                            {step.resources.map((res: Resource, i: number) => (
                               <a
                                 key={i}
                                 href={res.url}
