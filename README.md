@@ -144,18 +144,18 @@ This starts the backend on port `3333` and the frontend on port `80`.
 
 ## 🔐 Access Model
 
-| Route | Access |
-|---|---|
-| `GET /server/files` | Public |
-| `GET /server/subjects` | Public |
-| `GET /server/download` | Public |
-| `GET /server/request-count` | Public |
-| `GET /server/validate-token` | Token holder |
-| `DELETE /server/delete` | Admin (JWT) |
-| `GET /server/pending-requests` | Admin (JWT) |
-| `POST /server/approve` | Admin (JWT) |
-| `POST /server/admin_login` | Credential-based |
-| `POST /server/addAdmin` | Super-admin password |
+| Route                          | Access               |
+| ------------------------------ | -------------------- |
+| `GET /server/files`            | Public               |
+| `GET /server/subjects`         | Public               |
+| `GET /server/download`         | Public               |
+| `GET /server/request-count`    | Public               |
+| `GET /server/validate-token`   | Token holder         |
+| `DELETE /server/delete`        | Admin (JWT)          |
+| `GET /server/pending-requests` | Admin (JWT)          |
+| `POST /server/approve`         | Admin (JWT)          |
+| `POST /server/admin_login`     | Credential-based     |
+| `POST /server/addAdmin`        | Super-admin password |
 
 Socket.io upload events distinguish admin uploads (`type: "upload"`, requires JWT) from public contributions (`type: "contribute"`, requires email).
 
@@ -255,10 +255,10 @@ cd backend && npm start
 - 🟡 External Resources link with proper roadmap and timeline
 - 📋 Rate limiting, input sanitisation hardening, and email notifications on contribution status changes
 
-
 ## 🤝 Contributing
 
 Contributions are welcome ( **NOTE: Contribution will be made in dev branch only**).
+
 ## Please keep changes aligned with:##
 
 - Existing module boundaries (`resources`, `contributions`, `admin`, `upload`)
@@ -266,24 +266,24 @@ Contributions are welcome ( **NOTE: Contribution will be made in dev branch only
 - Root validation checks (`npm run lint`, `npm run build` in `frontend/`)
 - Documentation updates for any behaviour changes
 
-
 ### Ways to Contribute
+
 - Fix bugs & open PRs
 - Improve documentation
-- Add UI components  
+- Add UI components
 - Suggest features
 - Help with backend development
 
 ### Guidelines
+
 - Use clear PR titles & commit messages
 - Follow coding style defined in the repo
 - Open an issue before working on new features
 - Keep UI consistent with project design
 - See CONTRIBUTING.md for full guidelines.
 
-
 ### 📬 Community & Support
+
 - GitHub Issues: Feature requests & bug reports
 - Discussions: Share ideas and feedback
 - Discord/Telegram (optional): For contributors and campus admins
-
