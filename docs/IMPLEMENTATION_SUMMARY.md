@@ -21,7 +21,7 @@ Resource Adda delivers an end-to-end academic resource-sharing workflow for:
 - Public discovery of study resources by branch/semester/subject/unit
 - Contributor uploads routed to admin moderation
 - Admin-authenticated content management and pending-queue handling
-- Real-time chunked uploads to Google Cloud Storage
+- Real-time chunked uploads to Cloudinary Cloud Storage
 - MongoDB-backed persistence for resources, contributions, admins, and request-count history snapshots
 
 ### Delivery Snapshot
@@ -203,7 +203,7 @@ Resource-Adda/
 - **API Layer**: Express routes in `backend/app.js`
 - **Persistence Layer**: Mongoose models (`document`, `contrbution`, `admin`, `requestCount`)
 - **Auth Layer**: JWT middleware for protected admin routes
-- **Upload Layer**: Socket.io + Google Cloud Storage chunk stream integration
+- **Upload Layer**: Socket.io + Cloudinary Cloud Storage chunk stream integration
 - **Analytics Layer**: in-memory counter with optional MongoDB persistence
 
 ## Frontend Integration

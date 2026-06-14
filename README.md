@@ -1,10 +1,9 @@
 # Resource Adda
 
-<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"> <img src="https://img.shields.io/badge/Live-Google%20Cloud%20Run-blue.svg">
-
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
 The academic resource-sharing platform — designed to help students discover study materials, contribute notes, and connect with communities organised by branch and semester.
 
-🌐 **Live:** https://resource-adda-1030059749120.asia-south1.run.app/
+🌐 **Live:** https://resource-adda.onrender.com
 
 ## 📖 About
 
@@ -15,7 +14,7 @@ Resource Adda is a full-stack platform built with React and Node.js for:
 - **Admin operations** — managing uploads, reviewing contributions, and controlling access
 - **Community groups** — connecting students around shared academic interests
 
-It replaces scattered, manual note-sharing with a unified system including JWT-based admin auth, Google Cloud Storage for files, real-time upload progress via Socket.io, and a contribution approval workflow.
+It replaces scattered, manual note-sharing with a unified system including JWT-based admin auth, cloudinary Cloud Storage for files, real-time upload progress via Socket.io, and a contribution approval workflow.
 
 ## Key Problems Solved
 
@@ -72,7 +71,7 @@ It replaces scattered, manual note-sharing with a unified system including JWT-b
 
 - Node.js 22+
 - npm / yarn
-- Google Cloud SDK (authenticated) with a GCS bucket
+- Cloudinary cloud storage
 - MongoDB instance
 
 ### Installation
@@ -101,11 +100,9 @@ PASSWORD=your-bcrypt-hashed-super-admin-password
 # JWT
 JWT_SECRET=your-jwt-secret
 
-# Google Cloud Storage bucket name
-BUCKET_NAME=your-gcs-bucket-name
+# cloudinary
+CLOUDINARY_URL=your-cloudinary-url
 ```
-
-> **Note:** Ensure your environment is authenticated with `gcloud auth application-default login` so the backend can access Google Cloud Storage.
 
 ### Configure Frontend
 
@@ -166,8 +163,8 @@ Socket.io upload events distinguish admin uploads (`type: "upload"`, requires JW
 
 - **Frontend**: React 18, Vite, React Router DOM v6, Framer Motion, React PDF, Axios, Socket.io-client
 - **Backend**: Node.js 22, Express, Mongoose (MongoDB), JWT, bcrypt, Multer, Socket.io, Axios
-- **Storage**: Google Cloud Storage (GCS)
-- **Deployment**: Docker, Google Cloud Run
+- **Storage**: Cloudinary cloud storage
+- **Deployment**: Docker, Render
 - **Analytics**: MongoDB-backed daily request counting
 
 ## 🏗️ Architecture Highlights
@@ -177,7 +174,7 @@ Socket.io upload events distinguish admin uploads (`type: "upload"`, requires JW
 - **API Layer**: Express route handlers in `backend/app.js`
 - **Data Layer**: Mongoose models in `backend/document.js`, `backend/admin.js`, `backend/contrbution.js`, `backend/requestCount.js`
 - **Auth Layer**: JWT middleware (`authenticateJWT`) protecting admin-only routes
-- **Upload Layer**: Socket.io chunked streaming to Google Cloud Storage with per-socket upload state
+- **Upload Layer**: Socket.io chunked streaming to Cloudinary Cloud Storage with per-socket upload state
 
 ### Core Modules
 
@@ -252,16 +249,41 @@ cd backend && npm start
 - ✅ Resource discovery with multi-filter and cross-branch queries
 - ✅ Student contribution flow with admin approval queue
 - ✅ JWT-authenticated admin panel and super-admin provisioning
-- ✅ Chunked Socket.io uploads to Google Cloud Storage
-- ✅ Docker and Google Cloud Run deployment
+- ✅ Chunked Socket.io uploads to Cloudinary Cloud Storag
+- ✅ Docker and Render deployment
 - 🟡 Automated unit/integration test suite
+- 🟡 External Resources link with proper roadmap and timeline
 - 📋 Rate limiting, input sanitisation hardening, and email notifications on contribution status changes
+
 
 ## 🤝 Contributing
 
-Contributions are welcome. Please keep changes aligned with:
+Contributions are welcome ( **NOTE: Contribution will be made in dev branch only**).
+## Please keep changes aligned with:##
 
 - Existing module boundaries (`resources`, `contributions`, `admin`, `upload`)
 - Mongoose schema conventions in the backend model files
 - Root validation checks (`npm run lint`, `npm run build` in `frontend/`)
 - Documentation updates for any behaviour changes
+
+
+### Ways to Contribute
+- Fix bugs & open PRs
+- Improve documentation
+- Add UI components  
+- Suggest features
+- Help with backend development
+
+### Guidelines
+- Use clear PR titles & commit messages
+- Follow coding style defined in the repo
+- Open an issue before working on new features
+- Keep UI consistent with project design
+- See CONTRIBUTING.md for full guidelines.
+
+
+### 📬 Community & Support
+- GitHub Issues: Feature requests & bug reports
+- Discussions: Share ideas and feedback
+- Discord/Telegram (optional): For contributors and campus admins
+
