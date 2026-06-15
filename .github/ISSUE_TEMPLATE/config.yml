@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/NITRR-Official/Resource-Adda/discussions
+    about: Ask questions and share ideas with the community
+  - name: 📚 Developer Guide
+    url: https://github.com/NITRR-Official/Resource-Adda/blob/main/README.md
+    about: Check the Developer Guide and README for setup instructions

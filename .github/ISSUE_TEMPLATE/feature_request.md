@@ -1,19 +1,26 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: ✨ Feature Request
+about: Suggest a new feature or enhancement
 title: "[FEATURE] "
-labels: enhancement
-assignees: ""
+labels: ["feature", "needs-review"]
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## 🎯 Description
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+A clear and concise description of what feature you'd like to be added.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## 💡 Motivation
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+Why do you need this feature? What problem does it solve?
+
+## 📋 Use Case
+
+Describe the use case and how this feature would benefit Resource-Adda.
+
+### Example Scenario
+
+Walk through a real-world example of how this would be used.
+
+## 🛠️ Proposed Solution
+
+If you have an idea for implementation, describe it here.
