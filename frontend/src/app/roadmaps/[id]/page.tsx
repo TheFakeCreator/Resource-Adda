@@ -284,9 +284,11 @@ export default function RoadmapDetailPage() {
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                  {roadmap.globalPrerequisites.map((prereq, idx) => (
-                    <li key={idx}>{prereq}</li>
-                  ))}
+                  {roadmap.globalPrerequisites.map(
+                    (prereq: string, idx: number) => (
+                      <li key={idx}>{prereq}</li>
+                    ),
+                  )}
                 </ul>
               </CardContent>
             </Card>
@@ -298,7 +300,7 @@ export default function RoadmapDetailPage() {
           <div className="absolute left-[35px] md:left-[51px] top-4 bottom-4 w-0.5 bg-border z-0"></div>
 
           <div className="space-y-12">
-            {roadmap.steps.map((step, index) => {
+            {roadmap.steps.map((step: any, index: number) => {
               const isCompleted = completedSteps.includes(index);
 
               return (
@@ -357,15 +359,17 @@ export default function RoadmapDetailPage() {
                             Knowledge
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            {step.prerequisites.map((req, i) => (
-                              <Badge
-                                key={i}
-                                variant="secondary"
-                                className="bg-background text-xs"
-                              >
-                                {req}
-                              </Badge>
-                            ))}
+                            {step.prerequisites.map(
+                              (req: string, i: number) => (
+                                <Badge
+                                  key={i}
+                                  variant="secondary"
+                                  className="bg-background text-xs"
+                                >
+                                  {req}
+                                </Badge>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
@@ -378,7 +382,7 @@ export default function RoadmapDetailPage() {
                             Recommended Resources
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {step.resources.map((res, i) => (
+                            {step.resources.map((res: any, i: number) => (
                               <a
                                 key={i}
                                 href={res.url}
