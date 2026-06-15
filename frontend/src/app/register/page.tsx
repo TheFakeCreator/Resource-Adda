@@ -50,13 +50,8 @@ const createRegisterSchema = (allowedPatterns: string[]) =>
       .email({ message: "Please enter a valid email address." })
       .superRefine((val, ctx) => {
         if (!allowedPatterns || allowedPatterns.length === 0) {
-          // Fallback: Add more default domains here if you want to allow more than one
-          const defaultAllowedDomains = [".nitrr.ac.in"];
-
-          const isValidDefault = defaultAllowedDomains.some((domain) =>
-            val.endsWith(domain),
-          );
-          if (!isValidDefault) {
+          // Default fallback
+          if (!val.endsWith(".nitrr.ac.in")) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message:
@@ -67,11 +62,14 @@ const createRegisterSchema = (allowedPatterns: string[]) =>
         }
 
         const isValid = allowedPatterns.some((pattern) => {
-          // 1. Escape all regex special characters first (like the dots)
+          // 1. Escape all special regex characters EXCEPT the asterisk
+          // (This turns your dots into safe \. so they don't act as wildcards)
           let safePattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
-          // 2. Convert the explicitly entered '*' into the regex '.*'
-          safePattern = safePattern.replace(/\\\*/g, ".*");
 
+          // 2. Convert the plain '*' wildcards into valid Regex '.*' wildcards
+          safePattern = safePattern.replace(/\*/g, ".*");
+
+          // 3. Build and test the regex
           const regex = new RegExp(`^${safePattern}$`);
           return regex.test(val);
         });
