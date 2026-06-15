@@ -14,9 +14,14 @@ export const useConfigStore = create<ConfigState>((set) => ({
   instituteName: "Resource-Adda",
   allowedEmailPatterns: [],
   isLoaded: false,
+
   fetchConfig: async () => {
     try {
       const response = await api.get("/setup/settings/public");
+      console.log(
+        "Fetched Settings from API:",
+        response.data.allowedEmailPatterns,
+      );
       set({
         taglineLanguage: response.data.taglineLanguage,
         instituteName: response.data.instituteName,
