@@ -1,33 +1,37 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: 🐛 Bug Report
+about: Report a bug or unexpected behavior
 title: "[BUG] "
-labels: bug
-assignees: ""
+labels: ["bug", "needs-review"]
 ---
 
-**Describe the bug**
+## 📋 Description
+
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+## 🔄 Steps to Reproduce
+
 Steps to reproduce the behavior:
 
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
+2. Click on '...'
+3. Scroll down to '...'
 4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## ✅ Expected Behavior
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+A clear description of what you expected to happen.
 
-**Desktop (please complete the following information):**
+## ❌ Actual Behavior
 
-- OS: [e.g. iOS]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
+What actually happened instead.
 
-**Additional context**
-Add any other context about the problem here.
+## 📸 Screenshots
+
+If applicable, add screenshots or screen recordings to help explain the problem.
+
+## 🖥️ Environment
+
+- OS: [e.g. Windows, macOS, Linux]
+- Browser: [e.g. Chrome, Safari, Firefox]
+- Module Affected: [e.g. Frontend UI, Backend API, Database]
