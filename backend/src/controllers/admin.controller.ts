@@ -5,6 +5,8 @@ import Blog from "../models/Blog";
 import WellbeingPost from "../models/WellbeingPost";
 import InterviewExperience from "../models/InterviewExperience";
 import Roadmap from "../models/Roadmap";
+import WellbeingComment from "../models/WellbeingComment";
+import { ContributionStatus } from "../models/Contribution";
 
 export const getOverviewStats = async (
   req: Request,
@@ -39,17 +41,38 @@ export const getOverviewStats = async (
       .populate("uploadedBy", "name avatarUrl")
       .select("title type branch createdAt uploadedBy");
 
-    // For reports, we could theoretically count if there is a report model,
-    // but right now it looks like we don't have a distinct Report model.
-    // Shadowbanned content is inferred from the `reportCount` field in Blog / WellbeingPost.
-    // Let's count flagged content (e.g., reportCount >= 3)
-    const flaggedBlogs = await Blog.countDocuments({
-      reportCount: { $gte: 3 },
+    // Shadowbanned content is inferred from the `status` field
+    // Documents, Experiences, and Roadmaps use ContributionStatus.PENDING when shadowbanned
+    const flaggedDocuments = await Document.countDocuments({
+      status: ContributionStatus.PENDING,
     });
+    const flaggedInterviews = await InterviewExperience.countDocuments({
+      status: ContributionStatus.PENDING,
+    });
+    const flaggedRoadmaps = await Roadmap.countDocuments({
+      status: ContributionStatus.PENDING,
+    });
+
+    // Wellbeing uses a string status
     const flaggedPosts = await WellbeingPost.countDocuments({
-      reportCount: { $gte: 3 },
+      status: "pending",
     });
-    const pendingReports = flaggedBlogs + flaggedPosts;
+    const flaggedComments = await WellbeingComment.countDocuments({
+      status: "pending",
+    });
+
+    // Fallback for blogs
+    const flaggedBlogs = await Blog.countDocuments({
+      reportCount: { $gte: 5 },
+    });
+
+    const pendingReports =
+      flaggedDocuments +
+      flaggedInterviews +
+      flaggedRoadmaps +
+      flaggedPosts +
+      flaggedComments +
+      flaggedBlogs;
 
     res.json({
       stats: {

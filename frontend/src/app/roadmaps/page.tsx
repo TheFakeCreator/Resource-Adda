@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ReportModal } from "@/components/ui/ReportModal";
 
 interface Uploader {
   _id: string;
@@ -157,6 +158,8 @@ const getCategoryConfig = (category: string) => {
 export default function RoadmapsPage() {
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ pages: 1, total: 0 });
 
   // Filters
   const [search, setSearch] = useState("");
@@ -166,6 +169,7 @@ export default function RoadmapsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
+      setPage(1); // Reset page on new search
     }, 500);
     return () => clearTimeout(timer);
   }, [search]);
@@ -200,9 +204,19 @@ export default function RoadmapsPage() {
         const params = new URLSearchParams();
         if (debouncedSearch) params.append("targetAudience", debouncedSearch); // Simulating basic search
         if (categoryFilter !== "all") params.append("category", categoryFilter);
+        params.append("page", page.toString());
+        params.append("limit", "10");
 
         const response = await api.get(`/roadmaps?${params.toString()}`);
-        setRoadmaps(response.data);
+        if (response.data.roadmaps) {
+          setRoadmaps(response.data.roadmaps);
+          setPagination({
+            pages: response.data.pages,
+            total: response.data.total,
+          });
+        } else {
+          setRoadmaps(response.data);
+        }
       } catch (error) {
         console.error("Failed to fetch roadmaps", error);
       } finally {
@@ -211,7 +225,7 @@ export default function RoadmapsPage() {
     };
 
     fetchRoadmaps();
-  }, [debouncedSearch, categoryFilter]);
+  }, [debouncedSearch, categoryFilter, page]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -258,6 +272,7 @@ export default function RoadmapsPage() {
                 onClick={() => {
                   setSearch("");
                   setCategoryFilter("all");
+                  setPage(1);
                 }}
               >
                 Clear Filters
@@ -327,6 +342,12 @@ export default function RoadmapsPage() {
                             {categoryConfig.icon}
                             {roadmap.category}
                           </Badge>
+                          <div onClick={(e) => e.preventDefault()}>
+                            <ReportModal
+                              itemId={roadmap._id}
+                              itemModel="Roadmap"
+                            />
+                          </div>
                         </div>
                         <CardTitle className="text-xl group-hover:text-primary transition-colors leading-tight pr-12">
                           {roadmap.title}
@@ -432,6 +453,31 @@ export default function RoadmapsPage() {
                 }}
               >
                 Clear Filters
+              </Button>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && roadmaps.length > 0 && pagination.pages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-12 mb-8">
+              <Button
+                variant="outline"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-muted-foreground font-medium">
+                Page {page} of {pagination.pages}
+              </div>
+              <Button
+                variant="outline"
+                disabled={page >= pagination.pages}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
+              >
+                Next
               </Button>
             </div>
           )}

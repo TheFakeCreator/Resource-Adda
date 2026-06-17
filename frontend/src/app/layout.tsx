@@ -21,6 +21,8 @@ const markerFont = Permanent_Marker({
   subsets: ["latin"],
 });
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 export const metadata: Metadata = {
   title: "Resource-Adda | Open Source Academic Hub",
   description:
@@ -43,9 +45,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <AppLayoutWrapper>{children}</AppLayoutWrapper>
-          </AuthProvider>
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "fallback_id"}
+          >
+            <AuthProvider>
+              <AppLayoutWrapper>{children}</AppLayoutWrapper>
+            </AuthProvider>
+          </GoogleOAuthProvider>
         </ThemeProvider>
       </body>
     </html>

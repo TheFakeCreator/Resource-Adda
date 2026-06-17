@@ -35,6 +35,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { INSTITUTE_BRANCHES, SEMESTERS } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading, logout, checkAuth } =
@@ -62,6 +70,7 @@ export default function DashboardPage() {
     graduationYear: user?.graduationYear || new Date().getFullYear() + 4,
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -136,6 +145,8 @@ export default function DashboardPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       await checkAuth(); // Refresh the user object in the store
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error("Failed to update profile", err);
       alert("Failed to update profile");
@@ -627,33 +638,53 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="branch">Branch</Label>
-                        <Input
-                          id="branch"
-                          placeholder="e.g. Computer Science"
-                          value={profileForm.branch}
-                          onChange={(e) =>
+                        <Select
+                          value={profileForm.branch || ""}
+                          onValueChange={(value) =>
                             setProfileForm({
                               ...profileForm,
-                              branch: e.target.value,
+                              branch: value || "",
                             })
                           }
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Branch" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INSTITUTE_BRANCHES.map((b) => (
+                              <SelectItem key={b} value={b}>
+                                {b}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="semester">Semester</Label>
-                        <Input
-                          id="semester"
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={profileForm.semester}
-                          onChange={(e) =>
+                        <Select
+                          value={
+                            profileForm.semester
+                              ? profileForm.semester.toString()
+                              : ""
+                          }
+                          onValueChange={(value) =>
                             setProfileForm({
                               ...profileForm,
-                              semester: parseInt(e.target.value) || 1,
+                              semester: parseInt(value || "") || 1,
                             })
                           }
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Semester" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {SEMESTERS.map((sem) => (
+                              <SelectItem key={sem} value={sem}>
+                                Semester {sem}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="rollNumber">Roll Number</Label>
@@ -702,10 +733,16 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="flex items-center gap-4">
                     <Button onClick={handleSaveProfile} disabled={isSaving}>
                       {isSaving ? "Saving..." : "Save Changes"}
                     </Button>
+                    {saveSuccess && (
+                      <span className="text-sm text-emerald-600 font-medium flex items-center">
+                        <CheckCircle2 className="w-4 h-4 mr-1" /> Profile
+                        updated successfully!
+                      </span>
+                    )}
                   </CardFooter>
                 </Card>
 

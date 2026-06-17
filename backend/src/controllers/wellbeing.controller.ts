@@ -8,10 +8,16 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { category } = req.query;
 
-    const filter: any = {};
+    const filter: any = { status: "approved" };
     if (category && typeof category === "string") {
       filter.category = category;
     }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await WellbeingPost.countDocuments(filter);
 
     const posts = await WellbeingPost.find(filter)
       .populate("author", "name avatarUrl branch semester")
@@ -22,7 +28,9 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
           select: "name avatarUrl branch semester",
         },
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     // Handle anonymity
     const sanitizedPosts = posts.map((post) => {
@@ -54,7 +62,12 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
       return doc;
     });
 
-    res.status(200).json(sanitizedPosts);
+    res.status(200).json({
+      posts: sanitizedPosts,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -129,7 +142,10 @@ export const getComments = async (
   try {
     const { id } = req.params;
 
-    const comments = await WellbeingComment.find({ post: id })
+    const comments = await WellbeingComment.find({
+      post: id,
+      status: "approved",
+    })
       .populate("author", "name avatarUrl branch semester")
       .sort({ createdAt: 1 });
 

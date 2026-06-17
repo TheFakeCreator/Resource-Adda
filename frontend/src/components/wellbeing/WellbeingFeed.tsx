@@ -17,6 +17,7 @@ import { MessageCircle, PlaySquare } from "lucide-react";
 import SubmitWellbeingModal from "./SubmitWellbeingModal";
 import WellbeingPostModal from "./WellbeingPostModal";
 import WellbeingReaction, { ReactionType } from "./WellbeingReaction";
+import { ReportModal } from "@/components/ui/ReportModal";
 
 // Component to handle YouTube-style sliding comments preview
 function CommentTicker({ comments }: { comments: any[] }) {
@@ -61,6 +62,8 @@ export default function WellbeingFeed() {
   const [posts, setPosts] = useState<any[]>([]);
   const [category, setCategory] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ pages: 1, total: 0 });
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -68,9 +71,16 @@ export default function WellbeingFeed() {
     setLoading(true);
     try {
       const url =
-        category === "all" ? "/wellbeing" : `/wellbeing?category=${category}`;
+        category === "all"
+          ? `/wellbeing?page=${page}&limit=10`
+          : `/wellbeing?category=${category}&page=${page}&limit=10`;
       const res = await api.get(url);
-      setPosts(res.data);
+      if (res.data.posts) {
+        setPosts(res.data.posts);
+        setPagination({ pages: res.data.pages, total: res.data.total });
+      } else {
+        setPosts(res.data);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -119,14 +129,17 @@ export default function WellbeingFeed() {
 
   useEffect(() => {
     fetchPosts();
-  }, [category]);
+  }, [category, page]);
 
   return (
     <div className="w-full max-w-6xl mx-auto py-12 px-4 md:px-8">
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
         <Tabs
           defaultValue="all"
-          onValueChange={setCategory}
+          onValueChange={(val) => {
+            setCategory(val);
+            setPage(1);
+          }}
           className="w-full md:w-auto"
         >
           <TabsList className="bg-white/5 border border-white/10 backdrop-blur-md">
@@ -185,9 +198,15 @@ export default function WellbeingFeed() {
                   >
                     {post.category}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </span>
+                  <div
+                    className="flex items-center gap-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </span>
+                    <ReportModal itemId={post._id} itemModel="WellbeingPost" />
+                  </div>
                 </div>
                 <CardTitle className="text-xl leading-tight">
                   {post.title}
@@ -262,6 +281,29 @@ export default function WellbeingFeed() {
               </CardFooter>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {!loading && posts.length > 0 && pagination.pages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-12">
+          <button
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="px-4 py-2 border border-white/10 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+          >
+            Previous
+          </button>
+          <div className="text-sm text-muted-foreground font-medium">
+            Page {page} of {pagination.pages}
+          </div>
+          <button
+            disabled={page >= pagination.pages}
+            onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+            className="px-4 py-2 border border-white/10 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+          >
+            Next
+          </button>
         </div>
       )}
 

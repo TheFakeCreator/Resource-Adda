@@ -10,11 +10,24 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
       filter.tags = tag;
     }
 
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await Blog.countDocuments(filter);
+
     const blogs = await Blog.find(filter)
       .populate("author", "name avatarUrl branch semester")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    res.status(200).json(blogs);
+    res.status(200).json({
+      blogs,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

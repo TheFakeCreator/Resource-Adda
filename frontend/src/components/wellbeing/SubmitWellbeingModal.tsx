@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Ghost, PlusCircle } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Ghost, PlusCircle, User as UserIcon } from "lucide-react";
 
 export default function SubmitWellbeingModal({
   onPostSubmitted,
@@ -36,6 +37,7 @@ export default function SubmitWellbeingModal({
     "confession" | "question" | "support"
   >("confession");
   const [tags, setTags] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(true);
   const [files, setFiles] = useState<FileList | null>(null);
   const [error, setError] = useState("");
 
@@ -50,6 +52,7 @@ export default function SubmitWellbeingModal({
       formData.append("content", content);
       formData.append("category", category);
       formData.append("tags", tags); // backend will split by comma
+      formData.append("isAnonymous", isAnonymous ? "true" : "false");
 
       if (files) {
         for (let i = 0; i < files.length; i++) {
@@ -68,6 +71,7 @@ export default function SubmitWellbeingModal({
       setContent("");
       setCategory("confession");
       setTags("");
+      setIsAnonymous(true);
       setFiles(null);
       onPostSubmitted();
     } catch (err) {
@@ -86,14 +90,14 @@ export default function SubmitWellbeingModal({
         }
       >
         <PlusCircle className="h-4 w-4" />
-        Share Anonymously
+        Create Post
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] border border-white/10 bg-background/80 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Share Anonymously</DialogTitle>
+          <DialogTitle>Share with the Community</DialogTitle>
           <DialogDescription>
-            This is a safe space. Your real identity will never be shown to
-            other students or even admins on this post.
+            This is a safe space. You can choose whether to share your post
+            anonymously or with your real identity attached.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -166,6 +170,24 @@ export default function SubmitWellbeingModal({
             <p className="text-sm text-destructive font-medium">{error}</p>
           )}
 
+          <div className="flex items-center space-x-3 border border-white/5 p-3 rounded-lg bg-black/20">
+            <Switch
+              id="anonymous"
+              checked={isAnonymous}
+              onCheckedChange={setIsAnonymous}
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="anonymous" className="cursor-pointer">
+                Post Anonymously
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {isAnonymous
+                  ? "Your identity will be hidden."
+                  : "Your public profile will be attached."}
+              </p>
+            </div>
+          </div>
+
           <div className="pt-4 mt-6 border-t border-white/5 flex justify-end gap-2">
             <Button
               type="button"
@@ -179,8 +201,12 @@ export default function SubmitWellbeingModal({
                 <>Posting...</>
               ) : (
                 <>
-                  <Ghost className="h-4 w-4" />
-                  Post Anonymously
+                  {isAnonymous ? (
+                    <Ghost className="h-4 w-4" />
+                  ) : (
+                    <UserIcon className="h-4 w-4" />
+                  )}
+                  {isAnonymous ? "Post Anonymously" : "Post Publicly"}
                 </>
               )}
             </Button>

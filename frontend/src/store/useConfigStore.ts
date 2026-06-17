@@ -6,6 +6,7 @@ interface ConfigState {
   instituteName: string;
   allowedEmailPatterns: string[];
   isLoaded: boolean;
+  isSetupComplete: boolean;
   fetchConfig: () => Promise<void>;
 }
 
@@ -14,6 +15,7 @@ export const useConfigStore = create<ConfigState>((set) => ({
   instituteName: "Resource-Adda",
   allowedEmailPatterns: [],
   isLoaded: false,
+  isSetupComplete: true, // Default true to be safe
 
   fetchConfig: async () => {
     try {
@@ -26,6 +28,7 @@ export const useConfigStore = create<ConfigState>((set) => ({
         taglineLanguage: response.data.taglineLanguage,
         instituteName: response.data.instituteName,
         allowedEmailPatterns: response.data.allowedEmailPatterns || [],
+        isSetupComplete: response.data.isSetupComplete,
         isLoaded: true,
       });
     } catch (error) {

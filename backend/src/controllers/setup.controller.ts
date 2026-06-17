@@ -73,11 +73,15 @@ export const getPublicSettings = async (
 ): Promise<void> => {
   try {
     const settings = await SystemSettings.findOne();
+    const userCount = await User.countDocuments();
+    const isSetupComplete = userCount > 0 && settings?.isSetupComplete === true;
+
     if (!settings) {
       res.status(200).json({
         taglineLanguage: "hindi",
         instituteName: "Resource-Adda",
         allowedEmailPatterns: [],
+        isSetupComplete,
       });
       return;
     }
@@ -85,6 +89,7 @@ export const getPublicSettings = async (
       taglineLanguage: settings.taglineLanguage,
       instituteName: settings.instituteName,
       allowedEmailPatterns: settings.allowedEmailPatterns,
+      isSetupComplete,
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

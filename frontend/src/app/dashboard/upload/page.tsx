@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Upload, Link as LinkIcon, FileText } from "lucide-react";
+import { INSTITUTE_BRANCHES, SEMESTERS } from "@/lib/constants";
 
 export default function UploadResourcePage() {
   const router = useRouter();
@@ -141,6 +142,7 @@ export default function UploadResourcePage() {
                   required
                   placeholder="e.g. Data Structures Unit 1 Notes"
                   value={formData.title}
+                  maxLength={150}
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
@@ -185,6 +187,7 @@ export default function UploadResourcePage() {
                   required
                   placeholder="e.g. DBMS"
                   value={formData.subject}
+                  maxLength={100}
                   onChange={(e) =>
                     setFormData({ ...formData, subject: e.target.value })
                   }
@@ -206,11 +209,11 @@ export default function UploadResourcePage() {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="CSE">Computer Science</SelectItem>
-                    <SelectItem value="IT">Information Technology</SelectItem>
-                    <SelectItem value="MECH">Mechanical</SelectItem>
-                    <SelectItem value="ECE">Electronics</SelectItem>
-                    <SelectItem value="CIVIL">Civil</SelectItem>
+                    {INSTITUTE_BRANCHES.map((b) => (
+                      <SelectItem key={b} value={b}>
+                        {b}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -230,8 +233,8 @@ export default function UploadResourcePage() {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-                      <SelectItem key={sem} value={sem.toString()}>
+                    {SEMESTERS.map((sem) => (
+                      <SelectItem key={sem} value={sem}>
                         Semester {sem}
                       </SelectItem>
                     ))}
@@ -247,6 +250,7 @@ export default function UploadResourcePage() {
                 placeholder="Optional details about this resource..."
                 className="resize-none"
                 value={formData.description}
+                maxLength={2000}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   setFormData({ ...formData, description: e.target.value })
                 }

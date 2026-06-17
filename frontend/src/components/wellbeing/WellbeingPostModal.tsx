@@ -12,8 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, CornerDownRight } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Send, CornerDownRight, Flag } from "lucide-react";
 import WellbeingReaction, { ReactionType } from "./WellbeingReaction";
+import { ReportModal } from "@/components/ui/ReportModal";
 
 function CommentNode({
   comment,
@@ -58,6 +61,17 @@ function CommentNode({
             Reply
           </button>
         )}
+        <div className="inline-block mt-2 ml-4">
+          <ReportModal
+            itemId={comment._id}
+            itemModel="WellbeingComment"
+            triggerButton={
+              <button className="text-xs text-muted-foreground hover:text-destructive transition-colors font-medium flex items-center gap-1">
+                <Flag className="h-3 w-3" /> Report
+              </button>
+            }
+          />
+        </div>
 
         {comment.replies && comment.replies.length > 0 && (
           <div className="space-y-2">
@@ -92,6 +106,7 @@ export default function WellbeingPostModal({
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState(true);
   const [comments, setComments] = useState<any[]>(post?.comments || []);
   const [loadingComments, setLoadingComments] = useState(false);
 
@@ -161,7 +176,7 @@ export default function WellbeingPostModal({
     try {
       await api.post(`/wellbeing/${post._id}/comments`, {
         content: commentText,
-        isAnonymous: true,
+        isAnonymous: isAnonymous,
         parentComment: replyingTo,
       });
       setCommentText("");
@@ -198,9 +213,12 @@ export default function WellbeingPostModal({
             >
               {post.category}
             </Badge>
-            <span className="text-xs text-muted-foreground">
-              {new Date(post.createdAt).toLocaleDateString()}
-            </span>
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-muted-foreground">
+                {new Date(post.createdAt).toLocaleDateString()}
+              </span>
+              <ReportModal itemId={post._id} itemModel="WellbeingPost" />
+            </div>
           </div>
           <DialogTitle className="text-2xl leading-tight mb-2">
             {post.title}
@@ -311,6 +329,21 @@ export default function WellbeingPostModal({
               </button>
             </div>
           )}
+
+          <div className="flex items-center gap-2 mb-3 px-2">
+            <Switch
+              id="anon-comment"
+              checked={isAnonymous}
+              onCheckedChange={setIsAnonymous}
+            />
+            <Label
+              htmlFor="anon-comment"
+              className="text-xs text-muted-foreground cursor-pointer"
+            >
+              {isAnonymous ? "Posting anonymously" : "Posting publicly"}
+            </Label>
+          </div>
+
           <form onSubmit={handleSubmitComment} className="flex gap-3">
             <Input
               value={commentText}

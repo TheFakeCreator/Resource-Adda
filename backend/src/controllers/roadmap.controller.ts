@@ -22,9 +22,17 @@ export const getApprovedRoadmaps = async (
       filter.targetAudience = { $regex: targetAudience, $options: "i" };
     }
 
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await Roadmap.countDocuments(filter);
+
     const roadmaps = await Roadmap.find(filter)
       .populate("author", "name avatarUrl branch semester")
-      .sort({ isOfficial: -1, upvotes: -1, createdAt: -1 }); // Official first, then highly upvoted
+      .sort({ isOfficial: -1, upvotes: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     // Handle anonymity
     const sanitizedRoadmaps = roadmaps.map((rmap) => {
@@ -42,7 +50,12 @@ export const getApprovedRoadmaps = async (
       return doc;
     });
 
-    res.status(200).json(sanitizedRoadmaps);
+    res.status(200).json({
+      roadmaps: sanitizedRoadmaps,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -96,7 +109,7 @@ export const submitRoadmap = async (
     const newRoadmap = new Roadmap({
       ...req.body,
       author: req.user._id,
-      status: ContributionStatus.PENDING,
+      status: ContributionStatus.APPROVED,
       isOfficial: req.user.role === "admin" || req.user.role === "super_admin",
       upvotes: 0,
       downvotes: 0,

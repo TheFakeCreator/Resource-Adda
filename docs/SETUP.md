@@ -22,6 +22,8 @@ JWT_SECRET=your_super_secret_jwt_key
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+RESEND_API_KEY=your_resend_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 ### Frontend (`frontend/.env.local`)
@@ -30,6 +32,7 @@ Create a `.env.local` file in the `frontend` directory:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 ## 2. Installation
@@ -89,8 +92,8 @@ If you are handing this project off to someone else to deploy, they should follo
    ```
 
    **Important:** Open both newly created files and fill in the actual production values:
-   - `backend/.env`: Provide the production `MONGODB_URI`, set a strong random `JWT_SECRET`, add Cloudinary credentials, and set `NODE_ENV=production`.
-   - `frontend/.env.production`: Set `NEXT_PUBLIC_API_URL` to your production backend URL (e.g., `https://api.yourdomain.com/api`).
+   - `backend/.env`: Provide the production `MONGODB_URI`, set a strong random `JWT_SECRET`, add Cloudinary credentials, `RESEND_API_KEY`, `GOOGLE_CLIENT_ID`, and set `NODE_ENV=production`.
+   - `frontend/.env.production`: Set `NEXT_PUBLIC_API_URL` to your production backend URL (e.g., `https://api.yourdomain.com/api`) and set `NEXT_PUBLIC_GOOGLE_CLIENT_ID`.
 
 3. **Install Dependencies**
 

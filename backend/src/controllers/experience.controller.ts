@@ -25,9 +25,17 @@ export const getApprovedExperiences = async (
       filter.type = type;
     }
 
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await InterviewExperience.countDocuments(filter);
+
     const experiences = await InterviewExperience.find(filter)
       .populate("author", "name avatarUrl branch semester")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     // Handle anonymity
     const sanitizedExperiences = experiences.map((exp) => {
@@ -45,7 +53,12 @@ export const getApprovedExperiences = async (
       return doc;
     });
 
-    res.status(200).json(sanitizedExperiences);
+    res.status(200).json({
+      experiences: sanitizedExperiences,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -99,7 +112,7 @@ export const submitExperience = async (
     const newExperience = new InterviewExperience({
       ...req.body,
       author: req.user._id,
-      status: ContributionStatus.PENDING,
+      status: ContributionStatus.APPROVED,
       upvotes: 0,
       downvotes: 0,
       upvotedBy: [],
