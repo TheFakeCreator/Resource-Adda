@@ -96,12 +96,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         });
 
         if (!isAllowed) {
-          res
-            .status(403)
-            .json({
-              error:
-                "Email domain not allowed. Please use your institute email.",
-            });
+          res.status(403).json({
+            error: "Email domain not allowed. Please use your institute email.",
+          });
           return;
         }
       }
@@ -303,11 +300,9 @@ export const resendVerification = async (
     const emailSent = await sendVerificationEmail(email, verificationToken);
 
     if (!emailSent) {
-      res
-        .status(500)
-        .json({
-          error: "Failed to send verification email. Please try again later.",
-        });
+      res.status(500).json({
+        error: "Failed to send verification email. Please try again later.",
+      });
       return;
     }
 
@@ -331,12 +326,9 @@ export const forgotPassword = async (
     const user = await User.findOne({ email });
     if (!user) {
       // Return success even if user doesn't exist to prevent email enumeration
-      res
-        .status(200)
-        .json({
-          message:
-            "If an account exists, a password reset email has been sent.",
-        });
+      res.status(200).json({
+        message: "If an account exists, a password reset email has been sent.",
+      });
       return;
     }
 
@@ -348,19 +340,15 @@ export const forgotPassword = async (
 
     const emailSent = await sendPasswordResetEmail(user.email, resetToken);
     if (!emailSent) {
-      res
-        .status(500)
-        .json({
-          error: "Failed to send password reset email. Please try again later.",
-        });
+      res.status(500).json({
+        error: "Failed to send password reset email. Please try again later.",
+      });
       return;
     }
 
-    res
-      .status(200)
-      .json({
-        message: "If an account exists, a password reset email has been sent.",
-      });
+    res.status(200).json({
+      message: "If an account exists, a password reset email has been sent.",
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -466,12 +454,10 @@ export const googleAuth = async (
         });
 
         if (!isAllowed) {
-          res
-            .status(403)
-            .json({
-              error:
-                "Only institute emails are allowed. Please use your institute account.",
-            });
+          res.status(403).json({
+            error:
+              "Only institute emails are allowed. Please use your institute account.",
+          });
           return;
         }
       }

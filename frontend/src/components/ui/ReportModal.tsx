@@ -32,7 +32,7 @@ export function ReportModal({
 }: {
   itemId: string;
   itemModel: string;
-  triggerButton?: React.ReactNode;
+  triggerButton?: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState(REPORT_REASONS[0].label);
@@ -86,18 +86,20 @@ export function ReportModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {triggerButton || (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-destructive"
-          >
-            <Flag className="h-4 w-4 mr-2" />
-            Report
-          </Button>
-        )}
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          triggerButton || (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Flag className="h-4 w-4 mr-2" />
+              Report
+            </Button>
+          )
+        }
+      />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

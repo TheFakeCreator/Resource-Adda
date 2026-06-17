@@ -12,6 +12,7 @@
     "@base-ui/react": "^1.5.0",
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-label": "^2.1.9",
+    "@radix-ui/react-radio-group": "^1.4.1",
     "@radix-ui/react-slot": "^1.2.5",
     "@react-oauth/google": "^0.13.5",
     "axios": "^1.17.0",
