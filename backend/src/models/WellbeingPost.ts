@@ -12,6 +12,8 @@ export interface IWellbeingPost extends Document {
     type: "hugs" | "relatable" | "helpful" | "care";
     user: mongoose.Types.ObjectId;
   }[];
+  status: "approved" | "pending" | "rejected";
+  reportCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,12 @@ const WellbeingPostSchema: Schema = new Schema(
         user: { type: Schema.Types.ObjectId, ref: "User", required: true },
       },
     ],
+    status: {
+      type: String,
+      enum: ["approved", "pending", "rejected"],
+      default: "approved",
+    },
+    reportCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

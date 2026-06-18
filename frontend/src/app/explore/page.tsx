@@ -33,6 +33,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { INSTITUTE_BRANCHES, SEMESTERS } from "@/lib/constants";
 
 // Types
 interface Uploader {
@@ -61,18 +62,7 @@ interface Document {
   uploadedBy: Uploader;
 }
 
-const BRANCHES = [
-  "Computer Science",
-  "Information Technology",
-  "Mechanical",
-  "Civil",
-  "Electrical",
-  "Electronics",
-  "Architecture",
-  "Other",
-];
 const TYPES = ["Notes", "PYQ", "Book", "Lab Manual", "Other"];
-const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const RESOURCE_TYPE_COLORS: Record<
   string,
   {
@@ -153,7 +143,7 @@ const DUMMY_DOCUMENTS: Document[] = [
     isExternalLink: false,
     subject: "Operating Systems",
     semester: 5,
-    branch: "Computer Science",
+    branch: "CSE",
     type: "Notes",
     createdAt: new Date().toISOString(),
     downloadCount: 142,
@@ -165,7 +155,7 @@ const DUMMY_DOCUMENTS: Document[] = [
       avatarUrl:
         "https://ui-avatars.com/api/?name=Rahul+Sharma&background=random",
       email: "rahul@nitrr.ac.in",
-      branch: "Computer Science",
+      branch: "CSE",
       semester: 5,
     },
   },
@@ -178,7 +168,7 @@ const DUMMY_DOCUMENTS: Document[] = [
     isExternalLink: true,
     subject: "Data Structures",
     semester: 3,
-    branch: "Computer Science",
+    branch: "CSE",
     type: "PYQ",
     createdAt: new Date().toISOString(),
     downloadCount: 89,
@@ -190,7 +180,7 @@ const DUMMY_DOCUMENTS: Document[] = [
       avatarUrl:
         "https://ui-avatars.com/api/?name=Aditi+Verma&background=random",
       email: "aditi@nitrr.ac.in",
-      branch: "Computer Science",
+      branch: "CSE",
       semester: 7,
     },
   },
@@ -203,7 +193,7 @@ const DUMMY_DOCUMENTS: Document[] = [
     isExternalLink: false,
     subject: "Engineering Mechanics",
     semester: 1,
-    branch: "Mechanical",
+    branch: "MECH",
     type: "Lab Manual",
     createdAt: new Date().toISOString(),
     downloadCount: 210,
@@ -215,7 +205,7 @@ const DUMMY_DOCUMENTS: Document[] = [
       avatarUrl:
         "https://ui-avatars.com/api/?name=Vikram+Singh&background=random",
       email: "vikram@nitrr.ac.in",
-      branch: "Mechanical",
+      branch: "MECH",
       semester: 3,
     },
   },
@@ -228,7 +218,7 @@ const DUMMY_DOCUMENTS: Document[] = [
     isExternalLink: true,
     subject: "Mathematics",
     semester: 2,
-    branch: "Other",
+    branch: "EE",
     type: "Book",
     createdAt: new Date().toISOString(),
     downloadCount: 45,
@@ -239,7 +229,7 @@ const DUMMY_DOCUMENTS: Document[] = [
       name: "Priya Das",
       avatarUrl: "https://ui-avatars.com/api/?name=Priya+Das&background=random",
       email: "priya@nitrr.ac.in",
-      branch: "Electrical",
+      branch: "EE",
       semester: 4,
     },
   },
@@ -248,6 +238,8 @@ const DUMMY_DOCUMENTS: Document[] = [
 export default function ExplorePage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ pages: 1, total: 0 });
 
   // Filters
   const [search, setSearch] = useState("");
@@ -263,6 +255,7 @@ export default function ExplorePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
+      setPage(1); // Reset page on new search
     }, 500);
     return () => clearTimeout(timer);
   }, [search]);
@@ -309,11 +302,20 @@ export default function ExplorePage() {
         if (type !== "all") params.append("type", type);
         if (semester !== "all") params.append("semester", semester);
         if (minRating !== "all") params.append("minRating", minRating);
+        params.append("page", page.toString());
+        params.append("limit", "12");
 
         const response = await api.get(
           `/resources/documents?${params.toString()}`,
         );
-        setDocuments(response.data);
+
+        // Handle new paginated response structure or fallback
+        if (response.data.documents && response.data.pagination) {
+          setDocuments(response.data.documents);
+          setPagination(response.data.pagination);
+        } else {
+          setDocuments(response.data);
+        }
       } catch (error) {
         console.error("Failed to fetch documents", error);
       } finally {
@@ -322,7 +324,7 @@ export default function ExplorePage() {
     };
 
     fetchDocuments();
-  }, [debouncedSearch, branch, type, semester, minRating]);
+  }, [debouncedSearch, branch, type, semester, minRating, page]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-8">
@@ -383,7 +385,7 @@ export default function ExplorePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Branches</SelectItem>
-                  {BRANCHES.map((b) => (
+                  {INSTITUTE_BRANCHES.map((b) => (
                     <SelectItem key={b} value={b}>
                       {b}
                     </SelectItem>
@@ -406,7 +408,7 @@ export default function ExplorePage() {
                 <SelectContent>
                   <SelectItem value="all">All Semesters</SelectItem>
                   {SEMESTERS.map((s) => (
-                    <SelectItem key={s} value={s.toString()}>
+                    <SelectItem key={s} value={s}>
                       Semester {s}
                     </SelectItem>
                   ))}
@@ -442,6 +444,7 @@ export default function ExplorePage() {
                 setType("all");
                 setSemester("all");
                 setSearch("");
+                setPage(1);
               }}
             >
               Reset Filters
@@ -612,9 +615,35 @@ export default function ExplorePage() {
                   setType("all");
                   setSemester("all");
                   setSearch("");
+                  setPage(1);
                 }}
               >
                 Clear all filters
+              </Button>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && documents.length > 0 && pagination.pages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-12 mb-8">
+              <Button
+                variant="outline"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-muted-foreground font-medium">
+                Page {page} of {pagination.pages}
+              </div>
+              <Button
+                variant="outline"
+                disabled={page >= pagination.pages}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
+              >
+                Next
               </Button>
             </div>
           )}

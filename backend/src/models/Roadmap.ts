@@ -30,6 +30,7 @@ export interface IRoadmap extends MongooseDocument {
   isOfficial: boolean;
 
   tags: string[];
+  reportCount: number;
   upvotes: number;
   downvotes: number;
   upvotedBy: mongoose.Types.ObjectId[];
@@ -78,11 +79,12 @@ const RoadmapSchema: Schema = new Schema(
     status: {
       type: String,
       enum: Object.values(ContributionStatus),
-      default: ContributionStatus.PENDING,
+      default: ContributionStatus.APPROVED,
     },
     isOfficial: { type: Boolean, default: false },
 
     tags: [{ type: String }],
+    reportCount: { type: Number, default: 0 },
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
     upvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],

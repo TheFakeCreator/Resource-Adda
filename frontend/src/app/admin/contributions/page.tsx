@@ -28,6 +28,8 @@ interface PendingQueue {
   documents: any[];
   experiences: any[];
   roadmaps: any[];
+  wellbeingPosts: any[];
+  wellbeingComments: any[];
 }
 
 export default function AdminModerationQueuePage() {
@@ -36,15 +38,46 @@ export default function AdminModerationQueuePage() {
     documents: [],
     experiences: [],
     roadmaps: [],
+    wellbeingPosts: [],
+    wellbeingComments: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null); // e.g. 'document-123'
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ hasMore: false });
 
   const fetchPending = async () => {
     try {
-      const res = await api.get("/moderation/pending");
-      setQueue(res.data);
+      const res = await api.get(`/moderation/pending?page=${page}`);
+
+      if (page === 1) {
+        setQueue({
+          documents: res.data.documents || [],
+          experiences: res.data.experiences || [],
+          roadmaps: res.data.roadmaps || [],
+          wellbeingPosts: res.data.wellbeingPosts || [],
+          wellbeingComments: res.data.wellbeingComments || [],
+        });
+      } else {
+        setQueue((prev) => ({
+          documents: [...prev.documents, ...(res.data.documents || [])],
+          experiences: [...prev.experiences, ...(res.data.experiences || [])],
+          roadmaps: [...prev.roadmaps, ...(res.data.roadmaps || [])],
+          wellbeingPosts: [
+            ...prev.wellbeingPosts,
+            ...(res.data.wellbeingPosts || []),
+          ],
+          wellbeingComments: [
+            ...prev.wellbeingComments,
+            ...(res.data.wellbeingComments || []),
+          ],
+        }));
+      }
+
+      if (res.data.pagination) {
+        setPagination(res.data.pagination);
+      }
     } catch (err: any) {
       setError(
         err.response?.data?.error ||
@@ -58,10 +91,15 @@ export default function AdminModerationQueuePage() {
 
   useEffect(() => {
     if (token) fetchPending();
-  }, [token]);
+  }, [token, page]);
 
   const handleReview = async (
-    type: "document" | "experience" | "roadmap",
+    type:
+      | "document"
+      | "experience"
+      | "roadmap"
+      | "wellbeing_post"
+      | "wellbeing_comment",
     id: string,
     action: "approve" | "reject",
   ) => {
@@ -78,6 +116,12 @@ export default function AdminModerationQueuePage() {
           next.experiences = next.experiences.filter((e) => e._id !== id);
         if (type === "roadmap")
           next.roadmaps = next.roadmaps.filter((r) => r._id !== id);
+        if (type === "wellbeing_post")
+          next.wellbeingPosts = next.wellbeingPosts.filter((p) => p._id !== id);
+        if (type === "wellbeing_comment")
+          next.wellbeingComments = next.wellbeingComments.filter(
+            (c) => c._id !== id,
+          );
         return next;
       });
     } catch (err: any) {
@@ -96,7 +140,11 @@ export default function AdminModerationQueuePage() {
   }
 
   const totalPending =
-    queue.documents.length + queue.experiences.length + queue.roadmaps.length;
+    queue.documents.length +
+    queue.experiences.length +
+    queue.roadmaps.length +
+    queue.wellbeingPosts.length +
+    queue.wellbeingComments.length;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -151,9 +199,16 @@ export default function AdminModerationQueuePage() {
                         <CardTitle className="text-lg leading-tight line-clamp-1">
                           {contrib.documentId?.title || "Unknown Title"}
                         </CardTitle>
-                        <Badge variant="secondary" className="capitalize">
-                          {contrib.documentId?.type}
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge variant="secondary" className="capitalize">
+                            {contrib.documentId?.type}
+                          </Badge>
+                          {contrib.documentId?.reportCount >= 5 && (
+                            <Badge variant="destructive" className="text-xs">
+                              Reported {contrib.documentId.reportCount} times
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <CardDescription className="line-clamp-2 mt-2">
                         {contrib.documentId?.description}
@@ -245,12 +300,19 @@ export default function AdminModerationQueuePage() {
                         <CardTitle className="text-lg leading-tight">
                           {exp.company}
                         </CardTitle>
-                        <Badge
-                          variant="outline"
-                          className="text-amber-600 border-amber-600/30 bg-amber-500/10"
-                        >
-                          {exp.role}
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge
+                            variant="outline"
+                            className="text-amber-600 border-amber-600/30 bg-amber-500/10"
+                          >
+                            {exp.role}
+                          </Badge>
+                          {exp.reportCount >= 5 && (
+                            <Badge variant="destructive" className="text-xs">
+                              Reported {exp.reportCount} times
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <div className="text-sm font-medium text-emerald-500">
                         {exp.verdict}
@@ -322,6 +384,11 @@ export default function AdminModerationQueuePage() {
                         <CardTitle className="text-lg leading-tight">
                           {rm.title}
                         </CardTitle>
+                        {rm.reportCount >= 5 && (
+                          <Badge variant="destructive" className="text-xs">
+                            Reported {rm.reportCount} times
+                          </Badge>
+                        )}
                       </div>
                       <CardDescription className="line-clamp-2 mt-2">
                         {rm.description}
@@ -376,6 +443,178 @@ export default function AdminModerationQueuePage() {
                   </Card>
                 ))}
               </div>
+            </div>
+          )}
+          {/* WELLBEING POSTS */}
+          {queue.wellbeingPosts.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 border-b border-border pb-2">
+                <BookOpen className="h-5 w-5 text-indigo-500" /> Wellbeing Posts
+                ({queue.wellbeingPosts.length})
+              </h3>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {queue.wellbeingPosts.map((post) => (
+                  <Card
+                    key={post._id}
+                    className="border-border shadow-sm flex flex-col"
+                  >
+                    <CardHeader className="pb-3 bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg leading-tight">
+                          {post.title}
+                        </CardTitle>
+                        {post.reportCount >= 5 && (
+                          <Badge variant="destructive" className="text-xs">
+                            Reported {post.reportCount} times
+                          </Badge>
+                        )}
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className="w-fit mt-2 capitalize"
+                      >
+                        {post.category}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="pt-4 flex-1">
+                      <div className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                        {post.content}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <UserIcon className="h-4 w-4" />{" "}
+                        {post.isAnonymous ? "Anonymous" : post.author?.name}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex gap-3 border-t border-border mt-auto px-6 py-4">
+                      <Button
+                        className="flex-1 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-500/20"
+                        onClick={() =>
+                          handleReview("wellbeing_post", post._id, "approve")
+                        }
+                        disabled={
+                          actionLoading === `wellbeing_post-${post._id}`
+                        }
+                      >
+                        {actionLoading === `wellbeing_post-${post._id}` ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        className="flex-1 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white border border-rose-500/20"
+                        onClick={() =>
+                          handleReview("wellbeing_post", post._id, "reject")
+                        }
+                        disabled={
+                          actionLoading === `wellbeing_post-${post._id}`
+                        }
+                      >
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* WELLBEING COMMENTS */}
+          {queue.wellbeingComments.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 border-b border-border pb-2">
+                <FileText className="h-5 w-5 text-indigo-500" /> Wellbeing
+                Comments ({queue.wellbeingComments.length})
+              </h3>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {queue.wellbeingComments.map((comment) => (
+                  <Card
+                    key={comment._id}
+                    className="border-border shadow-sm flex flex-col"
+                  >
+                    <CardHeader className="pb-3 bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-sm leading-tight text-muted-foreground">
+                          Comment on Post ID: {comment.post}
+                        </CardTitle>
+                        {comment.reportCount >= 5 && (
+                          <Badge variant="destructive" className="text-xs">
+                            Reported {comment.reportCount} times
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-4 flex-1">
+                      <div className="text-sm text-foreground mb-4 whitespace-pre-wrap">
+                        {comment.content}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <UserIcon className="h-4 w-4" />{" "}
+                        {comment.isAnonymous
+                          ? "Anonymous"
+                          : comment.author?.name}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex gap-3 border-t border-border mt-auto px-6 py-4">
+                      <Button
+                        className="flex-1 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-500/20"
+                        onClick={() =>
+                          handleReview(
+                            "wellbeing_comment",
+                            comment._id,
+                            "approve",
+                          )
+                        }
+                        disabled={
+                          actionLoading === `wellbeing_comment-${comment._id}`
+                        }
+                      >
+                        {actionLoading ===
+                        `wellbeing_comment-${comment._id}` ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        className="flex-1 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white border border-rose-500/20"
+                        onClick={() =>
+                          handleReview(
+                            "wellbeing_comment",
+                            comment._id,
+                            "reject",
+                          )
+                        }
+                        disabled={
+                          actionLoading === `wellbeing_comment-${comment._id}`
+                        }
+                      >
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {pagination.hasMore && (
+            <div className="flex justify-center mt-8">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Load More Pending Items
+              </Button>
             </div>
           )}
         </div>

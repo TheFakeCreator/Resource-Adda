@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { FaGithub, FaTwitter } from "react-icons/fa";
+import { SITE_CONSTANTS } from "@/config/constants";
 
 export function Footer() {
   return (
@@ -17,8 +18,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              The open-source academic hub designed by students, for students.
-              Share notes and study stress-free.
+              {SITE_CONSTANTS.description}
             </p>
           </div>
 
@@ -27,7 +27,15 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <Link
-                  href="/documents"
+                  href="/about"
+                  className="hover:text-primary transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/resources"
                   className="hover:text-primary transition-colors"
                 >
                   Study Materials
@@ -79,6 +87,14 @@ export function Footer() {
                   Security Policy
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-primary transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -86,7 +102,7 @@ export function Footer() {
             <h3 className="font-semibold mb-4 text-foreground">Community</h3>
             <div className="flex space-x-4 mb-4">
               <a
-                href="https://github.com/NITRR-Official/CampusOS"
+                href={SITE_CONSTANTS.socials.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -95,7 +111,7 @@ export function Footer() {
                 <span className="sr-only">GitHub</span>
               </a>
               <a
-                href="#"
+                href={SITE_CONSTANTS.socials.twitter}
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
                 <FaTwitter className="h-5 w-5" />
@@ -110,8 +126,8 @@ export function Footer() {
 
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Resource-Adda. Open Source under MIT
-            License.
+            © {new Date().getFullYear()} {SITE_CONSTANTS.name}. Open Source
+            under MIT License.
           </p>
         </div>
       </div>

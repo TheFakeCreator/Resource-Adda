@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { INSTITUTE_BRANCHES, SEMESTERS } from "../constants";
 
 export enum UserRole {
   SUPER_ADMIN = "super_admin",
@@ -8,8 +9,12 @@ export enum UserRole {
 
 export interface IUser extends Document {
   email: string;
-  password_hash: string;
-  role: UserRole;
+  password_hash?: string;
+  role: "super_admin" | "admin" | "club_head" | "club_member" | "student";
+
+  // Authentication Provider
+  provider: "local" | "google";
+  googleId?: string;
 
   // Profile
   name?: string;
@@ -25,8 +30,14 @@ export interface IUser extends Document {
 
   // Verification
   isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpires?: Date;
   idCardUrl?: string;
   verifiedAt?: Date;
+
+  // Password Reset
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
 
   // Contribution System
   contributionPoints: number;
@@ -63,6 +74,7 @@ export interface IUser extends Document {
   isActive: boolean;
   isBanned: boolean;
   banReason?: string;
+  shadowbannedCount: number;
 }
 
 const UserSchema: Schema = new Schema(
@@ -73,13 +85,19 @@ const UserSchema: Schema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
-    password_hash: { type: String, required: true },
+    password_hash: { type: String },
     role: {
       type: String,
-      enum: Object.values(UserRole),
-      default: UserRole.STUDENT,
+      enum: ["super_admin", "admin", "club_head", "club_member", "student"],
+      default: "student",
+      required: true,
     },
+
+    // Authentication Provider
+    provider: { type: String, enum: ["local", "google"], default: "local" },
+    googleId: { type: String, index: true },
 
     // Profile
     name: { type: String },
@@ -88,15 +106,21 @@ const UserSchema: Schema = new Schema(
 
     // Academic
     rollNumber: { type: String },
-    branch: { type: String },
-    semester: { type: Number },
+    branch: { type: String, enum: INSTITUTE_BRANCHES },
+    semester: { type: Number, enum: SEMESTERS },
     section: { type: String },
     graduationYear: { type: Number },
 
     // Verification
     isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String },
+    verificationTokenExpires: { type: Date },
     idCardUrl: { type: String },
     verifiedAt: { type: Date },
+
+    // Password Reset
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 
     // Contribution System
     contributionPoints: { type: Number, default: 0 },
@@ -135,6 +159,7 @@ const UserSchema: Schema = new Schema(
     isActive: { type: Boolean, default: true },
     isBanned: { type: Boolean, default: false },
     banReason: { type: String },
+    shadowbannedCount: { type: Number, default: 0 },
   },
   { timestamps: true },
 );

@@ -71,12 +71,6 @@ export default function AdminLayout({
       icon: Settings,
       roles: ["super_admin"],
     },
-    {
-      title: "Markdown Pages",
-      href: "/admin/pages",
-      icon: FileText,
-      roles: ["super_admin"],
-    },
   ];
 
   return (

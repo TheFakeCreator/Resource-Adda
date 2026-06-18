@@ -5,11 +5,34 @@ import { Request } from "express";
 // Multer configured to store files in memory
 const storage = multer.memoryStorage();
 
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) => {
+  const allowedMimeTypes = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+  ];
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error(
+        "Invalid file type. Only PDF, PNG, and JPEG files are allowed.",
+      ),
+    );
+  }
+};
+
 export const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
+  fileFilter,
 });
 
 // Helper function to upload buffer to Cloudinary

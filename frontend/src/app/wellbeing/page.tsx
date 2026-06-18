@@ -1,5 +1,6 @@
 import WellbeingFeed from "@/components/wellbeing/WellbeingFeed";
 import { HeartPulse } from "lucide-react";
+import { SITE_CONSTANTS } from "@/config/constants";
 
 export const metadata = {
   title: "Student Wellbeing - Resource Adda",
@@ -51,7 +52,7 @@ export default function WellbeingPage() {
               <p className="text-sm text-muted-foreground mt-1">
                 Available Mon-Fri, 10AM - 5PM
               </p>
-              <p className="text-sm mt-2">counseling@nitrr.ac.in</p>
+              <p className="text-sm mt-2">{SITE_CONSTANTS.emails.counseling}</p>
             </div>
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-left w-full max-w-xs">
               <h3 className="font-semibold text-blue-400">

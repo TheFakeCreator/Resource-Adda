@@ -21,6 +21,18 @@ export const uploadResource = async (
       isExternalLink,
     } = req.body;
 
+    if (title && title.length > 150) {
+      res.status(400).json({ error: "Title must be less than 150 characters" });
+      return;
+    }
+
+    if (description && description.length > 2000) {
+      res
+        .status(400)
+        .json({ error: "Description must be less than 2000 characters" });
+      return;
+    }
+
     let fileUrl = "";
 
     if (isExternalLink === "true" || isExternalLink === true) {
@@ -59,12 +71,12 @@ export const uploadResource = async (
     const contribution = new Contribution({
       documentId: document._id,
       userId: req.user?._id,
-      status: ContributionStatus.PENDING,
+      status: ContributionStatus.APPROVED,
     });
     await contribution.save();
 
     res.status(201).json({
-      message: "Resource uploaded successfully. Awaiting admin approval.",
+      message: "Resource uploaded successfully.",
       document,
     });
   } catch (error: any) {
@@ -77,13 +89,30 @@ export const getPendingContributions = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const contributions = await Contribution.find({
-      status: ContributionStatus.PENDING,
-    })
-      .populate("documentId")
-      .populate("userId", "email role branch semester rollNumber");
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
-    res.status(200).json(contributions);
+    const [contributions, total] = await Promise.all([
+      Contribution.find({
+        status: ContributionStatus.PENDING,
+      })
+        .populate("documentId")
+        .populate("userId", "email role branch semester rollNumber")
+        .skip(skip)
+        .limit(limit),
+      Contribution.countDocuments({ status: ContributionStatus.PENDING }),
+    ]);
+
+    res.status(200).json({
+      contributions,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -135,7 +164,10 @@ export const getApprovedDocuments = async (
     });
     const approvedDocIds = approvedContributions.map((c) => c.documentId);
 
-    // Build query filters based on req.query
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    const skip = (page - 1) * limit;
+
     const { subject, semester, search, branch, type, minRating } = req.query;
     const filter: any = { _id: { $in: approvedDocIds } };
 
@@ -149,12 +181,23 @@ export const getApprovedDocuments = async (
       filter.title = { $regex: search as string, $options: "i" };
     }
 
-    const documents = await Document.find(filter).populate(
-      "uploadedBy",
-      "name avatarUrl email branch semester",
-    );
+    const [documents, total] = await Promise.all([
+      Document.find(filter)
+        .populate("uploadedBy", "name avatarUrl email branch semester")
+        .skip(skip)
+        .limit(limit),
+      Document.countDocuments(filter),
+    ]);
 
-    res.status(200).json(documents);
+    res.status(200).json({
+      documents,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

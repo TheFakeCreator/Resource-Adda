@@ -22,10 +22,13 @@ export default function BlogsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ pages: 1, total: 0 });
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
+      setPage(1);
     }, 500);
     return () => clearTimeout(timer);
   }, [search]);
@@ -33,8 +36,14 @@ export default function BlogsPage() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/blogs");
+      const res = await api.get(`/blogs?page=${page}&limit=9`);
       let data = res.data;
+
+      if (res.data.blogs) {
+        data = res.data.blogs;
+        setPagination({ pages: res.data.pages, total: res.data.total });
+      }
+
       if (debouncedSearch) {
         data = data.filter(
           (b: any) =>
@@ -52,7 +61,7 @@ export default function BlogsPage() {
 
   useEffect(() => {
     fetchBlogs();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, page]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -201,6 +210,31 @@ export default function BlogsPage() {
               <Link href="/blogs/write">
                 <Button>Write a Blog</Button>
               </Link>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && blogs.length > 0 && pagination.pages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-12 mb-8">
+              <Button
+                variant="outline"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-muted-foreground font-medium">
+                Page {page} of {pagination.pages}
+              </div>
+              <Button
+                variant="outline"
+                disabled={page >= pagination.pages}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
+              >
+                Next
+              </Button>
             </div>
           )}
         </main>

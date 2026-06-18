@@ -6,6 +6,8 @@ export interface IWellbeingComment extends Document {
   author: mongoose.Types.ObjectId;
   content: string;
   isAnonymous: boolean;
+  status: "approved" | "pending" | "rejected";
+  reportCount: number;
   upvotes: number;
   upvotedBy: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -29,6 +31,12 @@ const WellbeingCommentSchema: Schema = new Schema(
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     content: { type: String, required: true },
     isAnonymous: { type: Boolean, default: true },
+    status: {
+      type: String,
+      enum: ["approved", "pending", "rejected"],
+      default: "approved",
+    },
+    reportCount: { type: Number, default: 0 },
     upvotes: { type: Number, default: 0 },
     upvotedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },

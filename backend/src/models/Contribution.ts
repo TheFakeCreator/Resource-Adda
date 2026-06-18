@@ -23,7 +23,7 @@ const ContributionSchema: Schema = new Schema(
     status: {
       type: String,
       enum: Object.values(ContributionStatus),
-      default: ContributionStatus.PENDING,
+      default: ContributionStatus.APPROVED,
     },
   },
   { timestamps: true },
