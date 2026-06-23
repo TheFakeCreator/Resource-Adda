@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AppLayoutWrapper } from "@/components/AppLayoutWrapper";
+import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.className} ${geistMono.variable} ${markerFont.variable} antialiased min-h-screen flex flex-col`}
       >
+        <NextTopLoader color="hsl(var(--primary))" showSpinner={false} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

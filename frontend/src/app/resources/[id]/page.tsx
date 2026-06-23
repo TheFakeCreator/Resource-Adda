@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { ReportModal } from "@/components/ui/ReportModal";
 import {
   Download,
   BookOpen,
@@ -24,12 +25,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { RESOURCE_TYPE_COLORS } from "@/app/explore/page";
-import { Document as PdfDocument, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface DocumentDetails {
   _id: string;
@@ -126,10 +121,6 @@ export default function ResourceDetailPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // PDF state
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-
   // Review form state
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
@@ -162,16 +153,31 @@ export default function ResourceDetailPage() {
 
   const handleDownload = async () => {
     if (!document) return;
+
+    let downloadUrl = document.fileUrl;
+    // For older PDFs uploaded as images, Cloudinary blocks direct access.
+    // Adding fl_attachment is required to download them.
+    if (
+      downloadUrl.includes("res.cloudinary.com") &&
+      downloadUrl.includes("/image/upload/") &&
+      downloadUrl.endsWith(".pdf")
+    ) {
+      downloadUrl = downloadUrl.replace(
+        "/image/upload/",
+        "/image/upload/fl_attachment/",
+      );
+    }
+
     try {
       await api.post(`/resources/documents/${documentId}/download`);
       setDocument((prev) =>
         prev ? { ...prev, downloadCount: prev.downloadCount + 1 } : null,
       );
-      window.open(document.fileUrl, "_blank");
+      window.open(downloadUrl, "_blank");
     } catch (error) {
       console.error("Download tracking failed", error);
       // Still try to open it even if tracking fails
-      window.open(document.fileUrl, "_blank");
+      window.open(downloadUrl, "_blank");
     }
   };
 
@@ -346,24 +352,32 @@ export default function ResourceDetailPage() {
             </Button>
 
             {/* Uploader Info */}
-            <div className="mt-6 flex items-center p-4 bg-muted/30 rounded-2xl border border-border/50">
-              <Avatar className="h-10 w-10 border border-border mr-3">
-                <AvatarImage
-                  src={document.uploadedBy?.avatarUrl}
-                  alt={document.uploadedBy?.name}
-                />
-                <AvatarFallback>
-                  <UserIcon className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {document.uploadedBy?.name}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Uploaded {new Date(document.createdAt).toLocaleDateString()}
-                </p>
+            <div className="mt-6 flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/50">
+              <div className="flex items-center min-w-0 flex-1">
+                <Avatar className="h-10 w-10 border border-border mr-3 shrink-0">
+                  <AvatarImage
+                    src={document.uploadedBy?.avatarUrl}
+                    alt={document.uploadedBy?.name}
+                  />
+                  <AvatarFallback>
+                    <UserIcon className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0 pr-4">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {document.uploadedBy?.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    Uploaded {new Date(document.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
+
+              {token && (
+                <div className="shrink-0">
+                  <ReportModal itemId={document._id} itemModel="Document" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -431,35 +445,15 @@ export default function ResourceDetailPage() {
                 </Badge>
               )}
             </div>
-            <div className="flex-1 bg-zinc-100 dark:bg-zinc-950 overflow-auto flex justify-center p-4">
+            <div className="flex-1 bg-zinc-100 dark:bg-zinc-950 overflow-hidden flex justify-center">
               {isPdf && !document.isExternalLink ? (
-                <PdfDocument
-                  file={document.fileUrl}
-                  onLoadSuccess={({ numPages }: { numPages: number }) =>
-                    setNumPages(numPages)
-                  }
-                  loading={
-                    <div className="animate-pulse flex items-center justify-center h-full w-full">
-                      Loading PDF...
-                    </div>
-                  }
-                  error={
-                    <div className="text-muted-foreground">
-                      Failed to load PDF preview.
-                    </div>
-                  }
-                  className="shadow-2xl"
-                >
-                  <Page
-                    pageNumber={pageNumber}
-                    width={800}
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    className="bg-white"
-                  />
-                </PdfDocument>
+                <iframe
+                  src={`${document.fileUrl}#toolbar=0`}
+                  className="w-full h-full border-0"
+                  title="PDF Preview"
+                />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4">
                   <FileText className="w-16 h-16 mb-4 opacity-20" />
                   <p>Preview not available.</p>
                   <Button variant="link" onClick={handleDownload}>
@@ -468,31 +462,6 @@ export default function ResourceDetailPage() {
                 </div>
               )}
             </div>
-            {isPdf && numPages && (
-              <div className="bg-muted/50 px-4 py-3 border-t border-border flex justify-between items-center">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
-                  disabled={pageNumber <= 1}
-                >
-                  Previous
-                </Button>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Page {pageNumber} of {numPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setPageNumber((p) => Math.min(numPages, p + 1))
-                  }
-                  disabled={pageNumber >= numPages}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
           </div>
 
           {/* User Reviews List */}

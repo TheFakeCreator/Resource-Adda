@@ -122,7 +122,7 @@ export function ReportModal({
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 py-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-4">
             <div className="space-y-4">
               {REPORT_REASONS.map((r) => (
                 <div key={r.id} className="flex items-center space-x-2">
@@ -159,7 +159,7 @@ export function ReportModal({
               <p className="text-sm text-destructive font-medium">{error}</p>
             )}
 
-            <DialogFooter>
+            <DialogFooter className="mt-2">
               <Button
                 type="button"
                 variant="outline"

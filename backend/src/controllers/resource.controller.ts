@@ -47,9 +47,12 @@ export const uploadResource = async (
         return;
       }
       // Upload to Cloudinary
+      const resourceType =
+        req.file.mimetype === "application/pdf" ? "raw" : "auto";
       fileUrl = await uploadToCloudinary(
         req.file.buffer,
         "resource_adda/documents",
+        resourceType,
       );
     }
 

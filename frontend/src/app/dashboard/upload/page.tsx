@@ -23,7 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Upload, Link as LinkIcon, FileText } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  Link as LinkIcon,
+  FileText,
+  CheckCircle2,
+} from "lucide-react";
 import { INSTITUTE_BRANCHES, SEMESTERS } from "@/lib/constants";
 
 export default function UploadResourcePage() {
@@ -78,7 +84,7 @@ export default function UploadResourcePage() {
 
       setSuccess(true);
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/explore");
       }, 3000);
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || "Failed to upload");
@@ -89,24 +95,34 @@ export default function UploadResourcePage() {
 
   if (success) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <Card className="border-green-500 bg-green-50 dark:bg-green-900/10">
-          <CardHeader className="text-center">
-            <div className="mx-auto bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300 p-3 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-              <Upload className="w-8 h-8" />
+      <div className="w-full max-w-2xl mx-auto space-y-6 mt-8">
+        <Card className="border-green-500/30 shadow-md">
+          <CardHeader className="text-center space-y-4 pt-8">
+            <div className="mx-auto bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 p-4 rounded-full w-20 h-20 flex items-center justify-center ring-8 ring-green-50 dark:ring-green-500/10">
+              <CheckCircle2 className="w-10 h-10" />
             </div>
-            <CardTitle className="text-2xl text-green-700 dark:text-green-400">
+            <CardTitle className="text-3xl font-bold text-green-700 dark:text-green-400">
               Upload Successful!
             </CardTitle>
-            <CardDescription className="text-lg">
+            <CardDescription className="text-base md:text-lg max-w-md mx-auto">
               Your resource has been submitted and is currently{" "}
-              <strong>Pending Admin Approval</strong>. Once an admin verifies
-              it, it will be available in the public library.
+              <strong className="text-foreground">
+                Pending Admin Approval
+              </strong>
+              . Once an admin verifies it, it will be available in the public
+              library.
             </CardDescription>
           </CardHeader>
-          <CardFooter className="justify-center pb-8">
-            <Button onClick={() => router.push("/dashboard")} variant="outline">
-              Return to Dashboard
+          <CardFooter className="justify-center pb-8 pt-4 flex-col sm:flex-row gap-4">
+            <Button
+              onClick={() => router.push("/explore")}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              Go to Explore
+            </Button>
+            <Button onClick={() => router.back()} className="w-full sm:w-auto">
+              Go Back
             </Button>
           </CardFooter>
         </Card>
@@ -115,7 +131,7 @@ export default function UploadResourcePage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="w-full max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Upload Resource</h1>
@@ -125,9 +141,9 @@ export default function UploadResourcePage() {
         </div>
       </div>
 
-      <Card>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-6 pt-6">
+      <Card className="overflow-hidden w-full">
+        <form onSubmit={handleSubmit} className="w-full">
+          <CardContent className="space-y-6 pt-6 w-full">
             {error && (
               <div className="p-3 bg-red-100 text-red-600 border border-red-300 rounded-md text-sm">
                 {error}
