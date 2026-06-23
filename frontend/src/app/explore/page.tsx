@@ -515,7 +515,7 @@ export default function ExplorePage() {
                           {getMessage(doc._id)}
                         </span>
                       </div>
-                      <CardHeader className="pb-4 pt-6 relative z-0">
+                      <CardHeader className="pb-4 pt-10 relative z-0">
                         <div className="flex justify-between items-start mb-2 gap-2">
                           <Badge variant="outline" className={typeConfig.badge}>
                             <div

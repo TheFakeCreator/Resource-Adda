@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BlurText } from "@/components/animations/BlurText";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -77,8 +78,9 @@ const TESTIMONIALS = [
 export default function Home() {
   const { taglineLanguage, isLoaded } = useConfigStore();
 
-  const hindiTagline = "HAA BHAI... AA GAYA PADHNE\nNOTES NAHI MIL RAHE ??";
-  const englishTagline = "HEY THERE... HERE TO STUDY?\nCAN'T FIND THE NOTES ??";
+  const hindiTagline = "HAA BHAI... AA GAYA PADHNE \n NOTES NAHI MIL RAHE ??";
+  const englishTagline =
+    "HEY THERE... HERE TO STUDY? \n CAN'T FIND THE NOTES ??";
 
   return (
     <div className="flex-1 bg-background flex flex-col items-center w-full relative overflow-hidden">
@@ -102,15 +104,22 @@ export default function Home() {
             <div className="relative inline-block rotate-[-2deg] mb-8 md:mb-10 mr-8 md:mr-16">
               {/* Added mr-8 md:mr-16 to shift it slightly left to fix centering visual balance */}
               <div className="bg-slate-900/90 backdrop-blur-md text-white p-6 md:p-10 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.8)] border-4 border-slate-900 dark:border-white transition-transform hover:scale-105 duration-300">
-                <p
-                  className="text-3xl md:text-5xl lg:text-6xl whitespace-pre-wrap leading-[1.2] text-amber-50"
+                <div
                   style={{
                     fontFamily: "var(--font-marker)",
                     letterSpacing: "2px",
                   }}
                 >
-                  {taglineLanguage === "hindi" ? hindiTagline : englishTagline}
-                </p>
+                  <BlurText
+                    text={
+                      taglineLanguage === "hindi"
+                        ? hindiTagline
+                        : englishTagline
+                    }
+                    delay={0}
+                    className="text-3xl md:text-5xl lg:text-6xl whitespace-pre-wrap leading-[1.2] text-amber-50"
+                  />
+                </div>
               </div>
               {/* Playful accent */}
               <div className="absolute -bottom-5 -right-5 w-14 h-14 bg-amber-400 rounded-full border-4 border-slate-900 dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] flex items-center justify-center animate-bounce">

@@ -62,6 +62,21 @@ interface Roadmap {
 
 const USE_DUMMY_DATA = false;
 
+const WELLBEING_MESSAGES = [
+  "You're going to ace this! ✨",
+  "Take a deep breath, you got this. 🌟",
+  "One step at a time! 🚀",
+  "Remember to drink water! 💧",
+  "We believe in you! 🌻",
+  "Your hard work will pay off. 📈",
+  "Don't forget to take breaks! 🍵",
+];
+
+const getMessage = (id: string) => {
+  const sum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return WELLBEING_MESSAGES[sum % WELLBEING_MESSAGES.length];
+};
+
 const DUMMY_ROADMAPS: Roadmap[] = [
   {
     _id: "1",
@@ -322,18 +337,31 @@ export default function RoadmapsPage() {
                     <Card
                       className={`h-full relative overflow-hidden border border-border bg-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col ${
                         roadmap.isOfficial
-                          ? "border-l-4 border-l-blue-500"
+                          ? "border-t-4 border-t-blue-500"
                           : "border-t-4 border-t-emerald-500"
                       }`}
                     >
+                      {/* Expanding wellbeing banner that drops from the native top border */}
+                      <div
+                        className={`absolute top-0 left-0 w-full h-0 group-hover:h-8 transition-all duration-300 ease-in-out z-10 flex items-center justify-center overflow-hidden ${
+                          roadmap.isOfficial
+                            ? "bg-blue-500 text-white"
+                            : "bg-emerald-500 text-white"
+                        }`}
+                      >
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 whitespace-nowrap text-xs font-semibold tracking-wide px-4">
+                          {getMessage(roadmap._id)}
+                        </span>
+                      </div>
+
                       {roadmap.isOfficial && (
-                        <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg flex items-center shadow-sm">
+                        <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg flex items-center shadow-sm z-20">
                           <ShieldCheck className="w-3 h-3 mr-1" />
                           OFFICIAL
                         </div>
                       )}
 
-                      <CardHeader className="pb-4">
+                      <CardHeader className="pb-4 pt-10 relative z-0">
                         <div className="flex justify-between items-start mb-2">
                           <Badge
                             variant="outline"
