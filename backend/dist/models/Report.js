@@ -34,44 +34,31 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const WellbeingPostSchema = new mongoose_1.Schema({
-    title: { type: String, required: true, trim: true },
-    content: { type: String, required: true },
-    category: {
+const ReportSchema = new mongoose_1.Schema({
+    reportedItemId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: true,
+        index: true,
+    },
+    itemModel: {
         type: String,
-        enum: ["confession", "question", "support"],
+        enum: [
+            "Roadmap",
+            "InterviewExperience",
+            "Document",
+            "WellbeingPost",
+            "WellbeingComment",
+        ],
         required: true,
     },
-    author: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
-    isAnonymous: { type: Boolean, default: true }, // Posts are anonymous by default for wellbeing
-    tags: [{ type: String }],
-    mediaUrls: [{ type: String }],
-    reactions: [
-        {
-            type: {
-                type: String,
-                enum: ["hugs", "relatable", "helpful", "care"],
-                required: true,
-            },
-            user: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
-        },
-    ],
+    reportedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    reason: { type: String, required: true },
     status: {
         type: String,
-        enum: ["approved", "pending", "rejected"],
-        default: "approved",
+        enum: ["pending", "resolved"],
+        default: "pending",
     },
-    reportCount: { type: Number, default: 0 },
-}, {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-});
-// Virtual for fetching comments
-WellbeingPostSchema.virtual("comments", {
-    ref: "WellbeingComment",
-    localField: "_id",
-    foreignField: "post",
-    options: { sort: { createdAt: -1 }, limit: 3 }, // Only fetch 3 preview comments by default
-});
-exports.default = mongoose_1.default.model("WellbeingPost", WellbeingPostSchema);
+}, { timestamps: true });
+// Prevent users from reporting the same item multiple times
+ReportSchema.index({ reportedItemId: 1, reportedBy: 1 }, { unique: true });
+exports.default = mongoose_1.default.model("Report", ReportSchema);

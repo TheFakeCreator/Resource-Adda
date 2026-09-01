@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import api from "@/lib/api";
 import {
   LogOut,
@@ -20,6 +20,7 @@ import {
   XCircle,
   ChevronRight,
   ShieldCheck,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Link from "next/link";
 import {
   Select,
@@ -71,6 +80,10 @@ export default function DashboardPage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -155,6 +168,58 @@ export default function DashboardPage() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size should not exceed 5MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      await api.put("/users/me/avatar", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await checkAuth(); // Refresh the user object
+    } catch (err) {
+      console.error("Failed to upload avatar", err);
+      alert("Failed to upload profile picture");
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete("/users/me/account", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Account scheduled for deletion. You will now be logged out.");
+      logout();
+      router.push("/login");
+    } catch (err) {
+      console.error("Failed to delete account", err);
+      alert("Failed to schedule account deletion. Please try again.");
+    } finally {
+      setIsDeletingAccount(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -215,7 +280,10 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
               <AvatarImage
-                src={`https://ui-avatars.com/api/?name=${user.name}&background=random&size=128`}
+                src={
+                  user.avatarUrl ||
+                  `https://ui-avatars.com/api/?name=${user.name}&background=random&size=128`
+                }
               />
               <AvatarFallback>
                 <UserIcon className="w-12 h-12" />
@@ -592,7 +660,49 @@ export default function DashboardPage() {
                       This information will be displayed on your uploads.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-6">
+                    {/* Avatar Upload Section */}
+                    <div className="flex items-center gap-6 pb-6 border-b border-border">
+                      <Avatar className="w-20 h-20 border-2 border-border">
+                        <AvatarImage
+                          src={
+                            user.avatarUrl ||
+                            `https://ui-avatars.com/api/?name=${user.name}&background=random&size=128`
+                          }
+                        />
+                        <AvatarFallback>
+                          <UserIcon className="w-8 h-8" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-2 flex-1">
+                        <h4 className="text-sm font-medium">Profile Picture</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Upload a professional looking photo of yourself. Max
+                          size 5MB.
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="file"
+                            accept="image/jpeg, image/png, image/webp"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={handleAvatarUpload}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingAvatar}
+                          >
+                            <Camera className="w-4 h-4 mr-2" />
+                            {isUploadingAvatar
+                              ? "Uploading..."
+                              : "Change Picture"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
@@ -755,9 +865,49 @@ export default function DashboardPage() {
                       Once you delete your account, there is no going back.
                       Please be certain.
                     </p>
-                    <Button variant="destructive">Delete Account</Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => setIsDeleteModalOpen(true)}
+                    >
+                      Delete Account
+                    </Button>
                   </CardContent>
                 </Card>
+
+                <Dialog
+                  open={isDeleteModalOpen}
+                  onOpenChange={setIsDeleteModalOpen}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you absolutely sure?</DialogTitle>
+                      <DialogDescription>
+                        This action will schedule your account for permanent
+                        deletion in 30 days. You will be immediately logged out,
+                        and you won't be able to log back in. All your uploaded
+                        resources and contributions will be permanently erased
+                        after 30 days.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDeleteModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteAccount}
+                        disabled={isDeletingAccount}
+                      >
+                        {isDeletingAccount
+                          ? "Deleting..."
+                          : "Yes, delete my account"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </div>

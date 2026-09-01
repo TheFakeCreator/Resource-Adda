@@ -29,7 +29,8 @@ export const getSetupStatus = async (
 
     res.status(200).json({ isSetupComplete: true });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -63,7 +64,8 @@ export const configureSystem = async (
       .status(200)
       .json({ message: "System configuration saved successfully", settings });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -92,6 +94,7 @@ export const getPublicSettings = async (
       isSetupComplete,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

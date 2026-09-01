@@ -75,6 +75,13 @@ export interface IUser extends Document {
   isBanned: boolean;
   banReason?: string;
   shadowbannedCount: number;
+
+  // Session Management
+  tokenVersion: number;
+
+  // Deletion
+  isDeleted: boolean;
+  scheduledDeletionAt?: Date;
 }
 
 const UserSchema: Schema = new Schema(
@@ -160,6 +167,13 @@ const UserSchema: Schema = new Schema(
     isBanned: { type: Boolean, default: false },
     banReason: { type: String },
     shadowbannedCount: { type: Number, default: 0 },
+
+    // Session Management
+    tokenVersion: { type: Number, default: 0 },
+
+    // Deletion
+    isDeleted: { type: Boolean, default: false },
+    scheduledDeletionAt: { type: Date },
   },
   { timestamps: true },
 );

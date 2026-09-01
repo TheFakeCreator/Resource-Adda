@@ -173,7 +173,10 @@ export function Navbar() {
               >
                 <Avatar className="h-full w-full border-2 border-primary/20 hover:border-primary transition-colors cursor-pointer">
                   <AvatarImage
-                    src={`https://ui-avatars.com/api/?name=${user.name}&background=random`}
+                    src={
+                      user.avatarUrl ||
+                      `https://ui-avatars.com/api/?name=${user.name}&background=random`
+                    }
                     alt={user.name}
                   />
                   <AvatarFallback>

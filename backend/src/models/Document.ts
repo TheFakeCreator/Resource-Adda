@@ -13,6 +13,8 @@ export interface IDocument extends MongooseDocument {
   uploadedBy: mongoose.Types.ObjectId;
   reportCount: number;
   downloadCount: number;
+  downloadedBy: string[]; // Store IPs or User IDs to prevent inflation
+  views: number;
   averageRating: number;
   totalRatings: number;
   isFeatured: boolean;
@@ -31,6 +33,8 @@ const DocumentSchema: Schema = new Schema(
     uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     reportCount: { type: Number, default: 0 },
     downloadCount: { type: Number, default: 0 },
+    downloadedBy: [{ type: String }],
+    views: { type: Number, default: 0 },
     averageRating: { type: Number, default: 0 },
     totalRatings: { type: Number, default: 0 },
     isFeatured: { type: Boolean, default: false },

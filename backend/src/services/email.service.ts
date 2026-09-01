@@ -1,6 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY || "fallback_key");
+const getResendClient = (): Resend | null => {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+};
 
 export const sendVerificationEmail = async (
   to: string,
@@ -24,6 +29,11 @@ export const sendVerificationEmail = async (
     const frontendUrl =
       process.env.FRONTEND_URLS?.split(",")[0] || "http://localhost:3000";
     const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
+
+    const resend = getResendClient();
+    if (!resend) {
+      return false;
+    }
 
     const data = await resend.emails.send({
       from: "Resource-Adda <onboarding@resend.dev>", // Change this to your verified domain in production
@@ -79,6 +89,11 @@ export const sendPasswordResetEmail = async (
     const frontendUrl =
       process.env.FRONTEND_URLS?.split(",")[0] || "http://localhost:3000";
     const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+
+    const resend = getResendClient();
+    if (!resend) {
+      return false;
+    }
 
     const data = await resend.emails.send({
       from: "Resource-Adda <onboarding@resend.dev>", // Change this to your verified domain in production

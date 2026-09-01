@@ -4,6 +4,10 @@ import User from "../models/User";
 import { ContributionStatus } from "../models/Contribution";
 import { AuthRequest } from "../middlewares/auth";
 
+/** Escape special regex characters to prevent ReDoS attacks */
+const escapeRegex = (str: string): string =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getApprovedRoadmaps = async (
   req: Request,
   res: Response,
@@ -19,7 +23,10 @@ export const getApprovedRoadmaps = async (
     }
 
     if (targetAudience && typeof targetAudience === "string") {
-      filter.targetAudience = { $regex: targetAudience, $options: "i" };
+      filter.targetAudience = {
+        $regex: escapeRegex(targetAudience),
+        $options: "i",
+      };
     }
 
     const page = parseInt(req.query.page as string) || 1;
@@ -57,7 +64,8 @@ export const getApprovedRoadmaps = async (
       pages: Math.ceil(total / limit),
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -92,7 +100,8 @@ export const getRoadmapById = async (
 
     res.status(200).json(doc);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -106,8 +115,32 @@ export const submitRoadmap = async (
       return;
     }
 
+    const {
+      title,
+      description,
+      category,
+      difficulty,
+      estimatedTime,
+      targetAudience,
+      introNotes,
+      globalPrerequisites,
+      steps,
+      isAnonymous,
+      tags,
+    } = req.body;
+
     const newRoadmap = new Roadmap({
-      ...req.body,
+      title,
+      description,
+      category,
+      difficulty,
+      estimatedTime,
+      targetAudience,
+      introNotes,
+      globalPrerequisites,
+      steps,
+      isAnonymous,
+      tags,
       author: req.user._id,
       status: ContributionStatus.APPROVED,
       isOfficial: req.user.role === "admin" || req.user.role === "super_admin",
@@ -123,7 +156,8 @@ export const submitRoadmap = async (
 
     res.status(201).json(newRoadmap);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -162,7 +196,8 @@ export const enrollRoadmap = async (
       activeRoadmaps: user.activeRoadmaps,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -199,6 +234,7 @@ export const completeStep = async (
       .status(200)
       .json({ message: "Step completed", activeRoadmaps: user.activeRoadmaps });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

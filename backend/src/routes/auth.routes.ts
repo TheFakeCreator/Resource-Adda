@@ -8,6 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   googleAuth,
+  logout,
 } from "../controllers/auth.controller";
 import { authenticate } from "../middlewares/auth";
 
@@ -21,5 +22,6 @@ router.post("/resend-verification", resendVerification);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.post("/google", googleAuth);
+router.post("/logout", authenticate, logout);
 
 export default router;

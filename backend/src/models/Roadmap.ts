@@ -79,7 +79,7 @@ const RoadmapSchema: Schema = new Schema(
     status: {
       type: String,
       enum: Object.values(ContributionStatus),
-      default: ContributionStatus.APPROVED,
+      default: ContributionStatus.PENDING,
     },
     isOfficial: { type: Boolean, default: false },
 

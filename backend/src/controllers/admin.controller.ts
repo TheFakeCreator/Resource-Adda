@@ -91,9 +91,10 @@ export const getOverviewStats = async (
       recentDocuments,
     });
   } catch (error: any) {
+    console.error("Server error:", error);
     res.status(500).json({
       message: "Server error fetching admin stats",
-      error: error.message,
+      error: "An internal server error occurred",
     });
   }
 };

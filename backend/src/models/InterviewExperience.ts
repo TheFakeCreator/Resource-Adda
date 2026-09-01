@@ -66,7 +66,7 @@ const InterviewExperienceSchema: Schema = new Schema(
     status: {
       type: String,
       enum: Object.values(ContributionStatus),
-      default: ContributionStatus.APPROVED,
+      default: ContributionStatus.PENDING,
     },
     tags: [{ type: String }],
     reportCount: { type: Number, default: 0 },

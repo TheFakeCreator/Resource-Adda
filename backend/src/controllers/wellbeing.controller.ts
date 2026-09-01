@@ -69,7 +69,8 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
       pages: Math.ceil(total / limit),
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -131,7 +132,8 @@ export const createPost = async (
 
     res.status(201).json(doc);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -197,7 +199,8 @@ export const getComments = async (
 
     res.status(200).json(rootComments);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -247,7 +250,8 @@ export const addComment = async (
       .status(201)
       .json({ message: "Comment added successfully", comment: doc });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -296,6 +300,7 @@ export const toggleReaction = async (
       .status(200)
       .json({ message: "Reaction updated", reactions: post.reactions });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

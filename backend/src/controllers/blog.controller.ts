@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
+import DOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 import Blog from "../models/Blog";
 import { AuthRequest } from "../middlewares/auth";
+
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
 
 export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -29,7 +34,8 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
       pages: Math.ceil(total / limit),
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -49,7 +55,8 @@ export const getBlogBySlug = async (
     }
     res.status(200).json(blog);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -65,6 +72,21 @@ export const createBlog = async (
 
     const { title, content, tags, coverImage } = req.body;
 
+    if (!title || title.length > 100) {
+      res
+        .status(400)
+        .json({ error: "Title is required and must be under 100 characters." });
+      return;
+    }
+
+    if (!content) {
+      res.status(400).json({ error: "Content is required." });
+      return;
+    }
+
+    // Sanitize the content to prevent XSS
+    const sanitizedContent = purify.sanitize(content);
+
     // Generate unique slug
     let baseSlug = title
       .toLowerCase()
@@ -78,7 +100,7 @@ export const createBlog = async (
     }
 
     // Estimate read time (roughly 200 words per minute)
-    const wordCount = content.trim().split(/\s+/).length;
+    const wordCount = sanitizedContent.trim().split(/\s+/).length;
     const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
     // Parse tags if sent as string
@@ -97,7 +119,7 @@ export const createBlog = async (
     const newBlog = new Blog({
       title,
       slug,
-      content,
+      content: sanitizedContent,
       tags: parsedTags,
       coverImage: req.file ? `/uploads/${req.file.filename}` : coverImage,
       author: req.user._id,
@@ -111,7 +133,8 @@ export const createBlog = async (
 
     res.status(201).json(newBlog);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -173,7 +196,8 @@ export const reportBlog = async (
       isShadowbanned: blog.isShadowbanned,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -187,10 +211,15 @@ export const uploadMedia = async (
       return;
     }
 
-    // Return the URL that can be embedded in Markdown
-    const url = `http://localhost:5000/uploads/${req.file.filename}`;
+    // Upload to Cloudinary instead of serving locally
+    const { uploadToCloudinary } = await import("../middlewares/upload");
+    const url = await uploadToCloudinary(
+      req.file.buffer,
+      "resource_adda/blog_media",
+    );
     res.status(200).json({ url });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

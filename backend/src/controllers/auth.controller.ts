@@ -44,9 +44,19 @@ const loginSchema = z.object({
     .max(100, "Password too long"),
 });
 
-const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || "fallback_secret", {
-    expiresIn: "7d",
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error(
+      "FATAL: JWT_SECRET environment variable is not set. Server cannot sign tokens.",
+    );
+  }
+  return secret;
+};
+
+const generateToken = (userId: string, tokenVersion: number) => {
+  return jwt.sign({ userId, tokenVersion }, getJwtSecret(), {
+    expiresIn: "1d",
   });
 };
 
@@ -70,7 +80,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ error: "Email already exists" });
+      // Prevent email enumeration: act as if registration succeeded but require verification
+      res.status(201).json({
+        message:
+          "Registration successful. Please check your email to verify your account.",
+        user: { isVerified: false }, // Forces frontend to show verification screen instead of auto-login
+      });
       return;
     }
 
@@ -89,9 +104,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         settings.allowedEmailPatterns.length > 0
       ) {
         const isAllowed = settings.allowedEmailPatterns.some((pattern) => {
-          // Simple regex conversion from wildcard like *@*.nitrr.ac.in
-          const regexStr = pattern.replace(/\*/g, ".*");
-          const regex = new RegExp(`^${regexStr}$`);
+          // Escape all regex special chars except *, then convert * to .*
+          const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+          const regexStr = escaped.replace(/\*/g, ".*");
+          const regex = new RegExp(`^${regexStr}$`, "i");
           return regex.test(email);
         });
 
@@ -137,7 +153,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       emailSent = await sendVerificationEmail(email, verificationToken);
     }
 
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user._id.toString(), user.tokenVersion);
 
     res.status(201).json({
       message: emailSent
@@ -154,7 +170,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -203,7 +220,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     user.lastLogin = new Date();
     await user.save();
 
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user._id.toString(), user.tokenVersion);
 
     res.status(200).json({
       message: "Login successful",
@@ -218,7 +235,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -233,7 +251,8 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
     const user = await User.findById(req.user._id).select("-password_hash");
     res.status(200).json(user);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -266,7 +285,8 @@ export const verifyEmail = async (
 
     res.status(200).json({ message: "Email successfully verified!" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -308,7 +328,8 @@ export const resendVerification = async (
 
     res.status(200).json({ message: "Verification email sent successfully!" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -350,7 +371,8 @@ export const forgotPassword = async (
       message: "If an account exists, a password reset email has been sent.",
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -387,12 +409,14 @@ export const resetPassword = async (
     user.password_hash = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
+    user.tokenVersion += 1; // Invalidate all existing sessions on password reset
 
     await user.save();
 
     res.status(200).json({ message: "Password has been successfully reset." });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -448,8 +472,9 @@ export const googleAuth = async (
         settings.allowedEmailPatterns.length > 0
       ) {
         const isAllowed = settings.allowedEmailPatterns.some((pattern) => {
-          const regexStr = pattern.replace(/\*/g, ".*");
-          const regex = new RegExp(`^${regexStr}$`);
+          const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+          const regexStr = escaped.replace(/\*/g, ".*");
+          const regex = new RegExp(`^${regexStr}$`, "i");
           return regex.test(email);
         });
 
@@ -490,7 +515,7 @@ export const googleAuth = async (
     user.lastLogin = new Date();
     await user.save();
 
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user._id.toString(), user.tokenVersion);
 
     res.status(200).json({
       message: "Login successful",
@@ -506,5 +531,28 @@ export const googleAuth = async (
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const logout = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: "Not authenticated" });
+      return;
+    }
+
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.tokenVersion += 1; // Invalidate current and all other active JWTs
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error: any) {
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

@@ -41,3 +41,9 @@ next-env.d.ts
 # local database / storage
 *.sqlite
 *.db
+
+# security audit reports (NEVER commit to public repo)
+SECURITY_AUDIT.md
+PENETRATION_TEST.md
+PRE_PRODUCTION_CHECKLIST.md
+DEPENDENCY_AUDIT.md

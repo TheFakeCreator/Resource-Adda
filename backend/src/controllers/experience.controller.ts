@@ -3,6 +3,10 @@ import InterviewExperience from "../models/InterviewExperience";
 import { ContributionStatus } from "../models/Contribution";
 import { AuthRequest } from "../middlewares/auth";
 
+/** Escape special regex characters to prevent ReDoS attacks */
+const escapeRegex = (str: string): string =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getApprovedExperiences = async (
   req: Request,
   res: Response,
@@ -14,11 +18,11 @@ export const getApprovedExperiences = async (
     const filter: any = { status: ContributionStatus.APPROVED };
 
     if (company && typeof company === "string") {
-      filter.company = { $regex: company, $options: "i" };
+      filter.company = { $regex: escapeRegex(company), $options: "i" };
     }
 
     if (role && typeof role === "string") {
-      filter.role = { $regex: role, $options: "i" };
+      filter.role = { $regex: escapeRegex(role), $options: "i" };
     }
 
     if (type && typeof type === "string" && type !== "all") {
@@ -60,7 +64,8 @@ export const getApprovedExperiences = async (
       pages: Math.ceil(total / limit),
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -95,7 +100,8 @@ export const getExperienceById = async (
 
     res.status(200).json(doc);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -109,8 +115,34 @@ export const submitExperience = async (
       return;
     }
 
+    const {
+      title,
+      company,
+      role,
+      type,
+      offerStatus,
+      difficulty,
+      ctc,
+      preparationStrategy,
+      adviceForJuniors,
+      rounds,
+      isAnonymous,
+      tags,
+    } = req.body;
+
     const newExperience = new InterviewExperience({
-      ...req.body,
+      title,
+      company,
+      role,
+      type,
+      offerStatus,
+      difficulty,
+      ctc,
+      preparationStrategy,
+      adviceForJuniors,
+      rounds,
+      isAnonymous,
+      tags,
       author: req.user._id,
       status: ContributionStatus.APPROVED,
       upvotes: 0,
@@ -123,6 +155,7 @@ export const submitExperience = async (
 
     res.status(201).json(newExperience);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

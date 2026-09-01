@@ -27,37 +27,44 @@ export const toggleUpvote = async (
       return;
     }
 
-    const hasUpvoted = item.upvotedBy.includes(userId);
-    const hasDownvoted = item.downvotedBy.includes(userId);
+    const hasUpvoted = item.upvotedBy?.includes(userId);
 
-    // Remove downvote if exists
-    if (hasDownvoted) {
-      item.downvotedBy = item.downvotedBy.filter(
-        (id: any) => id.toString() !== userId.toString(),
-      );
-      item.downvotes -= 1;
-    }
+    // Use aggregation pipeline to atomically toggle the upvote and sync counts
+    await Model.updateOne({ _id: item._id }, [
+      {
+        $set: {
+          // Remove downvote if it exists
+          downvotedBy: {
+            $setDifference: [{ $ifNull: ["$downvotedBy", []] }, [userId]],
+          },
+          // Toggle upvote
+          upvotedBy: {
+            $cond: [
+              { $in: [userId, { $ifNull: ["$upvotedBy", []] }] },
+              { $setDifference: [{ $ifNull: ["$upvotedBy", []] }, [userId]] },
+              { $setUnion: [{ $ifNull: ["$upvotedBy", []] }, [userId]] },
+            ],
+          },
+        },
+      },
+      {
+        $set: {
+          upvotes: { $size: "$upvotedBy" },
+          downvotes: { $size: "$downvotedBy" },
+        },
+      },
+    ]);
 
-    if (hasUpvoted) {
-      // Remove upvote
-      item.upvotedBy = item.upvotedBy.filter(
-        (id: any) => id.toString() !== userId.toString(),
-      );
-      item.upvotes -= 1;
-    } else {
-      // Add upvote
-      item.upvotedBy.push(userId);
-      item.upvotes += 1;
-    }
+    const updatedItem = await Model.findById(id);
 
-    await item.save();
     res.status(200).json({
-      upvotes: item.upvotes,
-      downvotes: item.downvotes,
+      upvotes: updatedItem.upvotes,
+      downvotes: updatedItem.downvotes,
       hasUpvoted: !hasUpvoted,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -119,6 +126,7 @@ export const submitReview = async (
         .json({ error: "You have already reviewed this resource." });
       return;
     }
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

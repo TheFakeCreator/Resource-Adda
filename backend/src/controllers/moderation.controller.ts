@@ -81,7 +81,8 @@ export const getPendingQueue = async (
       },
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -178,7 +179,8 @@ export const reviewContribution = async (
 
     res.status(200).json({ message: `Successfully ${action}d ${type}` });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -279,6 +281,7 @@ export const reportItem = async (
 
     res.status(200).json({ message: "Report submitted successfully" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };

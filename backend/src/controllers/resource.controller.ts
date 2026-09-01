@@ -5,6 +5,10 @@ import Document from "../models/Document";
 import Contribution, { ContributionStatus } from "../models/Contribution";
 import Review from "../models/Review";
 
+/** Escape special regex characters to prevent ReDoS attacks */
+const escapeRegex = (str: string): string =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const uploadResource = async (
   req: AuthRequest,
   res: Response,
@@ -74,7 +78,7 @@ export const uploadResource = async (
     const contribution = new Contribution({
       documentId: document._id,
       userId: req.user?._id,
-      status: ContributionStatus.APPROVED,
+      status: ContributionStatus.PENDING,
     });
     await contribution.save();
 
@@ -83,7 +87,8 @@ export const uploadResource = async (
       document,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -117,7 +122,8 @@ export const getPendingContributions = async (
       },
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -152,7 +158,8 @@ export const reviewContribution = async (
 
     res.status(200).json({ message: `Contribution ${status}`, contribution });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -181,7 +188,7 @@ export const getApprovedDocuments = async (
     if (minRating)
       filter.averageRating = { $gte: parseFloat(minRating as string) };
     if (search) {
-      filter.title = { $regex: search as string, $options: "i" };
+      filter.title = { $regex: escapeRegex(search as string), $options: "i" };
     }
 
     const [documents, total] = await Promise.all([
@@ -202,7 +209,8 @@ export const getApprovedDocuments = async (
       },
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -221,7 +229,8 @@ export const getDocumentById = async (
     }
     res.status(200).json(document);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -230,22 +239,44 @@ export const incrementDownload = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const document = await Document.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { downloadCount: 1 } },
+    const userIp = (req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "unknown") as string;
+    const documentId = req.params.id;
+
+    // Atomically check if IP hasn't downloaded, then push and increment
+    const updatedDoc = await Document.findOneAndUpdate(
+      { _id: documentId, downloadedBy: { $ne: userIp } },
+      {
+        $addToSet: { downloadedBy: userIp },
+        $inc: { downloadCount: 1 },
+      },
       { new: true },
     );
-    if (!document) {
+
+    let finalDoc = updatedDoc;
+    if (!updatedDoc) {
+      // IP already downloaded or doc doesn't exist
+      finalDoc = await Document.findById(documentId);
+      if (!finalDoc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+    }
+
+    if (!finalDoc) {
       res.status(404).json({ error: "Document not found" });
       return;
     }
+
     res.status(200).json({
-      message: "Download count incremented",
-      downloadCount: document.downloadCount,
-      fileUrl: document.fileUrl,
+      message: "Download recorded",
+      downloadCount: finalDoc.downloadCount,
+      fileUrl: finalDoc.fileUrl,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -259,7 +290,8 @@ export const getReviews = async (
       .sort({ createdAt: -1 });
     res.status(200).json(reviews);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -308,7 +340,8 @@ export const addReview = async (
 
     res.status(200).json({ message: "Review added successfully", review });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -332,27 +365,39 @@ export const voteReview = async (
       return;
     }
 
-    // Remove user from both arrays first to reset their vote
-    review.upvotedBy = review.upvotedBy.filter(
-      (id) => id.toString() !== userId?.toString(),
-    );
-    review.downvotedBy = review.downvotedBy.filter(
-      (id) => id.toString() !== userId?.toString(),
-    );
+    // Use an aggregation pipeline update to atomically toggle votes and sync counts
+    await Review.updateOne({ _id: review._id }, [
+      {
+        $set: {
+          upvotedBy: {
+            $cond: [
+              { $eq: [voteType, "upvote"] },
+              { $setUnion: [{ $ifNull: ["$upvotedBy", []] }, [userId]] },
+              { $setDifference: [{ $ifNull: ["$upvotedBy", []] }, [userId]] },
+            ],
+          },
+          downvotedBy: {
+            $cond: [
+              { $eq: [voteType, "downvote"] },
+              { $setUnion: [{ $ifNull: ["$downvotedBy", []] }, [userId]] },
+              { $setDifference: [{ $ifNull: ["$downvotedBy", []] }, [userId]] },
+            ],
+          },
+        },
+      },
+      {
+        $set: {
+          upvotes: { $size: "$upvotedBy" },
+          downvotes: { $size: "$downvotedBy" },
+        },
+      },
+    ]);
 
-    if (voteType === "upvote") {
-      review.upvotedBy.push(userId);
-    } else if (voteType === "downvote") {
-      review.downvotedBy.push(userId);
-    }
-
-    review.upvotes = review.upvotedBy.length;
-    review.downvotes = review.downvotedBy.length;
-
-    await review.save();
-    res.status(200).json({ message: "Vote recorded", review });
+    const updatedReview = await Review.findById(reviewId);
+    res.status(200).json({ message: "Vote recorded", review: updatedReview });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
 
@@ -391,6 +436,7 @@ export const getFeaturedDocuments = async (
       trending,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Server error:", error);
+    res.status(500).json({ error: "An internal server error occurred" });
   }
 };
