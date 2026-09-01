@@ -5,4 +5,7 @@ module.exports = {
   testMatch: ["**/**/*.test.ts"],
   verbose: true,
   forceExit: true,
+  moduleNameMapper: {
+    "^jsdom$": "<rootDir>/src/__mocks__/jsdom.ts",
+  },
 };
